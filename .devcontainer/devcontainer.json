@@ -1,0 +1,14 @@
+{
+    "name": "atcoder-rust",
+    "dockerComposeFile": "compose.yaml",
+    "service": "rust",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer",
+                "tamasfe.even-better-toml"
+            ]
+        }
+    }
+}
