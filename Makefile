@@ -2,14 +2,10 @@
 run:
 	docker compose run --rm rust
 
-.PHONY: build
-build:
-	docker compose build
-
-.PHONY: build-nc
-build-nc:
-	docker compose build --no-cache
+.PHONY: install
+install:
+	cargo install --root bin cargo-compete
 
 .PHONY: init
 init:
-	docker compose run --rm rust bash -c 'echo 2 | cargo compete init atcoder'
+	echo 2 | cargo compete init atcoder

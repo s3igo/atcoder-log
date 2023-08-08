@@ -1,20 +1,19 @@
 # AtCoder Rust
 
+# Requirements
+
+- direnv
+
 ## Init
 
 ```sh
-# Build image
-make build
+# Install cargo-compete
+make install
 
 # Init project
 make init
-
-# (Optional) Build with `--no-cache` option
-make build-nc
 ```
 ## Usage
 
 ```sh
-# attach to container
-make
 ```
