@@ -12,3 +12,9 @@ make init
 # (Optional) Build with `--no-cache` option
 make build-nc
 ```
+## Usage
+
+```sh
+# attach to container
+make
+```
