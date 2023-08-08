@@ -12,4 +12,4 @@ build-nc:
 
 .PHONY: init
 init:
-	docker compose exec rust echo 2 | cargo compete init atcoder
+	docker compose run --rm rust bash -c 'echo 2 | cargo compete init atcoder'
