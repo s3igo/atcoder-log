@@ -4,7 +4,7 @@ run:
 
 .PHONY: install
 install:
-	cargo install --root bin cargo-compete
+	cargo install --root cargo_bin cargo-compete
 
 .PHONY: init
 init:
