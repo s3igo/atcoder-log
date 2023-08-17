@@ -9,3 +9,8 @@ install:
 .PHONY: init
 init:
 	echo 2 | cargo compete init atcoder
+	cargo compete login atcoder
+
+.PHONY: logout
+logout:
+	rm ${HOME}/Library/Application\ Support/cargo-compete/cookies.jsonl
