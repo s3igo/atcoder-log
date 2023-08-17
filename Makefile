@@ -1,7 +1,3 @@
-.PHONY: run
-run:
-	docker compose run --rm rust
-
 .PHONY: install
 install:
 	cargo install --root cargo_bin cargo-compete
