@@ -1,5 +1,10 @@
 use proconio::input;
 
 fn main() {
-    input! {}
+    input! {
+        n: usize,
+        y: usize,
+    }
+
+
 }
