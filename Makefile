@@ -2,6 +2,12 @@
 install:
 	cargo install --root cargo_bin cargo-compete
 
+
+.PHONY: update
+update:
+	cargo install --force --root cargo_bin cargo-compete
+	echo 2 | cargo compete init atcoder
+
 .PHONY: init
 init:
 	direnv allow
