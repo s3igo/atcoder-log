@@ -14,7 +14,7 @@ fn main() {
     }
     input!(x: usize);
 
-    data.retain(|(_, _, a)| a.contains(&x));
+    data.retain(|(.., a)| a.contains(&x));
     let c_min = data.iter().map(|(_, c, _)| *c).min().unwrap_or(0);
     data.retain(|(_, c, _)| *c == c_min);
 
