@@ -19,5 +19,5 @@ fn main() {
     data.retain(|(_, c, _)| *c == c_min);
 
     println!("{}", data.len());
-    println!("{}", data.iter().map(|(i, _, _)| i).join(" "));
+    println!("{}", data.iter().map(|(i, ..)| i).join(" "));
 }
