@@ -1,0 +1,9 @@
+{
+    "itertools": {
+        "prefix": ";it",
+        "body": [
+            "use itertools::*;"
+        ],
+        "description": "bring all items from itertools"
+    }
+}

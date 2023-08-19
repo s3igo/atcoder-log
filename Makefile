@@ -17,3 +17,7 @@ init:
 .PHONY: logout
 logout:
 	rm ${HOME}/Library/Application\ Support/cargo-compete/cookies.jsonl
+
+.PHONY: check
+check:
+	cargo +nightly fmt --check
