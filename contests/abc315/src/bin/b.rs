@@ -6,9 +6,9 @@ fn main() {
         ds: [usize; m],
     }
 
-    let center = ds.iter().sum::<usize>() / 2;
+    let center = (ds.iter().sum::<usize>() + 1) / 2;
     let mut month = 0;
-    let day = 1 + center
+    let day = center
         - ds.iter()
             .enumerate()
             .take_while(|(i, d)| {
@@ -17,5 +17,5 @@ fn main() {
             })
             .fold(0, |acc, (_, d)| acc + d);
 
-    println!("{} {}", month, day); // NOTE: WA
+    println!("{} {}", month, day);
 }
