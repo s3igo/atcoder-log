@@ -12,7 +12,6 @@ normalize_doc_attributes = true
 overflow_delimited_expr = true
 reorder_impl_items = true
 group_imports = "StdExternalCrate"
-single_line_if_else_max_width = 80
 use_field_init_shorthand = true
 use_try_shorthand = true
 wrap_comments = true
