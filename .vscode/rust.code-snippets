@@ -15,5 +15,12 @@
             "}"
         ],
         "description": "check if a string is a palindrome(回文)"
+    },
+    "is_sorted": {
+        "prefix": ";is_sort",
+        "body": [
+            ".tuple_windows().all(|(a, b)| a <= b)"
+        ],
+        "description": "check if a slice is sorted"
     }
 }

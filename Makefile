@@ -21,3 +21,9 @@ logout:
 .PHONY: check
 check:
 	cargo +nightly fmt --check
+
+.PHONY: new
+new:
+	cargo compete new $(ARG) \
+		&& git add contests/$(ARG) \
+		&& git commit -m "feat: add $(ARG)"
