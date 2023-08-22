@@ -1,9 +1,19 @@
 {
-    "itertools": {
+    "use itertools": {
         "prefix": ";it",
         "body": [
             "use itertools::*;"
         ],
         "description": "bring all items from itertools"
+    },
+    "is_palindrome": {
+        "prefix": ";is_pal",
+        "body": [
+            "fn is_palindrome(s: &str) -> bool {",
+            "\tlet s = s.chars().collect::<Vec<char>>();",
+            "\ts == s.iter().rev().copied().collect::<Vec<char>>()",
+            "}"
+        ],
+        "description": "check if a string is a palindrome(回文)"
     }
 }
