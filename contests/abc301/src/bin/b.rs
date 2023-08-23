@@ -7,20 +7,20 @@ fn main() {
         a: [usize; n],
     }
 
-    let mut ans = a
+    let ans = a
         .iter()
         .tuple_windows()
         .flat_map(|(&prev, &next)| {
             if (prev as isize - next as isize).abs() == 1 {
-                vec![prev]
+                vec![prev, next]
             } else if prev < next {
-                (prev..next).collect_vec()
+                (prev..=next).collect_vec()
             } else {
-                ((next + 1)..=prev).rev().collect_vec()
+                (next..=prev).rev().collect_vec()
             }
         })
+        .dedup()
         .collect_vec();
-    ans.push(*a.last().unwrap());
 
     println!("{}", ans.iter().join(" "));
 }
