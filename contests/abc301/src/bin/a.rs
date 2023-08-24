@@ -14,7 +14,7 @@ fn main() {
         _ => unreachable!(),
     });
     let ans = match t.cmp(&a) {
-        Ordering::Equal => match s.chars().rev().next().unwrap() {
+        Ordering::Equal => match s.chars().last().unwrap() {
             'T' => 'A',
             'A' => 'T',
             _ => unreachable!(),
