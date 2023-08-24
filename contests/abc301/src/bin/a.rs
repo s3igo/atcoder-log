@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use proconio::input;
 
 fn main() {
@@ -11,17 +13,14 @@ fn main() {
         'A' => (t, a + 1),
         _ => unreachable!(),
     });
-    #[allow(clippy::comparison_chain)]
-    let ans = if t == a {
-        match s.chars().rev().next().unwrap() {
+    let ans = match t.cmp(&a) {
+        Ordering::Equal => match s.chars().rev().next().unwrap() {
             'T' => 'A',
             'A' => 'T',
             _ => unreachable!(),
-        }
-    } else if t > a {
-        'T'
-    } else {
-        'A'
+        },
+        Ordering::Greater => 'T',
+        Ordering::Less => 'A',
     };
 
     println!("{}", ans);
