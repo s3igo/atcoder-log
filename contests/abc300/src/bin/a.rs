@@ -8,8 +8,7 @@ fn main() {
         c: [usize; n],
     }
 
-    let (ans, _) =
-        c.iter().enumerate().map(|(i, x)| (i + 1, x)).find(|(_, x)| **x == a + b).unwrap();
+    let ans = c.iter().position(|x| *x == a + b).unwrap() + 1;
 
     println!("{}", ans);
 }
