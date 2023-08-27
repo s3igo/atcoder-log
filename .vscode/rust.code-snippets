@@ -23,7 +23,6 @@
         ],
         "description": "check if a slice is sorted"
     },
-    // println!("{}", if cond { "Yes" } else { "No" });
     "Print Yes or No": {
         "prefix": ";printyesno",
         "body": [
