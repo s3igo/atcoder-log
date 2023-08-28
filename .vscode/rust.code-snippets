@@ -53,4 +53,15 @@
         ],
         "description": "get the slice between two elements"
     },
+    "manhattan distance": {
+        "prefix": ";manhattan",
+        "body": [
+            "// to support before v1.51.0; `unsigned_abs()` is not available",
+            "#[allow(clippy::cast_abs_to_unsigned)]",
+            "fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+            "\t(ax as i64 - bx as i64).abs() as usize + (ay as i64 - by as i64).abs() as usize",
+            "}"
+        ],
+        "description": "manhattan distance"
+    },
 }
