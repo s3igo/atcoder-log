@@ -23,11 +23,34 @@
         ],
         "description": "check if a slice is sorted"
     },
-    "Print Yes or No": {
-        "prefix": ";printyesno",
+    "Yes or No": {
+        "prefix": ";printyn",
         "body": [
             "println!(\"{}\", if cond { \"Yes\" } else { \"No\" });"
         ],
         "description": "Print Yes or No"
+    },
+    "rotate matrix": {
+        "prefix": ";rotate",
+        "body": [
+            "fn rotate<T: Copy>(matrix: Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
+            "\tlet n = matrix.len();",
+            "\tassert!(matrix.iter().all(|row| row.len() == n));",
+            "\tif times == 0 {",
+            "\t\tmatrix",
+            "\t} else {",
+            "\t\tlet rotated = (0..n).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect();",
+            "\t\trotate(rotated, times - 1)",
+            "\t}",
+            "}"
+        ],
+        "description": "rotate square matrix clockwise"
+    },
+    "between": {
+        "prefix": ";between",
+        "body": [
+            ".skip_while(|&${1:c}| ${1:c} != $2).skip(1).take_while(|&${1:c}| ${1:c} != $2)"
+        ],
+        "description": "get the slice between two elements"
     },
 }
