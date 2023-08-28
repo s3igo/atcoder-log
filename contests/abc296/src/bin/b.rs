@@ -7,13 +7,7 @@ fn main() {
     let b = row
         .chars()
         .zip(b'a'..)
-        .find_map(|(c, idx)| {
-            if c == '*' {
-                Some(char::from(idx))
-            } else {
-                None
-            }
-        })
+        .find_map(|(c, idx)| if c == '*' { Some(idx as char) } else { None })
         .unwrap();
 
     println!("{}{}", b, a);
