@@ -1,5 +1,6 @@
-use std::{cmp::Ordering, collections::HashMap};
+use std::cmp::Ordering;
 
+use maplit::hashmap;
 use proconio::input;
 
 fn main() {
@@ -8,15 +9,10 @@ fn main() {
         t: String,
     }
 
-    let mut s_dict = HashMap::new();
-    s_dict.insert('@', 0);
-    for c in s.chars() {
-        s_dict.entry(c).and_modify(|cnt| *cnt += 1).or_insert(1);
-    }
-    let mut t_dict = HashMap::new();
-    t_dict.insert('@', 0);
-    for c in t.chars() {
-        t_dict.entry(c).and_modify(|cnt| *cnt += 1).or_insert(1);
+    let (mut s_dict, mut t_dict) = (hashmap! { '@' => 0 }, hashmap! { '@' => 0 });
+    for (s, t) in s.chars().zip(t.chars()) {
+        s_dict.entry(s).and_modify(|cnt| *cnt += 1).or_insert(1);
+        t_dict.entry(t).and_modify(|cnt| *cnt += 1).or_insert(1);
     }
 
     for c in "atcoder".to_string().chars() {
