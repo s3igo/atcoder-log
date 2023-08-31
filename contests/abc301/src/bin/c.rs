@@ -34,6 +34,5 @@ fn main() {
         }
     }
 
-    let cond = s_dict == t_dict;
-    println!("{}", if cond { "Yes" } else { "No" });
+    println!("{}", if s_dict == t_dict { "Yes" } else { "No" });
 }
