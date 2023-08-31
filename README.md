@@ -1,6 +1,6 @@
 # AtCoder Rust
 
-Log of My AtCoder answers written in Rust.
+Log of My AtCoder solutions written in Rust.
 
 ## Requirements
 
@@ -22,9 +22,15 @@ make update
 # Logout from AtCoder
 make logout
 
-# Check format with nightly rustfmt feature
+# Check format of all contests with nightly rustfmt feature
 make check
 
 # Create new contest directory
-make new ARG=<contest-id>
+make new ARG=<contest>
+
+# Execute Testcases
+cargo compete t <problem>
+
+# Submit code
+cargo compete s <problem>
 ```
