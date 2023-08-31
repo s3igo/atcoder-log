@@ -1,17 +1,17 @@
 use itertools::Itertools;
-use proconio::input;
+use proconio::{input, marker::Usize1};
 
 fn main() {
     input! {
         n: usize,
-        p: usize,
-        q: usize,
-        r: usize,
-        s: usize,
+        p: Usize1,
+        q: Usize1,
+        r: Usize1,
+        s: Usize1,
         mut a: [usize; n],
     }
 
-    for (l, r) in (p - 1..q).zip(r - 1..s) {
+    for (l, r) in (p..=q).zip(r..=s) {
         a.swap(l, r);
     }
 
