@@ -1,5 +1,13 @@
 use proconio::input;
 
 fn main() {
-    input! {}
+    input! {
+        n: isize,
+        m: isize,
+        p: isize,
+    }
+
+    let ans = (n - m + p) / p;
+
+    println!("{}", ans);
 }
