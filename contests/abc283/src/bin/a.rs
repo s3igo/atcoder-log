@@ -1,5 +1,10 @@
 use proconio::input;
 
 fn main() {
-    input! {}
+    input! {
+        a: usize,
+        b: u32,
+    }
+
+    println!("{}", a.pow(b));
 }
