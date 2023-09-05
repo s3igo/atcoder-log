@@ -6,7 +6,7 @@
         ],
         "description": "bring all items from itertools"
     },
-    "is_palindrome": {
+    "is palindrome": {
         "prefix": ";is_pal",
         "body": [
             "fn is_palindrome(s: &str) -> bool {",
@@ -16,7 +16,7 @@
         ],
         "description": "check if a string is a palindrome(回文)"
     },
-    "is_sorted": {
+    "is sorted": {
         "prefix": ";is_sort",
         "body": [
             ".tuple_windows().all(|(a, b)| a <= b)"
@@ -59,9 +59,56 @@
             "// to support before v1.51.0; `unsigned_abs()` is not available",
             "#[allow(clippy::cast_abs_to_unsigned)]",
             "fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
-            "\t(ax as i64 - bx as i64).abs() as usize + (ay as i64 - by as i64).abs() as usize",
+            "\t(ax as isize - bx as isize).abs() as usize + (ay as isize - by as isize).abs() as usize",
             "}"
         ],
         "description": "manhattan distance"
+    },
+    "ceiling of division": {
+        "prefix": ";ceil_div",
+        "body": [
+            "($1 + $2 - 1) / $2"
+        ],
+        "description": "ceiling of a / b is (a + b - 1) / b"
+    },
+    "binary search (usize)": {
+        "prefix": ";bin_search_usize",
+        "body": [
+            "fn binary_search<F>(mut ng: usize, mut ok: usize, f: F) -> usize",
+            "where",
+            "\tF: Fn(usize) -> bool,",
+            "{",
+            "\twhile (ok as isize - ng as isize).abs() > 1 {",
+            "\t\tlet mid = (ok + ng) / 2;",
+            "\t\tif f(mid) {",
+            "\t\t\tok = mid;",
+            "\t\t} else {",
+            "\t\t\tng = mid;",
+            "\t\t}",
+            "\t}",
+            "\tok",
+            "}"
+        ],
+        "description": "general binary search for usize"
+    },
+    "binary search (f64)": {
+        "prefix": ";bin_search_f64",
+        "body": [
+            "fn binary_search<F>(mut ng: f64, mut ok: f64, err: f64, f: F) -> f64",
+            "where",
+            "\tF: Fn(f64) -> bool,",
+            "{",
+            "\twhile (ok - ng).abs() > err {",
+            "\t\tlet mid = (ok + ng) / 2.;",
+            "\t\tif f(mid) {",
+            "\t\t\tok = mid;",
+            "\t\t} else {",
+            "\t\t\tng = mid;",
+            "\t\t}",
+            "\t}",
+            "\tok",
+            "}"
+        ],
+        "description": "general binary search for f64"
     },
 }
