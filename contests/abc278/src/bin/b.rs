@@ -11,7 +11,7 @@ fn main() {
             break;
         }
 
-        let (next_h, next_m) = increment_time((h, m));
+        let (next_h, next_m) = increment_time(h, m);
         h = next_h;
         m = next_m;
     }
@@ -39,7 +39,7 @@ fn is_mistakable(h: usize, m: usize) -> bool {
     is_valid_range(swapped_h.parse().unwrap(), swapped_m.parse().unwrap())
 }
 
-fn increment_time((mut h, mut m): (usize, usize)) -> (usize, usize) {
+fn increment_time(mut h: usize, mut m: usize) -> (usize, usize) {
     m += 1;
     if m == 60 {
         m = 0;
