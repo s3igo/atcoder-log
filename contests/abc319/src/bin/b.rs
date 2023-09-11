@@ -15,18 +15,15 @@ fn main() {
 }
 
 fn divisors(n: usize) -> Vec<usize> {
-    let mut res = vec![];
-    for i in 1..=n {
-        if i * i > n {
-            break;
-        }
+    let (mut from_lower, mut from_upper) = (vec![], vec![]);
+    for i in (1..).take_while(|&i| i * i <= n) {
         if n % i == 0 {
-            res.push(i);
+            from_lower.push(i);
             if i != n / i {
-                res.push(n / i);
+                from_upper.push(n / i);
             }
         }
     }
-    res.sort();
-    res
+    from_upper.reverse();
+    [from_lower, from_upper].concat()
 }
