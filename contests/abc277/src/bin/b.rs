@@ -15,6 +15,7 @@ fn main() {
         let s = chars.next().unwrap();
         first.contains(f) && second.contains(s)
     }) && s.iter().sorted().tuple_windows().all(|(a, b)| a != b);
+    // TODO: itertoolsの`all_unique()`を使った方がいいかも
 
     println!("{}", if cond { "Yes" } else { "No" });
 }
