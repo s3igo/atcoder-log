@@ -137,4 +137,23 @@
         ],
         "description": "increment time"
     },
+    "enumerate divisors": {
+        "prefix": ";div",
+        "body": [
+            "fn enumerate_divisors(n: usize) -> Vec<usize> {",
+            "\tlet (mut from_lower, mut from_upper) = (vec![], vec![]);",
+            "\tfor i in (1..).take_while(|&i| i * i <= n) {",
+            "\t\tif n % i == 0 {",
+            "\t\t\tfrom_lower.push(i);",
+            "\t\t\tif i != n / i {",
+            "\t\t\t\tfrom_upper.push(n / i);",
+            "\t\t\t}",
+            "\t\t}",
+            "\t}",
+            "\tfrom_upper.reverse();",
+            "\t[from_lower, from_upper].concat()",
+            "}"
+        ],
+        "description": "enumerate divisors"
+    },
 }
