@@ -30,6 +30,7 @@
         ],
         "description": "Print Yes or No"
     },
+    // TODO: 正則でない行列に対応
     "rotate matrix": {
         "prefix": ";rotate",
         "body": [
