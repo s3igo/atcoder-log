@@ -1,5 +1,10 @@
 use proconio::input;
 
 fn main() {
-    input! {}
+    input! {
+        n: usize,
+        a: [usize; n],
+    }
+
+    println!("{}", a.iter().sum::<usize>());
 }
