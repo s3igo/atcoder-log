@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use proconio::{input, marker::Chars};
 
 fn main() {
@@ -5,7 +6,7 @@ fn main() {
 
     for i in (0..=s.len()).rev() {
         for s in s.windows(i) {
-            if s == s.iter().rev().copied().collect::<Vec<char>>() {
+            if s == s.iter().rev().copied().collect_vec() {
                 println!("{}", s.len());
                 return;
             }
