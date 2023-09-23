@@ -1,5 +1,9 @@
-use proconio::input;
+use proconio::{input, marker::Chars};
 
 fn main() {
-    input! {}
+    input!(s: Chars);
+
+    let ans = s[(s.len() + 1) / 2 - 1];
+
+    println!("{}", ans);
 }
