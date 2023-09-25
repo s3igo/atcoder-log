@@ -55,7 +55,7 @@
         "description": "get the slice between two elements"
     },
     "manhattan distance": {
-        "prefix": ";manhattan",
+        "prefix": ";distance_manhattan",
         "body": [
             "// to support before v1.51.0; `unsigned_abs()` is not available",
             "#[allow(clippy::cast_abs_to_unsigned)]",
@@ -63,7 +63,16 @@
             "\t(ax as isize - bx as isize).abs() as usize + (ay as isize - by as isize).abs() as usize",
             "}"
         ],
-        "description": "manhattan distance"
+        "description": "manhattan distance in 2 dimensions"
+    },
+    "chebyshev distance": {
+        "prefix": ";distance_chebyshev",
+        "body": [
+            "fn chebyshev_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+            "\tax.abs_diff(bx).max(ay.abs_diff(by))",
+            "}"
+        ],
+        "description": "chebyshev distance in 2 dimensions"
     },
     "ceiling of division": {
         "prefix": ";ceil_div",
