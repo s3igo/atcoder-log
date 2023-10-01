@@ -1,0 +1,14 @@
+{
+    "folders": [
+        {
+            "name": "root",
+            "path": "."
+        },
+        {
+            "path": "contests/1.42.0"
+        },
+        {
+            "path": "contests/1.70.0"
+        }
+    ]
+}
