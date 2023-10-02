@@ -1,3 +1,3 @@
 /target/
-/cargo-bin/
+/bin/cargo-bin/
 !.envrc
