@@ -10,5 +10,16 @@
         {
             "path": "contests/1.70.0"
         }
-    ]
+    ],
+    "settings": {
+        "[rust]": {
+            "editor.formatOnSave": true
+        },
+        "editor.inlayHints.enabled": "offUnlessPressed",
+        "rust-analyzer.checkOnSave": true,
+        "rust-analyzer.check.command": "clippy",
+        "rust-analyzer.linkedProjects": [
+            "contests/1.70.0/Cargo.toml"
+        ],
+    },
 }
