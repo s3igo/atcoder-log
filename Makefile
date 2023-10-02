@@ -1,11 +1,11 @@
 .PHONY: install
 install:
-	cargo install --root cargo-bin cargo-compete
+	cargo install --root ./bin/cargo-bin cargo-compete
 
 
 .PHONY: update
 update:
-	cargo install --force --root cargo-bin cargo-compete
+	cargo install --force --root ./bin/cargo-bin cargo-compete
 	echo 2 | cargo compete init atcoder
 
 .PHONY: init
