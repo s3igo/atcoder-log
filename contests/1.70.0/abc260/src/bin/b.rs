@@ -4,14 +4,7 @@ use itertools::{izip, Itertools};
 use proconio::input;
 
 fn main() {
-    input! {
-        n: usize,
-        x: usize,
-        y: usize,
-        z: usize,
-        a: [usize; n],
-        b: [usize; n],
-    }
+    input!(n: usize, x: usize, y: usize, z: usize, a: [usize; n], b: [usize; n]);
 
     let mut students = izip!(1.., a, b).collect_vec();
 

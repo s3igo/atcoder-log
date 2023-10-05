@@ -2,13 +2,7 @@ use itertools::Itertools;
 use proconio::{input, marker::Usize1};
 
 fn main() {
-    input! {
-        n: usize,
-        k: usize,
-        q: usize,
-        a: [Usize1; k],
-        l: [usize; q],
-    }
+    input!(n: usize, k: usize, q: usize, a: [Usize1; k], l: [usize; q]);
 
     let mut row = vec![0; n];
     for (i, &a) in a.iter().enumerate() {
