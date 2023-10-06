@@ -112,24 +112,24 @@
     ],
     "description": "enumerate divisors"
   },
-  ";distance_chebyshev": {
-    "prefix": ";distance_chebyshev",
+  ";coord_chebyshev-distance": {
+    "prefix": ";coord_chebyshev-distance",
     "body": [
-      "fn chebyshev_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "fn chebyshev_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
       "    ax.abs_diff(bx).max(ay.abs_diff(by))",
       "}"
     ]
   },
-  ";distance_manhattan": {
-    "prefix": ";distance_manhattan",
+  ";coord_manhattan-distance": {
+    "prefix": ";coord_manhattan-distance",
     "body": [
-      "fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "fn manhattan_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
       "    ax.abs_diff(bx) + ay.abs_diff(by)",
       "}"
     ]
   },
-  ";rotate": {
-    "prefix": ";rotate",
+  ";matrix_rotate": {
+    "prefix": ";matrix_rotate",
     "body": [
       "fn rotate<T: Copy>(matrix: Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
       "    let n = matrix.len();",
