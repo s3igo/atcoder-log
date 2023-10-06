@@ -7,11 +7,12 @@ use cargo_snippet::snippet;
 fn rotate<T: Copy>(matrix: Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
     let n = matrix.len();
     assert!(matrix.iter().all(|row| row.len() == n));
-    if times == 0 {
-        matrix
-    } else {
-        let rotated = (0..n).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect();
-        rotate(rotated, times - 1)
+    match times {
+        0 => matrix,
+        _ => rotate(
+            (0..n).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(),
+            times - 1,
+        ),
     }
 }
 
@@ -27,7 +28,7 @@ fn test_rotate() {
 
 #[snippet(name = ";distance_manhattan")]
 fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {
-    (ax as isize - bx as isize).abs() as usize + (ay as isize - by as isize).abs() as usize
+    ax.abs_diff(bx) + ay.abs_diff(by)
 }
 
 #[test]
