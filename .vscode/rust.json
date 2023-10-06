@@ -1,21 +1,4 @@
 {
-    "use itertools": {
-        "prefix": ";it",
-        "body": [
-            "use itertools::*;"
-        ],
-        "description": "bring all items from itertools"
-    },
-    "is palindrome": {
-        "prefix": ";is_pal",
-        "body": [
-            "fn is_palindrome(s: &str) -> bool {",
-            "\tlet s = s.chars().collect::<Vec<char>>();",
-            "\ts == s.iter().rev().copied().collect::<Vec<char>>()",
-            "}"
-        ],
-        "description": "check if a string is a palindrome(回文)"
-    },
     "is sorted": {
         "prefix": ";is_sort",
         "body": [
@@ -30,48 +13,12 @@
         ],
         "description": "Print Yes or No"
     },
-    "rotate matrix": {
-        "prefix": ";rotate",
-        "body": [
-            "fn rotate<T: Copy>(matrix: Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
-            "\tlet n = matrix.len();",
-            "\tassert!(matrix.iter().all(|row| row.len() == n));",
-            "\tif times == 0 {",
-            "\t\tmatrix",
-            "\t} else {",
-            "\t\tlet rotated = (0..n).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect();",
-            "\t\trotate(rotated, times - 1)",
-            "\t}",
-            "}"
-        ],
-        "description": "rotate square matrix clockwise"
-    },
     "between": {
         "prefix": ";between",
         "body": [
             ".skip_while(|&${1:c}| ${1:c} != $2).skip(1).take_while(|&${1:c}| ${1:c} != $2)"
         ],
         "description": "get the slice between two elements"
-    },
-    "manhattan distance": {
-        "prefix": ";distance_manhattan",
-        "body": [
-            "// to support before v1.51.0; `unsigned_abs()` is not available",
-            "#[allow(clippy::cast_abs_to_unsigned)]",
-            "fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
-            "\t(ax as isize - bx as isize).abs() as usize + (ay as isize - by as isize).abs() as usize",
-            "}"
-        ],
-        "description": "manhattan distance in 2 dimensions"
-    },
-    "chebyshev distance": {
-        "prefix": ";distance_chebyshev",
-        "body": [
-            "fn chebyshev_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
-            "\tax.abs_diff(bx).max(ay.abs_diff(by))",
-            "}"
-        ],
-        "description": "chebyshev distance in 2 dimensions"
     },
     "ceiling of division": {
         "prefix": ";ceil_div",
