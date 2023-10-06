@@ -1,6 +1,7 @@
 .PHONY: install
 install:
 	cargo install --root ./bin/cargo-bin cargo-compete
+	cargo install --root ./bin/cargo-bin cargo-snippet --features="binaries"
 
 
 .PHONY: update

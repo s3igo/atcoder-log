@@ -9,6 +9,9 @@
         },
         {
             "path": "contests/1.70.0"
+        },
+        {
+            "path": "snippets"
         }
     ],
     "settings": {
