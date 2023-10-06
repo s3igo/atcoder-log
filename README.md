@@ -6,6 +6,7 @@ Log of My AtCoder solutions written in Rust.
 
 - direnv
 - rustup
+- GNU Make
 - jq
 
 ## Usage
