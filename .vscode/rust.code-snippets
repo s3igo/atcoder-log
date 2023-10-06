@@ -1,0 +1,147 @@
+{
+  "is sorted": {
+    "prefix": ";is_sort",
+    "body": [
+      ".tuple_windows().all(|(a, b)| a <= b)"
+    ],
+    "description": "check if a slice is sorted"
+  },
+  "Yes or No": {
+    "prefix": ";printyn",
+    "body": [
+      "println!(\"{}\", if cond { \"Yes\" } else { \"No\" });"
+    ],
+    "description": "Print Yes or No"
+  },
+  "between": {
+    "prefix": ";between",
+    "body": [
+      ".skip_while(|&${1:c}| ${1:c} != $2).skip(1).take_while(|&${1:c}| ${1:c} != $2)"
+    ],
+    "description": "get the slice between two elements"
+  },
+  "ceiling of division": {
+    "prefix": ";ceil_div",
+    "body": [
+      "($1 + $2 - 1) / $2"
+    ],
+    "description": "ceiling of a / b is (a + b - 1) / b"
+  },
+  "binary search (usize)": {
+    "prefix": ";bin_search_usize",
+    "body": [
+      "fn binary_search<F>(mut ng: usize, mut ok: usize, f: F) -> usize",
+      "where",
+      "\tF: Fn(usize) -> bool,",
+      "{",
+      "\twhile (ok as isize - ng as isize).abs() > 1 {",
+      "\t\tlet mid = (ok + ng) / 2;",
+      "\t\tif f(mid) {",
+      "\t\t\tok = mid;",
+      "\t\t} else {",
+      "\t\t\tng = mid;",
+      "\t\t}",
+      "\t}",
+      "\tok",
+      "}"
+    ],
+    "description": "general binary search for usize"
+  },
+  "binary search (f64)": {
+    "prefix": ";bin_search_f64",
+    "body": [
+      "fn binary_search<F>(mut ng: f64, mut ok: f64, err: f64, f: F) -> f64",
+      "where",
+      "\tF: Fn(f64) -> bool,",
+      "{",
+      "\twhile (ok - ng).abs() > err {",
+      "\t\tlet mid = (ok + ng) / 2.;",
+      "\t\tif f(mid) {",
+      "\t\t\tok = mid;",
+      "\t\t} else {",
+      "\t\t\tng = mid;",
+      "\t\t}",
+      "\t}",
+      "\tok",
+      "}"
+    ],
+    "description": "general binary search for f64"
+  },
+  "is valid range": {
+    "prefix": ";is_valid_range",
+    "body": [
+      "fn is_valid_range(h: usize, m: usize) -> bool {",
+      "\t(0..24).contains(&h) && (0..60).contains(&m)",
+      "}"
+    ],
+    "description": "check if a time is valid"
+  },
+  "increment time": {
+    "prefix": ";increment_time",
+    "body": [
+      "fn increment_time(mut h: usize, mut m: usize) -> (usize, usize) {",
+      "\tm += 1;",
+      "\tif m == 60 {",
+      "\t\tm = 0;",
+      "\t\th += 1;",
+      "\t}",
+      "\tif h == 24 {",
+      "\t\th = 0;",
+      "\t}",
+      "\t(h, m)",
+      "}"
+    ],
+    "description": "increment time"
+  },
+  "enumerate divisors": {
+    "prefix": ";div",
+    "body": [
+      "fn enumerate_divisors(n: usize) -> Vec<usize> {",
+      "\tlet (mut from_lower, mut from_upper) = (vec![], vec![]);",
+      "\tfor i in (1..).take_while(|&i| i * i <= n) {",
+      "\t\tif n % i == 0 {",
+      "\t\t\tfrom_lower.push(i);",
+      "\t\t\tif i != n / i {",
+      "\t\t\t\tfrom_upper.push(n / i);",
+      "\t\t\t}",
+      "\t\t}",
+      "\t}",
+      "\tfrom_upper.reverse();",
+      "\t[from_lower, from_upper].concat()",
+      "}"
+    ],
+    "description": "enumerate divisors"
+  },
+  ";distance_chebyshev": {
+    "prefix": ";distance_chebyshev",
+    "body": [
+      "fn chebyshev_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "    ax.abs_diff(bx).max(ay.abs_diff(by))",
+      "}"
+    ]
+  },
+  ";distance_manhattan": {
+    "prefix": ";distance_manhattan",
+    "body": [
+      "fn manhattan_distance((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "    ax.abs_diff(bx) + ay.abs_diff(by)",
+      "}"
+    ]
+  },
+  ";rotate": {
+    "prefix": ";rotate",
+    "body": [
+      "fn rotate<T: Copy>(matrix: Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
+      "    let n = matrix.len();",
+      "    assert!(matrix.iter().all(|row| row.len() == n));",
+      "    match times {",
+      "        0 => matrix,",
+      "        _ => rotate(",
+      "            (0..n).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(),",
+      "            times - 1,",
+      "        ),",
+      "    }",
+      "}"
+    ]
+  }
+}
