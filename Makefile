@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: install
 install:
 	cargo install --root ./bin/cargo-bin cargo-compete
@@ -28,3 +30,10 @@ new:
 	cargo compete new $(ARG) \
 		&& git add contests/$(ARG) \
 		&& git commit -m "feat: add $(ARG)"
+
+
+.PHONY: snippet
+snippet:
+	cd snippets && cargo test --lib
+	jq -s add .vscode/rust.json <(cd snippets && cargo snippet -t vscode) > .vscode/rust.code-snippets
+
