@@ -31,7 +31,6 @@ new:
 		&& git add contests/$(ARG) \
 		&& git commit -m "feat: add $(ARG)"
 
-
 .PHONY: snippet
 snippet:
 	cd snippets && cargo test --lib
