@@ -67,32 +67,6 @@
     ],
     "description": "general binary search for f64"
   },
-  "is valid range": {
-    "prefix": ";is_valid_range",
-    "body": [
-      "fn is_valid_range(h: usize, m: usize) -> bool {",
-      "\t(0..24).contains(&h) && (0..60).contains(&m)",
-      "}"
-    ],
-    "description": "check if a time is valid"
-  },
-  "increment time": {
-    "prefix": ";increment_time",
-    "body": [
-      "fn increment_time(mut h: usize, mut m: usize) -> (usize, usize) {",
-      "\tm += 1;",
-      "\tif m == 60 {",
-      "\t\tm = 0;",
-      "\t\th += 1;",
-      "\t}",
-      "\tif h == 24 {",
-      "\t\th = 0;",
-      "\t}",
-      "\t(h, m)",
-      "}"
-    ],
-    "description": "increment time"
-  },
   "enumerate divisors": {
     "prefix": ";div",
     "body": [
@@ -141,6 +115,30 @@
       "            times - 1,",
       "        ),",
       "    }",
+      "}"
+    ]
+  },
+  ";time_increment": {
+    "prefix": ";time_increment",
+    "body": [
+      "fn increment(mut h: usize, mut m: usize) -> (usize, usize) {",
+      "    m += 1;",
+      "    if m == 60 {",
+      "        m = 0;",
+      "        h += 1;",
+      "    }",
+      "    if h == 24 {",
+      "        h = 0;",
+      "    }",
+      "    (h, m)",
+      "}"
+    ]
+  },
+  ";time_is-valid-range": {
+    "prefix": ";time_is-valid-range",
+    "body": [
+      "fn is_valid_range(h: usize, m: usize) -> bool {",
+      "    (0..24).contains(&h) && (0..60).contains(&m)",
       "}"
     ]
   }
