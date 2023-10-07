@@ -1,13 +1,19 @@
-use itertools::Itertools;
+use std::collections::BTreeSet;
+
 use proconio::input;
 
 fn main() {
     input!(n: usize, x: usize, a: [usize; n - 1]);
 
+    // use set of tuples to multiset: (value, index)
+    let a = a.iter().zip(1..).collect::<BTreeSet<_>>();
     let result = (0..=100)
-        .filter(|&i| {
-            let a = [a.clone(), vec![i]].concat();
-            a.iter().sorted().dropping(1).dropping_back(1).sum::<usize>() >= x
+        .filter(|i| {
+            let mut a = a.clone();
+            a.insert((i, 0));
+            a.pop_first();
+            a.pop_last();
+            a.into_iter().map(|(&v, _)| v).sum::<usize>() >= x
         })
         .min();
 
