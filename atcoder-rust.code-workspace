@@ -24,7 +24,7 @@
         "rust-analyzer.linkedProjects": [
             "contests/1.70.0/Cargo.toml",
             "contests/1.42.0/Cargo.toml",
-            "snippets"
+            "snippets/Cargo.toml"
         ],
     },
 }
