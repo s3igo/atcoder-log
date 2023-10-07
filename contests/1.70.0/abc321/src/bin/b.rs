@@ -6,8 +6,8 @@ fn main() {
 
     let result = (0..=100)
         .filter(|&i| {
-            let points = a.clone().into_iter().chain(std::iter::once(i)).collect_vec();
-            points.iter().sorted().dropping(1).dropping_back(1).sum::<usize>() >= x
+            let a = [a.clone(), vec![i]].concat();
+            a.iter().sorted().dropping(1).dropping_back(1).sum::<usize>() >= x
         })
         .min();
 
