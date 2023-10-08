@@ -2,12 +2,7 @@ use itertools::multizip;
 use proconio::input;
 
 fn main() {
-    input! {
-        m: usize,
-        s1: String,
-        s2: String,
-        s3: String,
-    }
+    input!(m: usize, s1: String, s2: String, s3: String);
 
     let mut cnt = vec![vec![false; m]; 3];
     for (i, c1, c2, c3) in
