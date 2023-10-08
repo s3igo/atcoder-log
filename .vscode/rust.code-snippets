@@ -67,25 +67,6 @@
     ],
     "description": "general binary search for f64"
   },
-  "enumerate divisors": {
-    "prefix": ";div",
-    "body": [
-      "fn enumerate_divisors(n: usize) -> Vec<usize> {",
-      "\tlet (mut from_lower, mut from_upper) = (vec![], vec![]);",
-      "\tfor i in (1..).take_while(|&i| i * i <= n) {",
-      "\t\tif n % i == 0 {",
-      "\t\t\tfrom_lower.push(i);",
-      "\t\t\tif i != n / i {",
-      "\t\t\t\tfrom_upper.push(n / i);",
-      "\t\t\t}",
-      "\t\t}",
-      "\t}",
-      "\tfrom_upper.reverse();",
-      "\t[from_lower, from_upper].concat()",
-      "}"
-    ],
-    "description": "enumerate divisors"
-  },
   ";coord_chebyshev-distance": {
     "prefix": ";coord_chebyshev-distance",
     "body": [
@@ -99,6 +80,37 @@
     "body": [
       "fn manhattan_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
       "    ax.abs_diff(bx) + ay.abs_diff(by)",
+      "}"
+    ]
+  },
+  ";math_divisors": {
+    "prefix": ";math_divisors",
+    "body": [
+      "fn divisors(n: usize) -> Vec<usize> {",
+      "    let (mut lhs, mut rhs) = (vec![], vec![]);",
+      "    for i in (1..).take_while(|&i| i * i <= n) {",
+      "        if n % i == 0 {",
+      "            lhs.push(i);",
+      "            rhs.push(n / i);",
+      "        }",
+      "    }",
+      "    let lhs = lhs;",
+      "    if rhs.last() == lhs.last() {",
+      "        rhs.pop();",
+      "    }",
+      "    rhs.reverse();",
+      "    [lhs, rhs].concat()",
+      "}"
+    ]
+  },
+  ";math_gcd": {
+    "prefix": ";math_gcd",
+    "body": [
+      "fn gcd(a: usize, b: usize) -> usize {",
+      "    match b {",
+      "        0 => a,",
+      "        _ => gcd(b, a % b),",
+      "    }",
       "}"
     ]
   },
