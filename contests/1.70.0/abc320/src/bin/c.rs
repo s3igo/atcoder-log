@@ -1,40 +1,19 @@
-use itertools::multizip;
+use itertools::Itertools;
 use proconio::input;
 
 fn main() {
-    input!(m: usize, s1: String, s2: String, s3: String);
+    input!(m: usize, s: [String; 3]);
 
-    let mut cnt = vec![vec![false; m]; 3];
-    for (i, c1, c2, c3) in
-        multizip((0..m * 3, s1.chars().cycle(), s2.chars().cycle(), s3.chars().cycle()))
-    {
-        let (c1, c2, c3) = (
-            c1.to_digit(10).unwrap() as usize,
-            c2.to_digit(10).unwrap() as usize,
-            c3.to_digit(10).unwrap() as usize,
-        );
+    let ans = ('0'..='9')
+        .flat_map(|i| {
+            s.iter().permutations(3).filter_map(move |s_vec| {
+                s_vec.iter().try_fold(0, |acc, s| {
+                    s.chars().cycle().skip(acc).take(m).position(|c| c == i).map(|x| acc + x + 1)
+                })
+            })
+        })
+        .min()
+        .map_or("-1".to_string(), |x| (x - 1).to_string());
 
-        let (mut is_changed_1, mut is_changed_2) = (false, false);
-        if !cnt[0][c1] {
-            cnt[0][c1] = true;
-            is_changed_1 = true;
-        }
-        if !cnt[1][c2] && !(is_changed_1 && c2 == c1) {
-            cnt[1][c2] = true;
-            is_changed_2 = true;
-        }
-        if !cnt[2][c3] && !(is_changed_1 && c3 == c1) && !(is_changed_2 && c3 == c2) {
-            cnt[2][c3] = true;
-        }
-
-        if cnt[0][c1] && cnt[1][c1] && cnt[2][c1]
-            || cnt[0][c2] && cnt[1][c2] && cnt[2][c2]
-            || cnt[0][c3] && cnt[1][c3] && cnt[2][c3]
-        {
-            println!("{}", i);
-            return;
-        }
-    }
-
-    println!("{}", -1); // TODO: WA
+    println!("{}", ans);
 }
