@@ -15,8 +15,7 @@ fn main() {
                 row[idx + 1] = i;
                 row[idx] = 0;
             },
-            Some(_) => continue,
-            None => continue,
+            Some(_) | None => continue,
         };
     }
 
