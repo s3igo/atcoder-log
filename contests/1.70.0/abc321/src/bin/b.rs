@@ -7,7 +7,7 @@ fn main() {
 
     // use set of tuples to multiset: (value, index)
     let a = a.iter().zip(1..).collect::<BTreeSet<_>>();
-    let result = (0..=100)
+    let ans = (0..=100)
         .filter(|i| {
             let mut a = a.clone();
             a.insert((i, 0));
@@ -15,12 +15,8 @@ fn main() {
             a.pop_last();
             a.into_iter().map(|(&v, _)| v).sum::<usize>() >= x
         })
-        .min();
-
-    let ans = match result {
-        Some(x) => x.to_string(),
-        None => "-1".to_string(),
-    };
+        .min()
+        .map_or("-1".to_string(), |x| x.to_string());
 
     println!("{}", ans);
 }
