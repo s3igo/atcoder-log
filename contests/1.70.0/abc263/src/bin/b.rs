@@ -1,10 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input! {
-        n: usize,
-        p: [usize; n - 1],
-    }
+    input!(n: usize, p: [usize; n - 1]);
 
     println!("{}", trace(&p, n, 0));
 }
