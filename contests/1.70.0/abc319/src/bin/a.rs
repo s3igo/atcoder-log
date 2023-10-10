@@ -17,5 +17,5 @@ fn main() {
         "semiexp" => 3481,
     };
 
-    println!("{}", dict.get(&s.as_str()).unwrap());
+    println!("{}", dict[s.as_str()]);
 }
