@@ -1,5 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(n: u8);
+
+    println!("{}", char::from(n));
 }
