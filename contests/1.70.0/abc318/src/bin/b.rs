@@ -2,10 +2,7 @@ use itertools::iproduct;
 use proconio::input;
 
 fn main() {
-    input! {
-        n: usize,
-        abcd: [(usize, usize, usize, usize); n],
-    }
+    input!(n: usize, abcd: [(usize, usize, usize, usize); n]);
 
     let mut area = vec![vec![0; 100]; 100];
     for (a, b, c, d) in abcd {
