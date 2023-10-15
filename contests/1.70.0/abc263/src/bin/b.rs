@@ -3,7 +3,9 @@ use proconio::input;
 fn main() {
     input!(n: usize, p: [usize; n - 1]);
 
-    println!("{}", trace(&p, n, 0));
+    let trace = |x| trace(&p, x, 0);
+
+    println!("{}", trace(n));
 }
 
 fn trace(p: &[usize], idx: usize, cnt: usize) -> usize {
