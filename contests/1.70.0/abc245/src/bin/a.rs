@@ -1,9 +1,9 @@
 use proconio::input;
 
 fn main() {
-    input!(a: usize, b: usize, c: usize, d: usize);
+    input!(ab: (usize, usize), cd: (usize, usize));
 
-    let ans = if (a, b) <= (c, d) { "Takahashi" } else { "Aoki" };
+    let ans = if ab <= cd { "Takahashi" } else { "Aoki" };
 
     println!("{}", ans);
 }
