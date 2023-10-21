@@ -1,5 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(s: String, _: String);
+
+    println!("{s} san");
 }
