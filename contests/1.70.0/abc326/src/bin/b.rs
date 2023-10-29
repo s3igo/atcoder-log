@@ -4,12 +4,7 @@ use proconio::input;
 fn main() {
     input!(n: usize);
 
-    let ans = (n..)
-        .find(|i| {
-            let s = i.to_string().chars().collect_vec();
-            s[0].to_digit(10).unwrap() * s[1].to_digit(10).unwrap() == s[2].to_digit(10).unwrap()
-        })
-        .unwrap();
+    let ans = (n..).map(|i| [i / 100, i / 10 % 10, i % 10]).find(|n| n[0] * n[1] == n[2]).unwrap();
 
-    println!("{ans}");
+    println!("{}", ans.iter().join(""));
 }
