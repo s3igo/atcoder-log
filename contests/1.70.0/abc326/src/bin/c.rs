@@ -7,13 +7,10 @@ fn main() {
     a.push(usize::MAX);
     let a = a;
 
-    let (mut ans, mut rhs) = (0, 0);
-    for lhs in 0..n {
-        while a[rhs] - a[lhs] < m {
-            rhs += 1;
-        }
-        ans = ans.max(rhs - lhs);
-    }
+    let (ans, _) = (0..n).fold((0, 0), |(acc, rhs), lhs| {
+        let rhs = (rhs..n).find(|&r| a[r] - a[lhs] >= m).unwrap_or(n);
+        (acc.max(rhs - lhs), rhs)
+    });
 
     println!("{ans}");
 }
