@@ -13,6 +13,13 @@
         ],
         "description": "Print Yes or No"
     },
+    "Answer": {
+        "prefix": ";printans",
+        "body": [
+            "println!(\"{ans}\");"
+        ],
+        "description": "Print Answer"
+    },
     "between": {
         "prefix": ";between",
         "body": [

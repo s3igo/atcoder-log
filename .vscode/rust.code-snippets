@@ -13,6 +13,13 @@
     ],
     "description": "Print Yes or No"
   },
+  "Answer": {
+    "prefix": ";printans",
+    "body": [
+      "println!(\"{ans}\");"
+    ],
+    "description": "Print Answer"
+  },
   "between": {
     "prefix": ";between",
     "body": [
@@ -127,6 +134,16 @@
       "            times - 1,",
       "        ),",
       "    }",
+      "}"
+    ]
+  },
+  ";matrix_transpose": {
+    "prefix": ";matrix_transpose",
+    "body": [
+      "fn transpose<T: Copy>(matrix: Vec<Vec<T>>) -> Vec<Vec<T>> {",
+      "    let n = matrix.len();",
+      "    assert!(matrix.iter().all(|row| row.len() == n));",
+      "    (0..n).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()",
       "}"
     ]
   },
