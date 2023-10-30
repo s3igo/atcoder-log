@@ -25,16 +25,55 @@ fn test_rotate() {
 }
 
 #[snippet(name = ";matrix_transpose")]
-fn transpose<T: Copy>(matrix: Vec<Vec<T>>) -> Vec<Vec<T>> {
-    let n = matrix.len();
-    assert!(matrix.iter().all(|row| row.len() == n));
-    (0..n).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()
+fn transpose<T: Copy>(matrix: &Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let (n, m) = (matrix.len(), matrix[0].len());
+    assert!(matrix.iter().map(|row| row.len()).all(|x| x == m));
+    (0..m).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()
 }
 
 #[test]
-fn test_transpose() {
+fn test_transpose1() {
+    // [
+    //   [1, 2, 3],
+    //   [4, 5, 6],
+    //   [7, 8, 9],
+    // ] => [
+    //   [1, 4, 7],
+    //   [2, 5, 8],
+    //   [3, 6, 9],
+    // ]
     let matrix = vec![vec![1, 2, 3], vec![4, 5, 6], vec![7, 8, 9]];
-    assert_eq!(transpose(matrix), vec![vec![1, 4, 7], vec![2, 5, 8], vec![3, 6, 9],]);
+    assert_eq!(transpose(&matrix), vec![vec![1, 4, 7], vec![2, 5, 8], vec![3, 6, 9],]);
+
+    // [
+    //   [1, 2],
+    //   [3, 4],
+    // ] => [
+    //   [1, 3],
+    //   [2, 4],
+    // ]
     let matrix = vec![vec![1, 2], vec![3, 4]];
-    assert_eq!(transpose(matrix), vec![vec![1, 3], vec![2, 4],]);
+    assert_eq!(transpose(&matrix), vec![vec![1, 3], vec![2, 4],]);
+
+    // [
+    //   [1, 2, 3],
+    //   [4, 5, 6],
+    // ] => [
+    //   [1, 4],
+    //   [2, 5],
+    //   [3, 6],
+    // ]
+    let matrix = vec![vec![1, 2, 3], vec![4, 5, 6]];
+    assert_eq!(transpose(&matrix), vec![vec![1, 4], vec![2, 5], vec![3, 6],]);
+
+    // [
+    //   [1, 2],
+    //   [3, 4],
+    //   [5, 6],
+    // ] => [
+    //   [1, 3, 5],
+    //   [2, 4, 6],
+    // ]
+    let matrix = vec![vec![1, 2], vec![3, 4], vec![5, 6]];
+    assert_eq!(transpose(&matrix), vec![vec![1, 3, 5], vec![2, 4, 6],]);
 }
