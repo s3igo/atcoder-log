@@ -129,10 +129,8 @@
       "    assert!(matrix.iter().all(|row| row.len() == n));",
       "    assert!(n % side == 0);",
       "    iproduct!((0..n).step_by(side), (0..n).step_by(side))",
-      "        .map(|(i, j)| {",
-      "            iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect::<Vec<_>>()",
-      "        })",
-      "        .collect::<Vec<_>>()",
+      "        .map(|(i, j)| iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect())",
+      "        .collect()",
       "}"
     ]
   },

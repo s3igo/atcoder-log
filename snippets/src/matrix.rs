@@ -94,10 +94,8 @@ fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {
     assert!(n % side == 0);
 
     iproduct!((0..n).step_by(side), (0..n).step_by(side))
-        .map(|(i, j)| {
-            iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>()
+        .map(|(i, j)| iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect())
+        .collect()
     // .map(|(i, j)| {
     //     (0..side)
     //         .map(|k| (0..side).map(|l| matrix[i + k][j + l]).collect::<Vec<_>>())

@@ -1,17 +1,17 @@
 use std::collections::HashSet;
 
-use itertools::{iproduct, Itertools};
+use itertools::iproduct;
 use proconio::input;
 
 fn main() {
     input!(a: [[usize; 9]; 9]);
 
-    let cmp = (1..=9).collect_vec();
+    let cmp = (1..=9).collect::<Vec<_>>();
     let cmp = cmp.iter().collect::<HashSet<_>>();
 
-    let cond = a.iter().all(|row| row.iter().collect::<HashSet<_>>() == cmp)
-        && rotate(&a, 1).iter().all(|row| row.iter().collect::<HashSet<_>>() == cmp)
-        && chunks(&a, 3).iter().all(|chunk| chunk.iter().collect::<HashSet<_>>() == cmp);
+    let cond = a.iter().all(|row| cmp == row.iter().collect())
+        && rotate(&a, 1).iter().all(|row| cmp == row.iter().collect())
+        && chunks(&a, 3).iter().all(|chunk| cmp == chunk.iter().collect());
 
     println!("{}", if cond { "Yes" } else { "No" });
 }
@@ -33,8 +33,6 @@ fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {
     assert!(matrix.iter().all(|row| row.len() == n));
     assert!(n % side == 0);
     iproduct!((0..n).step_by(side), (0..n).step_by(side))
-        .map(|(i, j)| {
-            iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect::<Vec<_>>()
-        })
-        .collect::<Vec<_>>()
+        .map(|(i, j)| iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect())
+        .collect()
 }
