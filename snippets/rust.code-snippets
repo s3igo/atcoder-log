@@ -7,14 +7,14 @@
         "description": "check if a slice is sorted"
     },
     "Yes or No": {
-        "prefix": ";printyn",
+        "prefix": ";print_yn",
         "body": [
             "println!(\"{}\", if cond { \"Yes\" } else { \"No\" });"
         ],
         "description": "Print Yes or No"
     },
     "Answer": {
-        "prefix": ";printans",
+        "prefix": ";print_ans",
         "body": [
             "println!(\"{ans}\");"
         ],

@@ -7,14 +7,14 @@
     "description": "check if a slice is sorted"
   },
   "Yes or No": {
-    "prefix": ";printyn",
+    "prefix": ";print_yn",
     "body": [
       "println!(\"{}\", if cond { \"Yes\" } else { \"No\" });"
     ],
     "description": "Print Yes or No"
   },
   "Answer": {
-    "prefix": ";printans",
+    "prefix": ";print_ans",
     "body": [
       "println!(\"{ans}\");"
     ],
@@ -181,6 +181,20 @@
     "body": [
       "fn is_valid_range(h: usize, m: usize) -> bool {",
       "    (0..24).contains(&h) && (0..60).contains(&m)",
+      "}"
+    ]
+  },
+  "string_rot": {
+    "prefix": "string_rot",
+    "body": [
+      "fn rot(s: &str, offset: u8) -> String {",
+      "    s.bytes()",
+      "        .map(|c| match c {",
+      "            b'a'..=b'z' => b'a' + (c - b'a' + offset) % 26,",
+      "            b'A'..=b'Z' => b'A' + (c - b'A' + offset) % 26,",
+      "            _ => c,",
+      "        } as char)",
+      "        .collect()",
       "}"
     ]
   }
