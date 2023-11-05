@@ -7,34 +7,11 @@ fn main() {
     input!(a: [[usize; 9]; 9]);
 
     let cmp = (1..=9).collect_vec();
-    let cmp = cmp.iter().collect::<HashSet<&usize>>();
+    let cmp = cmp.iter().collect::<HashSet<_>>();
 
-    let cond = a.iter().all(|row| row.iter().collect::<HashSet<&usize>>() == cmp)
-        && rotate(&a, 1).iter().all(|row| row.iter().collect::<HashSet<&usize>>() == cmp);
-
-    let mut third = true;
-    for (i, j) in iproduct!([0, 3, 6], [0, 3, 6]) {
-        if [
-            a[i][j],
-            a[i][j + 1],
-            a[i][j + 2],
-            a[i + 1][j],
-            a[i + 1][j + 1],
-            a[i + 1][j + 2],
-            a[i + 2][j],
-            a[i + 2][j + 1],
-            a[i + 2][j + 2],
-        ]
-        .iter()
-        .collect::<HashSet<&usize>>()
-            != cmp
-        {
-            third = false;
-            break;
-        }
-    }
-
-    let cond = cond && third;
+    let cond = a.iter().all(|row| row.iter().collect::<HashSet<_>>() == cmp)
+        && rotate(&a, 1).iter().all(|row| row.iter().collect::<HashSet<_>>() == cmp)
+        && chunks(&a, 3).iter().all(|chunk| chunk.iter().collect::<HashSet<_>>() == cmp);
 
     println!("{}", if cond { "Yes" } else { "No" });
 }
@@ -49,4 +26,15 @@ fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
             times - 1,
         ),
     }
+}
+
+fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {
+    let n = matrix.len();
+    assert!(matrix.iter().all(|row| row.len() == n));
+    assert!(n % side == 0);
+    iproduct!((0..n).step_by(side), (0..n).step_by(side))
+        .map(|(i, j)| {
+            iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
 }
