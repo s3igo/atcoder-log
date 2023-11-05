@@ -121,12 +121,27 @@
       "}"
     ]
   },
+  ";matrix_chunks": {
+    "prefix": ";matrix_chunks",
+    "body": [
+      "fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {",
+      "    let n = matrix.len();",
+      "    assert!(matrix.iter().all(|row| row.len() == n));",
+      "    assert!(n % side == 0);",
+      "    iproduct!((0..n).step_by(side), (0..n).step_by(side))",
+      "        .map(|(i, j)| {",
+      "            iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect::<Vec<_>>()",
+      "        })",
+      "        .collect::<Vec<_>>()",
+      "}"
+    ]
+  },
   ";matrix_rotate": {
     "prefix": ";matrix_rotate",
     "body": [
       "fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
       "    let (n, m) = (matrix.len(), matrix[0].len());",
-      "    assert!(matrix.iter().map(|row| row.len()).all(|x| x == m));",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
       "    match times {",
       "        0 => matrix.clone(),",
       "        _ => rotate(",
@@ -142,7 +157,7 @@
     "body": [
       "fn transpose<T: Copy>(matrix: &Vec<Vec<T>>) -> Vec<Vec<T>> {",
       "    let (n, m) = (matrix.len(), matrix[0].len());",
-      "    assert!(matrix.iter().map(|row| row.len()).all(|x| x == m));",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
       "    (0..m).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()",
       "}"
     ]
