@@ -1,5 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(x: f64);
+
+    println!("{}", x.round());
 }
