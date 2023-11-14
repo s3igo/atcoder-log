@@ -5,6 +5,7 @@ use itertools::iproduct;
 fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
     let (n, m) = (matrix.len(), matrix[0].len());
     assert!(matrix.iter().all(|row| row.len() == m));
+
     match times {
         0 => matrix.clone(),
         _ => rotate(
@@ -37,6 +38,7 @@ fn test_rotate() {
 fn transpose<T: Copy>(matrix: &Vec<Vec<T>>) -> Vec<Vec<T>> {
     let (n, m) = (matrix.len(), matrix[0].len());
     assert!(matrix.iter().all(|row| row.len() == m));
+
     (0..m).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()
 }
 
@@ -88,20 +90,16 @@ fn test_transpose() {
 }
 
 #[snippet(name = ";matrix_chunks")]
-fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {
-    let n = matrix.len();
-    assert!(matrix.iter().all(|row| row.len() == n));
-    assert!(n % side == 0);
+fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {
+    let (n, m) = (matrix.len(), matrix[0].len());
+    assert!(matrix.iter().all(|row| row.len() == m));
+    assert!(n % side == 0 && m % side == 0);
 
-    iproduct!((0..n).step_by(side), (0..n).step_by(side))
-        .map(|(i, j)| iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect())
+    iproduct!((0..n).step_by(side), (0..m).step_by(side))
+        .map(|(i, j)| {
+            (0..side).map(|k| (0..side).map(|l| matrix[i + k][j + l]).collect()).collect()
+        })
         .collect()
-    // .map(|(i, j)| {
-    //     (0..side)
-    //         .map(|k| (0..side).map(|l| matrix[i + k][j + l]).collect::<Vec<_>>())
-    //         .collect::<Vec<_>>()
-    // })
-    // .collect::<Vec<_>>()
 }
 
 #[test]
@@ -128,16 +126,41 @@ fn test_chunks() {
     // ]
     let matrix =
         vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
-    // assert_eq!(
-    //     chunks(&matrix, 2),
-    //     vec![
-    //         vec![vec![1, 2], vec![5, 6]],
-    //         vec![vec![3, 4], vec![7, 8]],
-    //         vec![vec![9, 10], vec![13, 14]],
-    //         vec![vec![11, 12], vec![15, 16]],
-    //     ]
-    // );
-    // => [
+    assert_eq!(
+        chunks(&matrix, 2),
+        vec![
+            vec![vec![1, 2], vec![5, 6]],
+            vec![vec![3, 4], vec![7, 8]],
+            vec![vec![9, 10], vec![13, 14]],
+            vec![vec![11, 12], vec![15, 16]],
+        ]
+    );
+
+    // [
+    //   [1, 2, 3, 4, 5, 6],
+    //   [7, 8, 9, 10, 11, 12],
+    //   [13, 14, 15, 16, 17, 18],
+    // ] => [
+    //   [
+    //     [1, 2, 3],
+    //     [7, 8, 9],
+    //     [13, 14, 15],
+    //   ], [
+    //     [4, 5, 6],
+    //     [10, 11, 12],
+    //     [16, 17, 18],
+    //   ],
+    // ]
+    let matrix =
+        vec![vec![1, 2, 3, 4, 5, 6], vec![7, 8, 9, 10, 11, 12], vec![13, 14, 15, 16, 17, 18]];
+    assert_eq!(
+        chunks(&matrix, 3),
+        vec![
+            vec![vec![1, 2, 3], vec![7, 8, 9], vec![13, 14, 15]],
+            vec![vec![4, 5, 6], vec![10, 11, 12], vec![16, 17, 18]],
+        ]
+    );
+}
     //   [1, 2, 5, 6],
     //   [3, 4, 7, 8],
     //   [9, 10, 13, 14],
