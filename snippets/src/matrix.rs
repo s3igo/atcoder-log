@@ -96,9 +96,7 @@ fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {
     assert!(n % side == 0 && m % side == 0);
 
     iproduct!((0..n).step_by(side), (0..m).step_by(side))
-        .map(|(i, j)| {
-            (0..side).map(|k| (0..side).map(|l| matrix[i + k][j + l]).collect()).collect()
-        })
+        .map(|(i, j)| (0..side).map(|k| matrix[i + k][j..j + side].to_vec()).collect())
         .collect()
 }
 
@@ -161,30 +159,154 @@ fn test_chunks() {
         ]
     );
 }
-    //   [1, 2, 5, 6],
-    //   [3, 4, 7, 8],
-    //   [9, 10, 13, 14],
-    //   [11, 12, 15, 16],
-    // ]
-    assert_eq!(
-        chunks(&matrix, 2),
-        vec![vec![1, 2, 5, 6], vec![3, 4, 7, 8], vec![9, 10, 13, 14], vec![11, 12, 15, 16],]
-    );
+
+#[snippet(name = ";matrix_windows")]
+fn windows<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {
+    let (n, m) = (matrix.len(), matrix[0].len());
+    assert!(matrix.iter().all(|row| row.len() == m));
+    assert!(n >= side && m >= side);
+
+    iproduct!(0..n - side + 1, 0..m - side + 1)
+        .map(|(i, j)| (0..side).map(|k| matrix[i + k][j..j + side].to_vec()).collect())
+        .collect()
 }
 
-// fn windows(&self, side_len: usize) -> Vec<Vec<Pixel>> {
-//     let (width, height) = (self.xsize() - side_len + 1, self.ysize() - side_len + 1);
-//
-//     // 1D array access like 2D array
-//     let idx = |i, j| i * self.xsize() + j;
-//
-//     let ij = (0..height).flat_map(|i| (0..width).map(move |j| (i, j)));
-//
-//     ij.map(|(i, j)| {
-//         // size_len * size_len pixel window
-//         (0..side_len)
-//             .flat_map(|k| self.p_buffer()[idx(i + k, j)..idx(i + k, j + side_len)].to_vec())
-//             .collect::<Vec<_>>()
-//     })
-//     .collect::<Vec<_>>()
-// }
+#[test]
+fn test_windows() {
+    // [
+    //   [1, 2, 3, 4],
+    //   [5, 6, 7, 8],
+    //   [9, 10, 11, 12],
+    //   [13, 14, 15, 16],
+    // ]
+    let matrix =
+        vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
+    // windows(2) => [
+    //   [
+    //      [1, 2],
+    //      [5, 6],
+    //   ], [
+    //      [2, 3],
+    //      [6, 7],
+    //   ], [
+    //      [3, 4],
+    //      [7, 8],
+    //   ], [
+    //      [5, 6],
+    //      [9, 10],
+    //   ], [
+    //      [6, 7],
+    //      [10, 11],
+    //   ], [
+    //      [7, 8],
+    //      [11, 12],
+    //   ], [
+    //      [9, 10],
+    //      [13, 14],
+    //   ], [
+    //      [10, 11],
+    //      [14, 15],
+    //   ], [
+    //      [11, 12],
+    //      [15, 16],
+    //   ],
+    // ]
+    assert_eq!(
+        windows(&matrix, 2),
+        vec![
+            vec![vec![1, 2], vec![5, 6]],
+            vec![vec![2, 3], vec![6, 7]],
+            vec![vec![3, 4], vec![7, 8]],
+            vec![vec![5, 6], vec![9, 10]],
+            vec![vec![6, 7], vec![10, 11]],
+            vec![vec![7, 8], vec![11, 12]],
+            vec![vec![9, 10], vec![13, 14]],
+            vec![vec![10, 11], vec![14, 15]],
+            vec![vec![11, 12], vec![15, 16]],
+        ]
+    );
+    // windows(3) => [
+    //  [
+    //     [1, 2, 3],
+    //     [5, 6, 7],
+    //     [9, 10, 11],
+    //  ], [
+    //     [2, 3, 4],
+    //     [6, 7, 8],
+    //     [10, 11, 12],
+    //  ], [
+    //     [5, 6, 7],
+    //     [9, 10, 11],
+    //     [13, 14, 15],
+    //  ], [
+    //     [6, 7, 8],
+    //     [10, 11, 12],
+    //     [14, 15, 16],
+    //  ],
+    // ]
+    assert_eq!(
+        windows(&matrix, 3),
+        vec![
+            vec![vec![1, 2, 3], vec![5, 6, 7], vec![9, 10, 11]],
+            vec![vec![2, 3, 4], vec![6, 7, 8], vec![10, 11, 12]],
+            vec![vec![5, 6, 7], vec![9, 10, 11], vec![13, 14, 15]],
+            vec![vec![6, 7, 8], vec![10, 11, 12], vec![14, 15, 16]],
+        ]
+    );
+    // [
+    //   [1, 2, 3, 4],
+    //   [5, 6, 7, 8],
+    //   [9, 10, 11, 12],
+    // ]
+    let matrix = vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12]];
+    // windows(2) => [
+    //   [
+    //      [1, 2],
+    //      [5, 6],
+    //   ], [
+    //      [2, 3],
+    //      [6, 7],
+    //   ], [
+    //      [3, 4],
+    //      [7, 8],
+    //   ], [
+    //      [5, 6],
+    //      [9, 10],
+    //   ], [
+    //      [6, 7],
+    //      [10, 11],
+    //   ], [
+    //      [7, 8],
+    //      [11, 12],
+    //   ],
+    // ]
+    assert_eq!(
+        windows(&matrix, 2),
+        vec![
+            vec![vec![1, 2], vec![5, 6]],
+            vec![vec![2, 3], vec![6, 7]],
+            vec![vec![3, 4], vec![7, 8]],
+            vec![vec![5, 6], vec![9, 10]],
+            vec![vec![6, 7], vec![10, 11]],
+            vec![vec![7, 8], vec![11, 12]],
+        ]
+    );
+    // windows(3) => [
+    //  [
+    //     [1, 2, 3],
+    //     [5, 6, 7],
+    //     [9, 10, 11],
+    //  ], [
+    //     [2, 3, 4],
+    //     [6, 7, 8],
+    //     [10, 11, 12],
+    //  ],
+    // ]
+    assert_eq!(
+        windows(&matrix, 3),
+        vec![
+            vec![vec![1, 2, 3], vec![5, 6, 7], vec![9, 10, 11]],
+            vec![vec![2, 3, 4], vec![6, 7, 8], vec![10, 11, 12]],
+        ]
+    );
+}

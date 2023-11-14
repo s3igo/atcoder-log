@@ -124,12 +124,12 @@
   ";matrix_chunks": {
     "prefix": ";matrix_chunks",
     "body": [
-      "fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<T>> {",
-      "    let n = matrix.len();",
-      "    assert!(matrix.iter().all(|row| row.len() == n));",
-      "    assert!(n % side == 0);",
-      "    iproduct!((0..n).step_by(side), (0..n).step_by(side))",
-      "        .map(|(i, j)| iproduct!(0..side, 0..side).map(|(k, l)| matrix[i + k][j + l]).collect())",
+      "fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    assert!(n % side == 0 && m % side == 0);",
+      "    iproduct!((0..n).step_by(side), (0..m).step_by(side))",
+      "        .map(|(i, j)| (0..side).map(|k| matrix[i + k][j..j + side].to_vec()).collect())",
       "        .collect()",
       "}"
     ]
@@ -157,6 +157,19 @@
       "    let (n, m) = (matrix.len(), matrix[0].len());",
       "    assert!(matrix.iter().all(|row| row.len() == m));",
       "    (0..m).map(|i| (0..n).map(|j| matrix[j][i]).collect()).collect()",
+      "}"
+    ]
+  },
+  ";matrix_windows": {
+    "prefix": ";matrix_windows",
+    "body": [
+      "fn windows<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    assert!(n >= side && m >= side);",
+      "    iproduct!(0..n - side + 1, 0..m - side + 1)",
+      "        .map(|(i, j)| (0..side).map(|k| matrix[i + k][j..j + side].to_vec()).collect())",
+      "        .collect()",
       "}"
     ]
   },
