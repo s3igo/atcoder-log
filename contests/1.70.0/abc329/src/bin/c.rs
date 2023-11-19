@@ -9,7 +9,8 @@ fn main() {
         .sorted()
         .rev()
         .dedup_by(|l, r| l[0] == r[0])
-        .fold(0, |acc, s| acc + s.len());
+        .map(|v| v.len())
+        .sum::<usize>();
 
     println!("{ans}");
 }
