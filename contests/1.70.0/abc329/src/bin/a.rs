@@ -1,5 +1,8 @@
+use itertools::Itertools;
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(s: String);
+
+    println!("{}", s.chars().join(" "));
 }
