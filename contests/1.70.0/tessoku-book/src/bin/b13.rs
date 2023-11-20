@@ -4,16 +4,16 @@ use proconio::input;
 fn main() {
     input!(n: usize, k: usize, a: [usize; n]);
 
-    let cumsum = a.iter().cumsum().collect::<Vec<usize>>();
+    let cumsum = std::iter::once(0).chain(a.iter().cumsum()).collect::<Vec<_>>();
 
-    let (mut l, mut r, mut cnt) = (0, 0, 0);
-    while l < n - 1 {
-        while r < n - 1 && cumsum[r] - cumsum.get((l as isize - 1) as usize).unwrap_or(&0) <= k {
-            r += 1;
-        }
-        cnt += r - l;
-        l += 1;
-    }
+    let rhs = (0..n)
+        .scan(0, |acc, lhs| {
+            *acc = (*acc..n).find(|&r| cumsum[r + 1] - cumsum[lhs] > k).unwrap_or(n);
+            Some(*acc)
+        })
+        .collect::<Vec<_>>();
 
-    println!("{}", cnt); // TODO: WA
+    let ans = (0..n).map(|i| rhs[i] - i).sum::<usize>();
+
+    println!("{ans}");
 }
