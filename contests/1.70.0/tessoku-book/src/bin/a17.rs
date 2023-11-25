@@ -7,9 +7,9 @@ fn main() {
 
     let dp = |x| dp(x, &a, &b);
 
-    let ans: Vec<_> = std::iter::successors(Some(n), |&acc| match acc {
-        p @ 2.. if dp(p - 1) + a[p - 2] == dp(p) => Some(p - 1),
-        p @ 3.. if dp(p - 2) + b[p - 3] == dp(p) => Some(p - 2),
+    let ans: Vec<_> = std::iter::successors(Some(n), |&acc| match dp(acc) {
+        Some(cur) if dp(acc - 1)? + a[acc - 2] == cur => Some(acc - 1),
+        Some(cur) if dp(acc - 2)? + b[acc - 3] == cur => Some(acc - 2),
         _ => None,
     })
     .collect();
@@ -18,11 +18,12 @@ fn main() {
 }
 
 #[memoise(n)]
-fn dp(n: usize, a: &[usize], b: &[usize]) -> usize {
+fn dp(n: usize, a: &[usize], b: &[usize]) -> Option<usize> {
     let dp = |x| dp(x, a, b);
     match n {
-        1 => 0,
-        2 => a[0],
-        _ => (dp(n - 1) + a[n - 2]).min(dp(n - 2) + b[n - 3]),
+        ..=0 => None,
+        1 => Some(0),
+        2 => Some(a[0]),
+        _ => Some((dp(n - 1)? + a[n - 2]).min(dp(n - 2)? + b[n - 3])),
     }
 }
