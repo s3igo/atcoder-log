@@ -2,22 +2,22 @@ use std::ops::{Bound, RangeBounds, RangeInclusive};
 
 use cargo_snippet::snippet;
 
-#[snippet(name = ";time_digits2_struct", prefix = "use std::ops::RangeInclusive;")]
+#[snippet(name = ";time_digits_struct", prefix = "use std::ops::RangeInclusive;")]
 #[derive(Debug, PartialEq)]
-struct Digits2 {
-    value: (usize, usize),
-    range: (RangeInclusive<usize>, RangeInclusive<usize>),
+struct Digits {
+    value: Vec<usize>,
+    range: Vec<RangeInclusive<usize>>,
 }
 
 #[snippet(
-    name = ";time_digits2",
-    include = ";time_digits2_struct",
+    name = ";time_digits",
+    include = ";time_digits_struct",
     prefix = "use std::ops::{Bound, RangeBounds};"
 )]
-impl Digits2 {
-    fn new<T: RangeBounds<usize>>(value: (usize, usize), range: (T, T)) -> Self {
-        assert!(range.0.contains(&value.0));
-        assert!(range.1.contains(&value.1));
+impl Digits {
+    fn new<T: RangeBounds<usize>>(value: &[usize], range: &[T]) -> Self {
+        assert!(value.len() == range.len());
+        assert!(value.iter().zip(range).all(|(v, r)| r.contains(v)));
 
         let decide_range = |r: &T| {
             let start = match r.start_bound() {
@@ -33,58 +33,73 @@ impl Digits2 {
             start..=end
         };
 
-        Self { value, range: (decide_range(&range.0), decide_range(&range.1)) }
-    }
-
-    fn wrap(&self) -> Option<Self> {
-        Some(Self::new(self.value, self.range.clone()))
+        Self { value: value.to_vec(), range: range.iter().map(decide_range).collect() }
     }
 
     fn inc(&self) -> Option<Self> {
-        let (mut a, mut b) = self.value;
-        b += 1;
-        if b == self.range.1.end() + 1 {
-            b = *self.range.1.start();
-            a += 1;
+        let mut value = self.value.clone();
+        for i in (0..self.value.len()).rev() {
+            if value[i] < *self.range[i].end() {
+                value[i] += 1;
+                break;
+            } else {
+                value[i] = *self.range[i].start();
+            }
         }
-        if a == self.range.0.end() + 1 {
+        if value.iter().enumerate().all(|(i, v)| v == self.range[i].start()) {
             None
         } else {
-            Some(Self::new((a, b), self.range.clone()))
+            Some(Self { value, range: self.range.clone() })
         }
     }
 
-    fn value(&self) -> (usize, usize) {
+    fn value(self) -> Vec<usize> {
         self.value
     }
 }
 
 #[test]
-fn test_digits2() {
+fn test_digits() {
     let (h, m) = (24, 60);
-    assert_eq!(Digits2::new((0, 0), (0..h, 0..m)).inc().unwrap().value(), (0, 1));
-    assert_eq!(Digits2::new((0, 1), (0..h, 0..m)).inc().unwrap().value(), (0, 2));
-    assert_eq!(Digits2::new((0, 59), (0..h, 0..m)).inc().unwrap().value(), (1, 0));
-    assert_eq!(Digits2::new((1, 59), (0..h, 0..m)).inc().unwrap().value(), (2, 0));
-    assert_eq!(Digits2::new((23, 59), (0..h, 0..m)).inc(), None);
+    assert_eq!(Digits::new(&[0, 0], &[0..h, 0..m]).inc().unwrap().value(), [0, 1]);
+    assert_eq!(Digits::new(&[0, 1], &[0..h, 0..m]).inc().unwrap().value(), [0, 2]);
+    assert_eq!(Digits::new(&[0, 59], &[0..h, 0..m]).inc().unwrap().value(), [1, 0]);
+    assert_eq!(Digits::new(&[1, 59], &[0..h, 0..m]).inc().unwrap().value(), [2, 0]);
+    assert_eq!(Digits::new(&[23, 59], &[0..h, 0..m]).inc(), None);
 
     assert_eq!(
-        Digits2::new((0, 0), (0..h, 0..m)).inc().and_then(|d| d.inc()).unwrap().value(),
-        (0, 2)
+        Digits::new(&[0, 0], &[0..h, 0..m]).inc().and_then(|d| d.inc()).unwrap().value(),
+        [0, 2]
     );
     assert_eq!(
-        Digits2::new((0, 0), (0..h, 0..m))
+        Digits::new(&[0, 0], &[0..h, 0..m])
             .inc()
             .and_then(|d| d.inc())
             .and_then(|d| d.inc())
             .unwrap()
             .value(),
-        (0, 3)
+        [0, 3]
     );
 
-    let mut date = Digits2::new((1, 1), (1..=12, 1..=30)).wrap();
+    let mut date = Some(Digits::new(&[1, 1], &[1..=12, 1..=30]));
     for _ in 0..50 {
         date = date.and_then(|d| d.inc());
     }
-    assert_eq!(date.unwrap().value(), (2, 21));
+    assert_eq!(date.unwrap().value(), [2, 21]);
+
+    // 3 digits
+    let (h, m, s) = (24, 60, 60);
+    assert_eq!(
+        Digits::new(&[0, 0, 0], &[0..h, 0..m, 0..s])
+            .inc()
+            .and_then(|d| d.inc())
+            .and_then(|d| d.inc())
+            .unwrap()
+            .value(),
+        [0, 0, 3]
+    );
+    assert_eq!(
+        Digits::new(&[0, 59, 59], &[0..h, 0..m, 0..s]).inc().and_then(|d| d.inc()).unwrap().value(),
+        [1, 0, 1]
+    );
 }
