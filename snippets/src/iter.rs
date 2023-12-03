@@ -1,7 +1,7 @@
 use cargo_snippet::snippet;
 use itertools::Itertools;
 
-#[snippet(name = "iter_split-adjacent")]
+#[snippet(name = ";iter_split-adjacent", prefix = "use itertools::Itertools;")]
 fn split_adjacent<I, T>(iter: I) -> Vec<Vec<T>>
 where
     I: Iterator<Item = T>,
