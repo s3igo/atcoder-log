@@ -1,5 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(s: String, t: String);
+
+    println!("{}", if s < t { "Yes" } else { "No" });
 }
