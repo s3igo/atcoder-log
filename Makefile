@@ -33,5 +33,5 @@ new:
 .PHONY: snippet
 snippet:
 	cd snippets && cargo test --lib
-	jq -s add snippets/rust.code-snippets <(cd snippets && cargo snippet -t vscode) > .vscode/rust.code-snippets
+	jq -s add snippets/rust.json <(cd snippets && cargo snippet -t vscode) > .vscode/rust.code-snippets
 
