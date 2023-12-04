@@ -16,7 +16,7 @@ struct Digits {
 )]
 impl Digits {
     fn new<T: RangeBounds<usize>>(value: &[usize], range: &[T]) -> Self {
-        assert!(value.len() == range.len());
+        assert!(value.len() >= range.len());
         assert!(value.iter().zip(range).all(|(v, r)| r.contains(v)));
 
         let decide_range = |r: &T| {
@@ -33,7 +33,15 @@ impl Digits {
             start..=end
         };
 
-        Self { value: value.to_vec(), range: range.iter().map(decide_range).collect() }
+        let mut range: Vec<_> = range.iter().map(decide_range).collect();
+        if value.len() > range.len() {
+            range = std::iter::repeat(0..=usize::MAX)
+                .take(value.len() - range.len())
+                .chain(range)
+                .collect();
+        }
+
+        Self { value: value.to_vec(), range }
     }
 
     fn inc(&self) -> Option<Self> {
@@ -79,6 +87,17 @@ fn test_digits() {
             .unwrap()
             .value(),
         [0, 3]
+    );
+
+    assert_eq!(
+        Digits::new(&[0, 9, 9], &[0..10, 0..10])
+            .inc()
+            .and_then(|d| d.inc())
+            .and_then(|d| d.inc())
+            .and_then(|d| d.inc())
+            .unwrap()
+            .value(),
+        [1, 0, 3]
     );
 
     let mut date = Some(Digits::new(&[1, 1], &[1..=12, 1..=30]));
