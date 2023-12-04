@@ -20,6 +20,28 @@
         ],
         "description": "Print Answer"
     },
+    "List Answer": {
+        "prefix": ";print_ans_list",
+        "body": [
+            "use itertools::Itertools;",
+            "println!(\"{}\", ans.iter().join(\" \"));"
+        ],
+        "description": "Print Answer"
+    },
+    "Collect vec": {
+        "prefix": ";collect_vec",
+        "body": [
+            "collect::<Vec<_>>()"
+        ],
+        "description": "collect to Vec"
+    },
+    "Vec type annotation": {
+        "prefix": ";vec",
+        "body": [
+            ": Vec<_>"
+        ],
+        "description": "Vec type annotation"
+    },
     "between": {
         "prefix": ";between",
         "body": [
