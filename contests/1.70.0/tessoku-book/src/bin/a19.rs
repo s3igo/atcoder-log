@@ -14,8 +14,8 @@ fn dp(i: usize, j: usize, wv: &[(usize, usize)]) -> usize {
         0
     } else {
         match wv[i - 1] {
-            (w, v) if j >= w => dp(i - 1, j).max(dp(i - 1, j - w) + v),
-            _ => dp(i - 1, j),
+            (w, _) if j < w => dp(i - 1, j),
+            (w, v) => dp(i - 1, j).max(dp(i - 1, j - w) + v),
         }
     }
 }
