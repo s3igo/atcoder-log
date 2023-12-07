@@ -1,11 +1,4 @@
 {
-    "is sorted": {
-        "prefix": ";is_sort",
-        "body": [
-            ".tuple_windows().all(|(a, b)| a <= b)"
-        ],
-        "description": "check if a slice is sorted"
-    },
     "Yes or No": {
         "prefix": ";print_yn",
         "body": [
@@ -38,7 +31,7 @@
     "Vec type annotation": {
         "prefix": ";vec",
         "body": [
-            ": Vec<_>"
+            "Vec<_>"
         ],
         "description": "Vec type annotation"
     },
