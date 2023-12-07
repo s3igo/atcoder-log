@@ -9,13 +9,15 @@ fn main() {
     println!("{ans}");
 }
 
+macro_rules! lazy {
+    ($tuple:expr) => { (|| $tuple.0, || $tuple.1) };
+}
+
 #[memoise(l, r)]
 fn dp(l: usize, r: usize, pa: &[(usize, usize)]) -> usize {
     let dp = |x, y| dp(x, y, pa);
-    let pl = || pa[l - 2].0;
-    let al = || pa[l - 2].1;
-    let pr = || pa[r].0;
-    let ar = || pa[r].1;
+    let (pl, al) = lazy!(pa[l - 2]);
+    let (pr, ar) = lazy!(pa[r]);
     let pop_left = || dp(l - 1, r) + (if (l..=r).contains(&pl()) { al() } else { 0 });
     let pop_right = || dp(l, r + 1) + (if (l..=r).contains(&pr()) { ar() } else { 0 });
     match (l, r) {
