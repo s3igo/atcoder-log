@@ -35,19 +35,27 @@
         ],
         "description": "Vec type annotation"
     },
-    "between": {
+    "Between": {
         "prefix": ";between",
         "body": [
             ".skip_while(|&${1:c}| ${1:c} != $2).skip(1).take_while(|&${1:c}| ${1:c} != $2)"
         ],
         "description": "get the slice between two elements"
     },
-    "ceiling of division": {
+    "Ceiling of division": {
         "prefix": ";ceil_div",
         "body": [
             "($1 + $2 - 1) / $2"
         ],
         "description": "ceiling of a / b is (a + b - 1) / b"
+    },
+    "Wrap with closure": {
+        "prefix": ";lazy",
+        "body": [
+            "macro_rules! lazy {",
+            "\t($tuple:expr) => { (|| $tuple.0, || $tuple.1) };",
+            "}"
+        ]
     },
     "binary search (usize)": {
         "prefix": ";bin_search_usize",

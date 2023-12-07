@@ -23,7 +23,7 @@ fn dp(l: usize, r: usize, pa: &[(usize, usize)]) -> usize {
     match (l, r) {
         (1, n) if n == pa.len() => 0,
         (1, _) => pop_right(),
-        (_, r) if r == pa.len() => pop_left(),
+        (_, n) if n == pa.len() => pop_left(),
         (_, _) => pop_left().max(pop_right()),
     }
 }
