@@ -32,6 +32,44 @@ fn test_gcd() {
     assert_eq!(gcd(18, 12), 6);
 }
 
+#[snippet(name = ";math_is-prime")]
+fn is_prime(n: usize) -> bool {
+    if n < 2 {
+        return false;
+    }
+    for i in (2..).take_while(|&i| i * i <= n) {
+        if n % i == 0 {
+            return false;
+        }
+    }
+    true
+}
+
+#[test]
+fn test_is_prime() {
+    assert!(!is_prime(0));
+    assert!(!is_prime(1));
+    assert!(is_prime(2));
+    assert!(is_prime(3));
+    assert!(!is_prime(4));
+    assert!(is_prime(5));
+    assert!(!is_prime(6));
+    assert!(is_prime(7));
+    assert!(!is_prime(8));
+    assert!(!is_prime(9));
+    assert!(!is_prime(10));
+    assert!(is_prime(11));
+    assert!(!is_prime(12));
+    assert!(is_prime(13));
+    assert!(!is_prime(14));
+    assert!(!is_prime(15));
+    assert!(!is_prime(16));
+    assert!(is_prime(17));
+    assert!(!is_prime(18));
+    assert!(is_prime(19));
+    assert!(!is_prime(20));
+}
+
 // enumerate divisors of n
 #[snippet(name = ";math_divisors")]
 fn divisors(n: usize) -> Vec<usize> {
