@@ -57,46 +57,6 @@
       "}"
     ]
   },
-  "binary search (usize)": {
-    "prefix": ";bin_search_usize",
-    "body": [
-      "fn binary_search<F>(mut ng: usize, mut ok: usize, f: F) -> usize",
-      "where",
-      "\tF: Fn(usize) -> bool,",
-      "{",
-      "\twhile (ok as isize - ng as isize).abs() > 1 {",
-      "\t\tlet mid = (ok + ng) / 2;",
-      "\t\tif f(mid) {",
-      "\t\t\tok = mid;",
-      "\t\t} else {",
-      "\t\t\tng = mid;",
-      "\t\t}",
-      "\t}",
-      "\tok",
-      "}"
-    ],
-    "description": "general binary search for usize"
-  },
-  "binary search (f64)": {
-    "prefix": ";bin_search_f64",
-    "body": [
-      "fn binary_search<F>(mut ng: f64, mut ok: f64, err: f64, f: F) -> f64",
-      "where",
-      "\tF: Fn(f64) -> bool,",
-      "{",
-      "\twhile (ok - ng).abs() > err {",
-      "\t\tlet mid = (ok + ng) / 2.;",
-      "\t\tif f(mid) {",
-      "\t\t\tok = mid;",
-      "\t\t} else {",
-      "\t\t\tng = mid;",
-      "\t\t}",
-      "\t}",
-      "\tok",
-      "}"
-    ],
-    "description": "general binary search for f64"
-  },
   ";coord_chebyshev-distance": {
     "prefix": ";coord_chebyshev-distance",
     "body": [
@@ -154,6 +114,22 @@
       "        0 => a,",
       "        _ => gcd(b, a % b),",
       "    }",
+      "}"
+    ]
+  },
+  ";math_is-prime": {
+    "prefix": ";math_is-prime",
+    "body": [
+      "fn is_prime(n: usize) -> bool {",
+      "    if n < 2 {",
+      "        return false;",
+      "    }",
+      "    for i in (2..).take_while(|&i| i * i <= n) {",
+      "        if n % i == 0 {",
+      "            return false;",
+      "        }",
+      "    }",
+      "    true",
       "}"
     ]
   },
