@@ -39,11 +39,11 @@ mod f64 {
     use super::*;
 
     #[snippet(name = ";search_binary_f64")]
-    fn binary_search<F>(mut ng: f64, mut ok: f64, err: f64, f: F) -> f64
+    fn binary_search<F>(mut ng: f64, mut ok: f64, eps: f64, f: F) -> f64
     where
         F: Fn(f64) -> bool,
     {
-        while (ok - ng).abs() > err {
+        while (ok - ng).abs() > eps {
             let mid = (ok + ng) / 2.;
             if f(mid) {
                 ok = mid;
