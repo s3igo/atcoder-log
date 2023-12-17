@@ -40,3 +40,16 @@ cargo compete t <problem>
 # Submit code
 cargo compete s <problem>
 ```
+## Build
+
+```sh
+# check hashes and inputs
+nix run 'nixpkgs#nix-init' -- \
+    --url https://github.com/qryxip/cargo-compete \
+    --config <(echo "nixpkgs = 'builtins.getFlake \"nixpkgs\"'")
+
+nix run 'nixpkgs#nix-init' -- \
+    --url https://github.com/hatoo/cargo-snippet \
+    --config <(echo "nixpkgs = 'builtins.getFlake \"nixpkgs\"'")
+
+```
