@@ -22,7 +22,7 @@
         # cargo-snippet = import ./cargo-snippet.nix { inherit nixpkgs system rust-overlay; };
       in
       {
-        devShells.default = pkgs.mkShell {
+        devShell = pkgs.mkShell {
           buildInputs = [
             pkgs.rustToolchain
             cargo-compete
