@@ -1,5 +1,4 @@
-{ pkgs }:
-
+{pkgs}:
 pkgs.rustPlatform.buildRustPackage rec {
   pname = "cargo-compete";
   version = "0.10.6";
@@ -15,14 +14,15 @@ pkgs.rustPlatform.buildRustPackage rec {
     pkgs.pkg-config
   ];
 
-  buildInputs = with pkgs; [
-    libgit2
-    openssl
-    zlib
-  ] ++ lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.Security
-  ];
+  buildInputs = with pkgs;
+    [
+      libgit2
+      openssl
+      zlib
+    ]
+    ++ lib.optionals stdenv.isDarwin [
+      darwin.apple_sdk.frameworks.Security
+    ];
 
   doCheck = false;
 }
-
