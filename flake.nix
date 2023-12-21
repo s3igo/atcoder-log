@@ -29,6 +29,9 @@
         devShell = pkgs.mkShell {
           buildInputs = [
             pkgs.rustToolchain
+            pkgs.rust-analyzer
+            pkgs.statix
+            pkgs.online-judge-tools
             cargo-compete
           ];
         };
