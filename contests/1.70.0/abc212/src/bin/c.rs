@@ -10,11 +10,9 @@ fn main() {
         .sorted()
         .map(|a| match b.binary_search(a) {
             Ok(_) => 0,
-            Err(i) => match i {
-                0 => a.abs_diff(b[i]),
-                i if i == m => a.abs_diff(b[i - 1]),
-                _ => a.abs_diff(b[i - 1]).min(a.abs_diff(b[i])),
-            },
+            Err(0) => a.abs_diff(b[0]),
+            Err(i) if i == m => a.abs_diff(b[m - 1]),
+            Err(i) => a.abs_diff(b[i - 1]).min(a.abs_diff(b[i])),
         })
         .min()
         .unwrap();

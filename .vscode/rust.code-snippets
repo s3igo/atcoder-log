@@ -65,6 +65,17 @@
       "}"
     ]
   },
+  ";coord_compress": {
+    "prefix": ";coord_compress",
+    "body": [
+      "use itertools::Itertools;",
+      "use std::collections::HashMap;",
+      "fn compress(v: &[usize]) -> Vec<usize> {",
+      "    let ranks: HashMap<_, _> = v.iter().sorted().dedup().zip(1..).collect();",
+      "    v.iter().map(|x| ranks[x]).collect()",
+      "}"
+    ]
+  },
   ";coord_manhattan-distance": {
     "prefix": ";coord_manhattan-distance",
     "body": [
@@ -188,11 +199,11 @@
   ";search_binary_f64": {
     "prefix": ";search_binary_f64",
     "body": [
-      "fn binary_search<F>(mut ng: f64, mut ok: f64, err: f64, f: F) -> f64",
+      "fn binary_search<F>(mut ng: f64, mut ok: f64, eps: f64, f: F) -> f64",
       "where",
       "    F: Fn(f64) -> bool,",
       "{",
-      "    while (ok - ng).abs() > err {",
+      "    while (ok - ng).abs() > eps {",
       "        let mid = (ok + ng) / 2.;",
       "        if f(mid) {",
       "            ok = mid;",
