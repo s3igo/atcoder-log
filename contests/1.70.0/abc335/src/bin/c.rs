@@ -3,24 +3,25 @@ use std::collections::VecDeque;
 use proconio::input;
 
 fn main() {
-    input!(n: isize, q: usize, query: [(isize, String); q]);
+    input!(n: isize, q: usize);
 
     let mut pos: VecDeque<_> = (1..=n).zip(std::iter::repeat(0)).collect();
-    for (idx, s) in query {
-        match idx {
+    for _ in 0..q {
+        input!(t: usize);
+        match t {
             1 => {
+                input!(c: char);
                 let (x, y) = pos.front().unwrap();
-                match s.chars().next().unwrap() {
-                    'R' => pos.push_front((*x + idx, *y)),
-                    'L' => pos.push_front((*x - idx, *y)),
-                    'U' => pos.push_front((*x, *y + idx)),
-                    'D' => pos.push_front((*x, *y - idx)),
+                match c {
+                    'R' => pos.push_front((*x + 1, *y)),
+                    'L' => pos.push_front((*x - 1, *y)),
+                    'U' => pos.push_front((*x, *y + 1)),
+                    'D' => pos.push_front((*x, *y - 1)),
                     _ => unreachable!(),
                 }
-                pos.pop_back();
             },
             2 => {
-                let p = s.parse::<usize>().unwrap();
+                input!(p: usize);
                 let (x, y) = pos[p - 1];
                 println!("{x} {y}");
             },

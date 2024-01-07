@@ -1,10 +1,7 @@
-use proconio::{input, marker::Chars};
+use proconio::input;
 
 fn main() {
-    input!(mut s: Chars);
+    input!(s: String);
 
-    s.pop();
-    s.push('4');
-
-    println!("{}", s.iter().collect::<String>());
+    println!("{}4", &s[..s.len() - 1]);
 }

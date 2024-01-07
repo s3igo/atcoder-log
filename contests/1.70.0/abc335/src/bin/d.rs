@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use proconio::input;
 
 fn main() {
@@ -5,20 +6,36 @@ fn main() {
 
     let mut grid = vec![vec![None; n]; n];
     grid[0][0] = Some(1);
-    grid[(n + 1) / 2 - 1][(n + 1) / 2 - 1] = Some(isize::MAX);
+    grid[n / 2][n / 2] = Some(0);
     for i in 0.. {
         let idx = i / 4;
-        let mut cur = grid[idx][idx].unwrap();
+        let mut cur = if i != 0 && i % 4 == 0 {
+            grid[idx][idx - 1].unwrap()
+        } else {
+            grid[idx][idx].unwrap()
+        };
         grid[idx].iter_mut().for_each(|x| {
             if x.is_none() {
-                *x = Some(cur);
                 cur += 1;
+                *x = Some(cur);
             }
         });
         if grid.iter().flatten().all(|x| x.is_some()) {
             break;
         }
         grid = rotate(&grid, 3);
+    }
+
+    for row in grid {
+        let row = row
+            .iter()
+            .map(|x| match x.unwrap() {
+                0 => "T".to_string(),
+                x => x.to_string(),
+            })
+            .join(" ");
+
+        println!("{}", row);
     }
 }
 
