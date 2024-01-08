@@ -70,6 +70,52 @@ fn test_is_prime() {
     assert!(!is_prime(20));
 }
 
+#[snippet(name = ";math_primes")]
+fn primes(n: usize) -> Vec<usize> {
+    if n == 0 {
+        return vec![];
+    }
+
+    let mut is_prime = vec![true; n + 1];
+    is_prime[0] = false;
+    is_prime[1] = false;
+    for i in (2..).take_while(|&i| i * i <= n) {
+        if !is_prime[i] {
+            continue;
+        }
+        for j in (2 * i..=n).step_by(i) {
+            is_prime[j] = false;
+        }
+    }
+
+    is_prime.iter().enumerate().filter(|(_, &is)| is).map(|(x, _)| x).collect()
+}
+
+#[test]
+fn test_primes() {
+    assert_eq!(primes(0), vec![]);
+    assert_eq!(primes(1), vec![]);
+    assert_eq!(primes(2), vec![2]);
+    assert_eq!(primes(3), vec![2, 3]);
+    assert_eq!(primes(4), vec![2, 3]);
+    assert_eq!(primes(5), vec![2, 3, 5]);
+    assert_eq!(primes(6), vec![2, 3, 5]);
+    assert_eq!(primes(7), vec![2, 3, 5, 7]);
+    assert_eq!(primes(8), vec![2, 3, 5, 7]);
+    assert_eq!(primes(9), vec![2, 3, 5, 7]);
+    assert_eq!(primes(10), vec![2, 3, 5, 7]);
+    assert_eq!(primes(11), vec![2, 3, 5, 7, 11]);
+    assert_eq!(primes(12), vec![2, 3, 5, 7, 11]);
+    assert_eq!(primes(13), vec![2, 3, 5, 7, 11, 13]);
+    assert_eq!(primes(14), vec![2, 3, 5, 7, 11, 13]);
+    assert_eq!(primes(15), vec![2, 3, 5, 7, 11, 13]);
+    assert_eq!(primes(16), vec![2, 3, 5, 7, 11, 13]);
+    assert_eq!(primes(17), vec![2, 3, 5, 7, 11, 13, 17]);
+    assert_eq!(primes(18), vec![2, 3, 5, 7, 11, 13, 17]);
+    assert_eq!(primes(19), vec![2, 3, 5, 7, 11, 13, 17, 19]);
+    assert_eq!(primes(20), vec![2, 3, 5, 7, 11, 13, 17, 19]);
+}
+
 // enumerate divisors of n
 #[snippet(name = ";math_divisors")]
 fn divisors(n: usize) -> Vec<usize> {

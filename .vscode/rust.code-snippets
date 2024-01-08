@@ -144,6 +144,28 @@
       "}"
     ]
   },
+  ";math_primes": {
+    "prefix": ";math_primes",
+    "body": [
+      "fn primes(n: usize) -> Vec<usize> {",
+      "    if n == 0 {",
+      "        return vec![];",
+      "    }",
+      "    let mut is_prime = vec![true; n + 1];",
+      "    is_prime[0] = false;",
+      "    is_prime[1] = false;",
+      "    for i in (2..).take_while(|&i| i * i <= n) {",
+      "        if !is_prime[i] {",
+      "            continue;",
+      "        }",
+      "        for j in (2 * i..=n).step_by(i) {",
+      "            is_prime[j] = false;",
+      "        }",
+      "    }",
+      "    is_prime.iter().enumerate().filter(|(_, &is)| is).map(|(x, _)| x).collect()",
+      "}"
+    ]
+  },
   ";matrix_chunks": {
     "prefix": ";matrix_chunks",
     "body": [
