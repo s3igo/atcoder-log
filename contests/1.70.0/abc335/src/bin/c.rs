@@ -5,7 +5,7 @@ use proconio::input;
 fn main() {
     input!(n: isize, q: usize);
 
-    let mut pos: VecDeque<_> = (1..=n).zip(std::iter::repeat(0)).collect();
+    let mut pos: VecDeque<_> = (1..=n).map(|i| (i, 0)).collect();
     for _ in 0..q {
         input!(t: usize);
         match t {
