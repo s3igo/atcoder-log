@@ -1,5 +1,7 @@
 use proconio::input;
 
 fn main() {
-    input!();
+    input!(n: usize);
+
+    println!("{}", n.trailing_zeros());
 }
