@@ -17,7 +17,7 @@
         "prefix": ";print_ans_list",
         "body": [
             "use itertools::Itertools;",
-            "println!(\"{}\", ans.iter().join(\" \"));"
+            "println!(\"{}\", ans.iter().join(\"$1\"));"
         ],
         "description": "Print Answer"
     },
