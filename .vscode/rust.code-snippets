@@ -166,6 +166,22 @@
       "}"
     ]
   },
+  ";math_to-radix": {
+    "prefix": ";math_to-radix",
+    "body": [
+      "fn to_radix(mut n: usize, radix: usize) -> Vec<usize> {",
+      "    if n == 0 {",
+      "        return vec![0];",
+      "    }",
+      "    let mut digits = vec![];",
+      "    while n != 0 {",
+      "        digits.push(n % radix);",
+      "        n /= radix;",
+      "    }",
+      "    digits.into_iter().rev().collect()",
+      "}"
+    ]
+  },
   ";matrix_chunks": {
     "prefix": ";matrix_chunks",
     "body": [

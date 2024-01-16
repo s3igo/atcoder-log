@@ -157,3 +157,65 @@ fn test_divisors() {
     assert_eq!(divisors(19), vec![1, 19]);
     assert_eq!(divisors(20), vec![1, 2, 4, 5, 10, 20]);
 }
+
+#[snippet(name = ";math_to-radix")]
+fn to_radix(mut n: usize, radix: usize) -> Vec<usize> {
+    if n == 0 {
+        return vec![0];
+    }
+    let mut digits = vec![];
+    while n != 0 {
+        digits.push(n % radix);
+        n /= radix;
+    }
+    digits.into_iter().rev().collect()
+}
+
+#[test]
+fn test_to_radix() {
+    assert_eq!(to_radix(0, 2), vec![0]);
+    assert_eq!(to_radix(1, 2), vec![1]);
+    assert_eq!(to_radix(2, 2), vec![1, 0]);
+    assert_eq!(to_radix(3, 2), vec![1, 1]);
+    assert_eq!(to_radix(4, 2), vec![1, 0, 0]);
+    assert_eq!(to_radix(5, 2), vec![1, 0, 1]);
+    assert_eq!(to_radix(6, 2), vec![1, 1, 0]);
+    assert_eq!(to_radix(7, 2), vec![1, 1, 1]);
+    assert_eq!(to_radix(8, 2), vec![1, 0, 0, 0]);
+    assert_eq!(to_radix(9, 2), vec![1, 0, 0, 1]);
+    assert_eq!(to_radix(10, 2), vec![1, 0, 1, 0]);
+    assert_eq!(to_radix(11, 2), vec![1, 0, 1, 1]);
+    assert_eq!(to_radix(12, 2), vec![1, 1, 0, 0]);
+    assert_eq!(to_radix(13, 2), vec![1, 1, 0, 1]);
+    assert_eq!(to_radix(14, 2), vec![1, 1, 1, 0]);
+    assert_eq!(to_radix(15, 2), vec![1, 1, 1, 1]);
+    assert_eq!(to_radix(16, 2), vec![1, 0, 0, 0, 0]);
+
+    assert_eq!(to_radix(0, 3), vec![0]);
+    assert_eq!(to_radix(1, 3), vec![1]);
+    assert_eq!(to_radix(2, 3), vec![2]);
+    assert_eq!(to_radix(3, 3), vec![1, 0]);
+    assert_eq!(to_radix(4, 3), vec![1, 1]);
+    assert_eq!(to_radix(5, 3), vec![1, 2]);
+    assert_eq!(to_radix(6, 3), vec![2, 0]);
+    assert_eq!(to_radix(7, 3), vec![2, 1]);
+    assert_eq!(to_radix(8, 3), vec![2, 2]);
+    assert_eq!(to_radix(9, 3), vec![1, 0, 0]);
+
+    assert_eq!(to_radix(9, 10), vec![9]);
+    assert_eq!(to_radix(10, 10), vec![1, 0]);
+    assert_eq!(to_radix(99, 10), vec![9, 9]);
+    assert_eq!(to_radix(100, 10), vec![1, 0, 0]);
+
+    assert_eq!(to_radix(9, 16), vec![9]);
+    assert_eq!(to_radix(10, 16), vec![10]);
+    assert_eq!(to_radix(11, 16), vec![11]);
+    assert_eq!(to_radix(12, 16), vec![12]);
+    assert_eq!(to_radix(13, 16), vec![13]);
+    assert_eq!(to_radix(14, 16), vec![14]);
+    assert_eq!(to_radix(15, 16), vec![15]);
+    assert_eq!(to_radix(16, 16), vec![1, 0]);
+    assert_eq!(to_radix(17, 16), vec![1, 1]);
+    assert_eq!(to_radix(255, 16), vec![15, 15]);
+    assert_eq!(to_radix(256, 16), vec![1, 0, 0]);
+}
