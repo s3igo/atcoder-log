@@ -2,31 +2,21 @@ use itertools::Itertools;
 use proconio::input;
 
 fn main() {
-    input!(mut n: usize);
+    input!(n: usize);
 
-    let mut nums = vec![];
-    while n > 0 {
-        nums.push(n % 5);
-        n /= 5;
+    let ans: Vec<_> = to_radix(n - 1, 5).iter().map(|x| x * 2).collect();
+
+    println!("{}", ans.iter().join(""));
+}
+
+fn to_radix(mut n: usize, radix: usize) -> Vec<usize> {
+    if n == 0 {
+        return vec![0];
     }
-
-    let digits: Vec<_> = nums.iter().map(|x| x * 2).collect();
-
-    let digits: Vec<_> = digits
-        .iter()
-        .scan(2, |acc, i| match i.checked_sub(*acc) {
-            Some(n) => {
-                *acc = 0;
-                Some(n)
-            },
-            None => {
-                *acc = 2;
-                Some(8)
-            },
-        })
-        .collect();
-
-    let ans = digits.iter().rev().join("");
-
-    println!("{ans}");
+    let mut digits = vec![];
+    while n != 0 {
+        digits.push(n % radix);
+        n /= radix;
+    }
+    digits.into_iter().rev().collect()
 }
