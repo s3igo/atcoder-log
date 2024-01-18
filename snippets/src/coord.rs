@@ -33,10 +33,7 @@ fn test_chebyshev_dst() {
     assert_eq!(chebyshev_dst((1, 2), (3, 4)), 2);
 }
 
-#[snippet(
-    name = ";coord_compress",
-    prefix = "use std::collections::HashMap;\nuse itertools::Itertools;"
-)]
+#[snippet(name = ";coord_compress", prefix = "use std::collections::HashMap;\nuse itertools::Itertools;")]
 
 fn compress(v: &[usize]) -> Vec<usize> {
     let ranks: HashMap<_, _> = v.iter().sorted().dedup().zip(1..).collect();

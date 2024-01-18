@@ -21,10 +21,7 @@ fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
     assert!(matrix.iter().map(|row| row.len()).all(|x| x == m));
     match times {
         0 => matrix.clone(),
-        _ => rotate(
-            &(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(),
-            times - 1,
-        ),
+        _ => rotate(&(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(), times - 1),
     }
 }
 

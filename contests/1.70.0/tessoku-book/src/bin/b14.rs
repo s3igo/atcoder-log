@@ -6,14 +6,9 @@ fn main() {
 
     let (lhs, rhs) = a.split_at(n / 2);
 
-    let rhs =
-        rhs.iter().powerset().map(|x| x.into_iter().sum::<usize>()).sorted().collect::<Vec<_>>();
+    let rhs = rhs.iter().powerset().map(|x| x.into_iter().sum::<usize>()).sorted().collect::<Vec<_>>();
 
-    let cond = lhs
-        .iter()
-        .powerset()
-        .map(|x| x.into_iter().sum::<usize>())
-        .any(|x| rhs.binary_search(&(k - x)).is_ok());
+    let cond = lhs.iter().powerset().map(|x| x.into_iter().sum::<usize>()).any(|x| rhs.binary_search(&(k - x)).is_ok());
 
     println!("{}", if cond { "Yes" } else { "No" });
 }

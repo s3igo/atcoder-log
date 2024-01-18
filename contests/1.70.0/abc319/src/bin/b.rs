@@ -6,9 +6,7 @@ fn main() {
     let divs = divisors(n);
     let ans = (0..=n)
         .map(|i| {
-            divs.iter()
-                .find(|&x| i % (n / x) == 0 && (1..=9).contains(x))
-                .map_or('-'.to_string(), |x| x.to_string())
+            divs.iter().find(|&x| i % (n / x) == 0 && (1..=9).contains(x)).map_or('-'.to_string(), |x| x.to_string())
         })
         .collect::<String>();
 

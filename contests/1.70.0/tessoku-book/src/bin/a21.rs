@@ -10,7 +10,9 @@ fn main() {
 }
 
 macro_rules! lazy {
-    ($tuple:expr) => { (|| $tuple.0, || $tuple.1) };
+    ($tuple:expr) => {
+        (|| $tuple.0, || $tuple.1)
+    };
 }
 
 #[memoise(l, r)]

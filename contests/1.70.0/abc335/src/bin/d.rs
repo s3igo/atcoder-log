@@ -9,11 +9,7 @@ fn main() {
     grid[n / 2][n / 2] = Some(0);
     for i in 0.. {
         let idx = i / 4;
-        let mut cur = if i != 0 && i % 4 == 0 {
-            grid[idx][idx - 1].unwrap()
-        } else {
-            grid[idx][idx].unwrap()
-        };
+        let mut cur = if i != 0 && i % 4 == 0 { grid[idx][idx - 1].unwrap() } else { grid[idx][idx].unwrap() };
         grid[idx].iter_mut().for_each(|x| {
             if x.is_none() {
                 cur += 1;
@@ -44,9 +40,6 @@ fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
     assert!(matrix.iter().all(|row| row.len() == m));
     match times {
         0 => matrix.clone(),
-        _ => rotate(
-            &(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(),
-            times - 1,
-        ),
+        _ => rotate(&(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(), times - 1),
     }
 }

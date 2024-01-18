@@ -8,10 +8,7 @@ fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {
 
     match times {
         0 => matrix.clone(),
-        _ => rotate(
-            &(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(),
-            times - 1,
-        ),
+        _ => rotate(&(0..m).map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect()).collect(), times - 1),
     }
 }
 
@@ -122,8 +119,7 @@ fn test_chunks() {
     //     [15, 16],
     //   ],
     // ]
-    let matrix =
-        vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
+    let matrix = vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
     assert_eq!(
         chunks(&matrix, 2),
         vec![
@@ -149,8 +145,7 @@ fn test_chunks() {
     //     [16, 17, 18],
     //   ],
     // ]
-    let matrix =
-        vec![vec![1, 2, 3, 4, 5, 6], vec![7, 8, 9, 10, 11, 12], vec![13, 14, 15, 16, 17, 18]];
+    let matrix = vec![vec![1, 2, 3, 4, 5, 6], vec![7, 8, 9, 10, 11, 12], vec![13, 14, 15, 16, 17, 18]];
     assert_eq!(
         chunks(&matrix, 3),
         vec![
@@ -179,8 +174,7 @@ fn test_windows() {
     //   [9, 10, 11, 12],
     //   [13, 14, 15, 16],
     // ]
-    let matrix =
-        vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
+    let matrix = vec![vec![1, 2, 3, 4], vec![5, 6, 7, 8], vec![9, 10, 11, 12], vec![13, 14, 15, 16]];
     // windows(2) => [
     //   [
     //      [1, 2],
@@ -304,9 +298,6 @@ fn test_windows() {
     // ]
     assert_eq!(
         windows(&matrix, 3),
-        vec![
-            vec![vec![1, 2, 3], vec![5, 6, 7], vec![9, 10, 11]],
-            vec![vec![2, 3, 4], vec![6, 7, 8], vec![10, 11, 12]],
-        ]
+        vec![vec![vec![1, 2, 3], vec![5, 6, 7], vec![9, 10, 11]], vec![vec![2, 3, 4], vec![6, 7, 8], vec![10, 11, 12]],]
     );
 }

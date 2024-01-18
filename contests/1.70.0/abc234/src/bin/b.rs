@@ -4,11 +4,7 @@ use proconio::input;
 fn main() {
     input!(n: usize, xy: [(isize, isize); n]);
 
-    let ans = xy
-        .iter()
-        .tuple_combinations()
-        .map(|(&a, &b)| euclidean_dst(a, b))
-        .fold(0.0, |acc, x| x.max(acc));
+    let ans = xy.iter().tuple_combinations().map(|(&a, &b)| euclidean_dst(a, b)).fold(0.0, |acc, x| x.max(acc));
 
     println!("{ans}");
 }

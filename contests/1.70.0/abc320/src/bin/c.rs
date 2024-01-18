@@ -7,9 +7,9 @@ fn main() {
     let ans = ('0'..='9')
         .flat_map(|i| {
             s.iter().permutations(3).filter_map(move |s_vec| {
-                s_vec.iter().try_fold(0, |acc, s| {
-                    s.chars().cycle().skip(acc).take(m).position(|c| c == i).map(|x| acc + x + 1)
-                })
+                s_vec
+                    .iter()
+                    .try_fold(0, |acc, s| s.chars().cycle().skip(acc).take(m).position(|c| c == i).map(|x| acc + x + 1))
             })
         })
         .min()

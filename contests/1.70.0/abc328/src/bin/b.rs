@@ -9,11 +9,7 @@ fn main() {
         .zip(1..)
         .map(|(&d, i)| {
             (1..=d)
-                .filter(|&j| {
-                    i % 10 == j % 10
-                        && i.to_string().chars().all_equal()
-                        && j.to_string().chars().all_equal()
-                })
+                .filter(|&j| i % 10 == j % 10 && i.to_string().chars().all_equal() && j.to_string().chars().all_equal())
                 .count()
         })
         .sum::<usize>();

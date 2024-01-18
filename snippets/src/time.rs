@@ -9,11 +9,7 @@ struct Digits {
     range: Vec<RangeInclusive<usize>>,
 }
 
-#[snippet(
-    name = ";time_digits",
-    include = ";time_digits_struct",
-    prefix = "use std::ops::{Bound, RangeBounds};"
-)]
+#[snippet(name = ";time_digits", include = ";time_digits_struct", prefix = "use std::ops::{Bound, RangeBounds};")]
 impl Digits {
     fn new<T: RangeBounds<usize>>(value: &[usize], range: &[T]) -> Self {
         assert!(value.len() >= range.len());
@@ -35,10 +31,7 @@ impl Digits {
 
         let mut range: Vec<_> = range.iter().map(decide_range).collect();
         if value.len() > range.len() {
-            range = std::iter::repeat(0..=usize::MAX)
-                .take(value.len() - range.len())
-                .chain(range)
-                .collect();
+            range = std::iter::repeat(0..=usize::MAX).take(value.len() - range.len()).chain(range).collect();
         }
 
         Self { value: value.to_vec(), range }
@@ -75,17 +68,9 @@ fn test_digits() {
     assert_eq!(Digits::new(&[1, 59], &[0..h, 0..m]).inc().unwrap().value(), [2, 0]);
     assert_eq!(Digits::new(&[23, 59], &[0..h, 0..m]).inc(), None);
 
+    assert_eq!(Digits::new(&[0, 0], &[0..h, 0..m]).inc().and_then(|d| d.inc()).unwrap().value(), [0, 2]);
     assert_eq!(
-        Digits::new(&[0, 0], &[0..h, 0..m]).inc().and_then(|d| d.inc()).unwrap().value(),
-        [0, 2]
-    );
-    assert_eq!(
-        Digits::new(&[0, 0], &[0..h, 0..m])
-            .inc()
-            .and_then(|d| d.inc())
-            .and_then(|d| d.inc())
-            .unwrap()
-            .value(),
+        Digits::new(&[0, 0], &[0..h, 0..m]).inc().and_then(|d| d.inc()).and_then(|d| d.inc()).unwrap().value(),
         [0, 3]
     );
 
@@ -109,16 +94,8 @@ fn test_digits() {
     // 3 digits
     let (h, m, s) = (24, 60, 60);
     assert_eq!(
-        Digits::new(&[0, 0, 0], &[0..h, 0..m, 0..s])
-            .inc()
-            .and_then(|d| d.inc())
-            .and_then(|d| d.inc())
-            .unwrap()
-            .value(),
+        Digits::new(&[0, 0, 0], &[0..h, 0..m, 0..s]).inc().and_then(|d| d.inc()).and_then(|d| d.inc()).unwrap().value(),
         [0, 0, 3]
     );
-    assert_eq!(
-        Digits::new(&[0, 59, 59], &[0..h, 0..m, 0..s]).inc().and_then(|d| d.inc()).unwrap().value(),
-        [1, 0, 1]
-    );
+    assert_eq!(Digits::new(&[0, 59, 59], &[0..h, 0..m, 0..s]).inc().and_then(|d| d.inc()).unwrap().value(), [1, 0, 1]);
 }

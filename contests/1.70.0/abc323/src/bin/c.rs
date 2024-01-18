@@ -13,8 +13,7 @@ fn main() {
         .collect_vec();
 
     for (i, s) in s.iter().enumerate() {
-        let cumsum =
-            s.chars().positions(|c| c == 'x').map(|x| a[x]).sorted().rev().cumsum::<usize>();
+        let cumsum = s.chars().positions(|c| c == 'x').map(|x| a[x]).sorted().rev().cumsum::<usize>();
         let mut points = points.clone();
         let cur = points.remove(i);
         let &max = points.iter().max().unwrap();

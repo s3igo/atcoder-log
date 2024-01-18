@@ -3,8 +3,7 @@ use proconio::input;
 fn main() {
     input!(n: usize, k: usize, a: [usize; n]);
 
-    let ans =
-        binary_search(0, 10_usize.pow(9), |pos| a.iter().map(|&x| pos / x).sum::<usize>() >= k);
+    let ans = binary_search(0, 10_usize.pow(9), |pos| a.iter().map(|&x| pos / x).sum::<usize>() >= k);
 
     println!("{ans}");
 }
