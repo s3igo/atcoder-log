@@ -1,12 +1,15 @@
 # encoding
 newline_style = "Unix"
 
+# line width
+max_width = 120
+use_small_heuristics = "Max"
+
 # imports
 imports_granularity = "Crate"
 
 # condense
 fn_single_line = true
-use_small_heuristics = "Max"
 
 # match
 match_block_trailing_comma = true
@@ -15,7 +18,7 @@ match_block_trailing_comma = true
 use_field_init_shorthand = true
 use_try_shorthand = true
 
-# ----- nightly ----- #
+# nightly ----------------------------------------------------------------------
 # imports
 group_imports = "StdExternalCrate"
 
