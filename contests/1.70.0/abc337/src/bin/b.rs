@@ -4,7 +4,7 @@ use regex::Regex;
 fn main() {
     input!(s: String);
 
-    let pat = Regex::new(r"^A*B*C*$").unwrap();
+    let cond = Regex::new(r"^A*B*C*$").unwrap().is_match(&s);
 
-    println!("{}", if pat.is_match(&s) { "Yes" } else { "No" });
+    println!("{}", if cond { "Yes" } else { "No" });
 }
