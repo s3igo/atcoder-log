@@ -24,15 +24,20 @@
           })
         ];
         pkgs = import nixpkgs { inherit system overlays; };
-        # cargo-compete = import ./cargo-compete.nix { inherit pkgs; };
+        cargo-compete = import ./cargo-compete.nix { inherit pkgs; };
         # cargo-snippet = import ./cargo-snippet.nix { inherit nixpkgs system rust-overlay; };
-        cargoAlias = pkgs.writeShellScriptBin "c" ''
-          cargo "$@"
-        '';
         ojt = pkgs.writeShellScriptBin "ojt" ''
           # $1: bin name (e.g. abc001-a)
           declare ROOT="$(git rev-parse --show-toplevel)"
           cargo build --release --bin "$1" && oj t -c "$ROOT/target/release/$1"
+        '';
+        new = pkgs.writeShellScriptBin "task_new" ''
+          cat <<EOF
+          cargo compete new "$1" \
+              && git add "$1" \
+              && git commit -m "feat: add $1" \
+              && cd "$1"
+          EOF
         '';
       in
       {
@@ -42,9 +47,10 @@
             pkgs.rust-analyzer
             pkgs.statix
             pkgs.online-judge-tools
-            # cargo-compete
-            cargoAlias
+            cargo-compete
+            # cargoAlias
             ojt
+            new
           ];
         };
         formatter = pkgs.nixfmt-rfc-style;

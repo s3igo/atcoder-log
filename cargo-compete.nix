@@ -5,10 +5,10 @@ pkgs.rustPlatform.buildRustPackage rec {
   src = pkgs.fetchFromGitHub {
     owner = "qryxip";
     repo = pname;
-    rev = version;
-    hash = "sha256-trtnxWDXzCeZ7ICLbPgCrBFZZzOmpkGOjjrpus6t+is=";
+    rev = "f17c37417b270c8a726eab8ee5a6ea09a202348a";
+    hash = "sha256-OgT8jwpRmwBrwtzue3pDwjNkzJmzHzpNTi889ucs8wY=";
   };
-  cargoHash = "sha256-A8DAsbQDu9I8vEuDxBszADm45Q8NjnMDO8mD+ADl224=";
+  cargoHash = "sha256-V3lA9IlAWvWS+EHF10XNylALBe1Jh8FFwGPJPCemIGM=";
 
   nativeBuildInputs = [ pkgs.pkg-config ];
 
