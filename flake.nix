@@ -59,7 +59,12 @@
               ];
             in
             with pkgs;
-            [ statix ] ++ deps ++ tasks;
+            [
+              statix
+              rustup # for cargo-compete
+            ]
+            ++ deps
+            ++ tasks;
         };
 
         formatter = pkgs.nixfmt-rfc-style;
