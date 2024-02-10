@@ -1,47 +1,28 @@
-{
-  nixpkgs,
-  system,
-  rust-overlay,
-}:
-let
-  overlays = [
-    (import rust-overlay)
-    (self: super: {
-      # Cargo.toml was last updated on 2020-07-19
-      rustToolchain = super.rust-bin.nightly."2021-01-01".default;
-    })
-  ];
-  pkgs = import nixpkgs { inherit system overlays; };
-in
+{ pkgs }:
 pkgs.rustPlatform.buildRustPackage rec {
   pname = "cargo-snippet";
-  version = "0.1.2";
+  version = "0.6.5";
 
   src = pkgs.fetchFromGitHub {
     owner = "hatoo";
-    repo = "cargo-snippet";
-    rev = version;
-    hash = "sha256-lSsLQnK1XBQDx00C2LULzeD1R5MZGwEONgvLfP7igt0=";
+    repo = pname;
+    rev = "v${version}";
+    hash = "sha256-70UETnz7TOTjWoxKrYXq/9WskKJnC65hLWtzdZnc1nE=";
   };
 
-  nativeBuildInputs = [ pkgs.rustToolchain ];
+  cargoHash = "sha256-z5VOo6nCDK5IZcKY0qocjcXeX0dKeTrr+i13jCqHm8c=";
 
-  cargoBuildFlags = [
-    "--offline"
-    "-Z"
-    "unstable-options"
-  ];
-  # buildNoDefaultFeatures = false;
-  buildFeatures = [
-    "binaries"
-    # "const_fn"
-    # "thread_local_state"
-  ];
-  # HACK: see https://github.com/NixOS/nixpkgs/issues/261412
-  postConfigure = ''
-    cargo metadata --offline
-  '';
+  cargoPatches = [ ./add-lockfile.patch ];
 
-  cargoHash = "sha256-1+esdZhaBQI/EW9vzw5ZSCSdA9DASpBY0O1n9OmMb7c=";
+  doCheck = false;
+
+  buildFeatures = [ "binaries" ];
+
+  meta = with pkgs.lib; {
+    description = "A snippet extrator for competitive programmers";
+    homepage = "https://github.com/hatoo/cargo-snippet";
+    license = licenses.mit;
+    maintainers = [ ];
+    mainProgram = "cargo-snippet";
+  };
 }
-# wip

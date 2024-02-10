@@ -3,11 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
@@ -33,7 +33,7 @@
             default.rustfmt
           ];
         cargo-compete = import ./cargo-compete.nix { inherit pkgs; };
-        # cargo-snippet = import ./cargo-snippet.nix { inherit pkgs fenix; };
+        cargo-snippet = import ./cargo-snippet.nix { inherit pkgs; };
         tasks =
           let
             new = pkgs.writeScriptBin "task_new" ''
@@ -48,14 +48,13 @@
           [ new ];
       in
       {
-        # packages.default = cargo-snippet;
         devShell = pkgs.mkShell {
           buildInputs =
             let
               deps = [
                 toolchain
                 cargo-compete
-                # cargo-snippet
+                cargo-snippet
               ];
             in
             with pkgs;
