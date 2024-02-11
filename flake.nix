@@ -60,7 +60,6 @@
             with pkgs;
             [
               statix
-              rustup # for cargo-compete
             ]
             ++ deps
             ++ tasks;
