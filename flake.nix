@@ -28,15 +28,6 @@
       system:
       let
         pkgs = import nixpkgs { inherit system; };
-        toolchain =
-          with fenix.packages.${system};
-          combine [
-            (fromToolchainFile {
-              file = ./contests/1.70.0/rust-toolchain.toml;
-              sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
-            })
-            default.rustfmt # rustfmt nightly
-          ];
         neovim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
           module = {
             imports = [ dotfiles.nixosModules.neovim ];
@@ -59,8 +50,25 @@
             };
           };
         };
-        cargo-compete = import ./cargo-compete.nix { inherit pkgs; };
-        cargo-snippet = import ./cargo-snippet.nix { inherit pkgs; };
+        deps =
+          let
+            toolchain =
+              with fenix.packages.${system};
+              combine [
+                (fromToolchainFile {
+                  file = ./contests/1.70.0/rust-toolchain.toml;
+                  sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
+                })
+                default.rustfmt # rustfmt nightly
+              ];
+            cargo-compete = import ./cargo-compete.nix { inherit pkgs; };
+            cargo-snippet = import ./cargo-snippet.nix { inherit pkgs; };
+          in
+          [
+            toolchain
+            cargo-compete
+            cargo-snippet
+          ];
         tasks =
           let
             new = pkgs.writeScriptBin "task_new" ''
@@ -80,19 +88,7 @@
           default = neovim;
         };
 
-        devShell = pkgs.mkShell {
-          buildInputs =
-            let
-              deps = [
-                neovim
-                toolchain
-                cargo-compete
-                cargo-snippet
-              ];
-            in
-            with pkgs;
-            [ statix ] ++ deps ++ tasks;
-        };
+        devShell = pkgs.mkShell { buildInputs = with pkgs; [ statix ] ++ deps ++ tasks; };
 
         formatter = pkgs.nixfmt-rfc-style;
       }
