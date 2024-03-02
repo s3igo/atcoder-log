@@ -36,13 +36,6 @@
               enable = true;
               installCargo = false;
               installRustc = false;
-              cmd = [ "rust-analyzer" ];
-              filetypes = [ "rust" ];
-              rootDir = ''
-                function()
-                  return vim.fs.dirname(vim.fs.find({ 'Cargo.toml', '.git' }, { upward = true })[1])
-                end
-              '';
               settings = {
                 check.command = "clippy";
                 files.excludeDirs = [ ".direnv" ];
@@ -70,17 +63,41 @@
             cargo-snippet
           ];
         tasks =
+          with pkgs;
           let
-            new = pkgs.writeScriptBin "task_new" ''
-              cat <<EOF
-              cargo compete new "$1" \
-                && git add "$1" \
-                && git commit -m "feat: add $1" \
-                && cd "$1"
+            build = writeShellScriptBin "task_build" ''
+              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
+              docker build \
+                --build-arg ATTIC_TOKEN=$(sudo cat /run/agenix/attic-token) \
+                --tag s3igo/atcoder-rust \
+                $PROJ_ROOT/containers/rust
+            '';
+            run = writeShellScriptBin "task_run" ''
+              docker run --rm -it s3igo/atcoder-rust
+            '';
+            new = writeShellScriptBin "task_new" ''
+              [ -f $1 ] || cat > $1 <<EOF
+              use proconio::input;
+
+              fn main() {
+                  input!();
+              }
               EOF
+
+              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
+              docker run \
+                --rm \
+                -it \
+                --mount type=bind,source=$PROJ_ROOT/containers/rust/flake.lock,target=/workspace/flake.lock \
+                --mount type=bind,source=$(pwd)/$1,target=/workspace/src/main.rs \
+                s3igo/atcoder-rust
             '';
           in
-          [ new ];
+          [
+            build
+            run
+            new
+          ];
       in
       {
         packages = {
@@ -88,9 +105,7 @@
           default = neovim;
         };
 
-        devShell = pkgs.mkShell { buildInputs = with pkgs; [ statix ] ++ deps ++ tasks; };
-
-        formatter = pkgs.nixfmt-rfc-style;
+        devShells.default = pkgs.mkShell { buildInputs = deps ++ tasks; };
       }
     );
 }
