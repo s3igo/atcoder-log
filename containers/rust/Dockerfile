@@ -13,7 +13,7 @@ FROM base as attic
 RUN nix build --out-link /tmp/attic -- github:zhaofengli/attic#attic-client
 
 # copy store
-RUN mkdir /tmp/store && cp -r $(nix-store -qR /tmp/attic) /tmp/store
+RUN mkdir /tmp/store && cp -r $(nix-store --query --requisites /tmp/attic) /tmp/store
 
 # final image ------------------------------------------------------------------
 FROM base
@@ -21,12 +21,11 @@ FROM base
 # copy result from attic builder
 COPY --from=attic /tmp/store /nix/store
 COPY --from=attic /tmp/attic /attic
-ENV PATH=/attic/bin:$PATH
 
 # setup binary cache
 ARG ATTIC_TOKEN
-RUN attic login fly https://s3igo-nix-cache.fly.dev $ATTIC_TOKEN
-RUN attic use docker
+RUN /attic/bin/attic login fly https://s3igo-nix-cache.fly.dev $ATTIC_TOKEN
+RUN /attic/bin/attic use docker
 
 # setup workspace
 WORKDIR /workspace
@@ -39,7 +38,8 @@ RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa61
 
 # build devShell
 RUN nix develop --profile /tmp/devshell -c true
-RUN attic push docker /tmp/devshell
+RUN /attic/bin/attic push docker /tmp/devshell
+RUN rm -rf /attic
 
 # setup copilot.lua
 ARG COPILOT_TOKEN
@@ -49,7 +49,7 @@ RUN mkdir -p /root/.config/github-copilot \
 # setup fidget.nvim
 RUN mkdir -p /root/.cache/nvim
 
-# pre-build
+# pre-build to cache dependencies
 RUN mkdir ./src && echo "fn main() {}" > ./src/main.rs
 RUN nix develop --command fish -c "cargo build --release"
 RUN rm ./src/main.rs
