@@ -84,7 +84,11 @@
                 nix flake update
             '';
             new = writeShellScriptBin "task_new" ''
-              [ -f $1 ] || cat > $1 <<EOF
+              # $1: task url
+              # $2: filename (optional)
+              declare FILENAME=''${2:-$(basename $1).rs}
+
+              [ -f $FILENAME ] || cat > $FILENAME <<EOF
               use proconio::input;
 
               fn main() {
@@ -92,10 +96,10 @@
               }
               EOF
 
-              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
               docker run --rm -it \
-                --mount type=bind,source=$(pwd)/$1,target=/workspace/src/main.rs \
-                s3igo/atcoder-rust
+                --mount type=bind,source=$(pwd)/$FILENAME,target=/workspace/src/main.rs \
+                s3igo/atcoder-rust \
+                nix develop --command fish --init-command "oj download $1"
             '';
           in
           [
