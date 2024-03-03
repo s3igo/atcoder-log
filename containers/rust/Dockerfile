@@ -3,8 +3,8 @@ FROM nixos/nix:2.20.4 as base
 
 # see https://discourse.nixos.org/t/cross-compilation-failing-with-nix-and-docker-on-macos/22169/4
 # when using heredoc, syntax highlighting by treesitter in neovim does not work
-RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf \
-    && echo "filter-syscalls = false" >> /etc/nix/nix.conf
+RUN echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf \
+    && echo 'filter-syscalls = false' >> /etc/nix/nix.conf
 
 # attic builder ----------------------------------------------------------------
 FROM base as attic
@@ -12,7 +12,7 @@ FROM base as attic
 # build attic
 RUN nix build --out-link /tmp/attic -- github:zhaofengli/attic#attic-client
 
-# copy store
+# copy runtime dependencies
 RUN mkdir /tmp/store && cp -r $(nix-store --query --requisites /tmp/attic) /tmp/store
 
 # final image ------------------------------------------------------------------
@@ -37,9 +37,9 @@ COPY config.toml ./.cargo/
 RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa6179d074d3a565d3c3db256db54071a38f9/Cargo.lock -fO
 
 # build devShell
-RUN nix develop --profile /tmp/devshell -c true
+RUN nix develop --profile /tmp/devshell --command true
 RUN /attic/bin/attic push docker /tmp/devshell
-RUN rm -rf /attic
+RUN rm -rf /attic /tmp/devshell
 
 # setup copilot.lua
 ARG COPILOT_TOKEN
@@ -50,8 +50,8 @@ RUN mkdir -p /root/.config/github-copilot \
 RUN mkdir -p /root/.cache/nvim
 
 # pre-build to cache dependencies
-RUN mkdir ./src && echo "fn main() {}" > ./src/main.rs
-RUN nix develop --command fish -c "cargo build --release"
+RUN mkdir ./src && echo 'fn main() {}' > ./src/main.rs
+RUN nix develop --command fish --command 'cargo build --release'
 RUN rm ./src/main.rs
 
 # start with fish
