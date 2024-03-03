@@ -10,19 +10,17 @@ RUN echo "experimental-features = nix-command flakes" >> /etc/nix/nix.conf \
 FROM base as attic
 
 # build attic
-WORKDIR /tmp/attic
-RUN nix build github:zhaofengli/attic#attic-client
+RUN nix build --out-link /tmp/attic -- github:zhaofengli/attic#attic-client
 
 # copy store
-RUN mkdir /tmp/store
-RUN cp -r $(nix-store -qR result/) /tmp/store
+RUN mkdir /tmp/store && cp -r $(nix-store -qR /tmp/attic) /tmp/store
 
 # final image ------------------------------------------------------------------
 FROM base
 
 # copy result from attic builder
 COPY --from=attic /tmp/store /nix/store
-COPY --from=attic /tmp/attic/result /attic
+COPY --from=attic /tmp/attic /attic
 ENV PATH=/attic/bin:$PATH
 
 # setup binary cache
@@ -33,7 +31,7 @@ RUN attic use docker
 # setup workspace
 WORKDIR /workspace
 
-COPY flake.nix rust-toolchain.toml Cargo.toml ./
+COPY flake.nix flake.lock rust-toolchain.toml Cargo.toml ./
 COPY config.toml ./.cargo/
 
 # download `Cargo.lock`
@@ -42,6 +40,14 @@ RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa61
 # build devShell
 RUN nix develop --profile /tmp/devshell -c true
 RUN attic push docker /tmp/devshell
+
+# setup copilot.lua
+ARG COPILOT_TOKEN
+RUN mkdir -p /root/.config/github-copilot \
+    && echo $COPILOT_TOKEN > /root/.config/github-copilot/hosts.json
+
+# setup fidget.nvim
+RUN mkdir -p /root/.cache/nvim
 
 # pre-build
 RUN mkdir ./src && echo "fn main() {}" > ./src/main.rs

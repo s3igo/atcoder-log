@@ -69,11 +69,20 @@
               declare PROJ_ROOT=$(git rev-parse --show-toplevel)
               docker build \
                 --build-arg ATTIC_TOKEN=$(sudo cat /run/agenix/attic-token) \
+                --build-arg COPILOT_TOKEN=$(cat $XDG_CONFIG_HOME/github-copilot/hosts.json) \
                 --tag s3igo/atcoder-rust \
                 $PROJ_ROOT/containers/rust
             '';
             run = writeShellScriptBin "task_run" ''
+              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
               docker run --rm -it s3igo/atcoder-rust
+            '';
+            update = writeShellScriptBin "task_update" ''
+              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
+              docker run --rm -it \
+                --mount type=bind,source=$PROJ_ROOT/containers/rust/flake.lock,target=/workspace/flake.lock \
+                s3igo/atcoder-rust \
+                nix flake update
             '';
             new = writeShellScriptBin "task_new" ''
               [ -f $1 ] || cat > $1 <<EOF
@@ -85,9 +94,7 @@
               EOF
 
               declare PROJ_ROOT=$(git rev-parse --show-toplevel)
-              docker run \
-                --rm \
-                -it \
+              docker run --rm -it \
                 --mount type=bind,source=$PROJ_ROOT/containers/rust/flake.lock,target=/workspace/flake.lock \
                 --mount type=bind,source=$(pwd)/$1,target=/workspace/src/main.rs \
                 s3igo/atcoder-rust
@@ -96,6 +103,7 @@
           [
             build
             run
+            update
             new
           ];
       in
