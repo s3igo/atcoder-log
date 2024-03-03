@@ -74,8 +74,7 @@
                 $PROJ_ROOT/containers/rust
             '';
             run = writeShellScriptBin "task_run" ''
-              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
-              docker run --rm -it s3igo/atcoder-rust
+              docker run --rm -it s3igo/atcoder-rust "$@"
             '';
             update = writeShellScriptBin "task_update" ''
               declare PROJ_ROOT=$(git rev-parse --show-toplevel)
@@ -95,7 +94,6 @@
 
               declare PROJ_ROOT=$(git rev-parse --show-toplevel)
               docker run --rm -it \
-                --mount type=bind,source=$PROJ_ROOT/containers/rust/flake.lock,target=/workspace/flake.lock \
                 --mount type=bind,source=$(pwd)/$1,target=/workspace/src/main.rs \
                 s3igo/atcoder-rust
             '';
