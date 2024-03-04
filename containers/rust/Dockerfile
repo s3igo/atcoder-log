@@ -60,7 +60,7 @@ RUN nix develop --command \
 
 # pre-build to cache dependencies
 RUN mkdir ./src && echo 'fn main() {}' > ./src/main.rs
-RUN nix develop --command fish --command 'cargo build --release'
+RUN nix develop --command fish --command 'cargo build && cargo build --release'
 RUN rm ./src/main.rs
 
 # start with fish

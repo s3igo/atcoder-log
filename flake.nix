@@ -102,9 +102,12 @@
             new = writeShellApplication {
               name = "task_new";
               text = ''
-                # $1: task url
+                # $1: task url (optional)
                 # $2: filename (optional)
-                FILENAME=''${2:-$(basename "$1").rs}
+                # at least one of them is required
+                [[ $1 == https://atcoder.jp/* ]] \
+                  && FILENAME=''${2:-$(basename "$1").rs} \
+                  || FILENAME="$1"
 
                 [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
                 use proconio::input;
@@ -114,10 +117,19 @@
                 }
                 EOF
 
-                docker run --rm -it \
-                  --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
-                  s3igo/atcoder-rust \
-                  nix develop --command fish --init-command "oj download $1"
+                # redundant command due to the complexity of [COMMAND] and [ARG...]
+                # received by `docker run`
+                if [[ $1 == https://atcoder.jp/* ]]; then
+                  docker run --rm -it \
+                    --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
+                    s3igo/atcoder-rust \
+                    nix develop --command fish --init-command "oj download $1 && nvim src/main.rs"
+                else
+                  docker run --rm -it \
+                    --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
+                    s3igo/atcoder-rust \
+                    nix develop --command fish --init-command 'nvim src/main.rs'
+                fi
               '';
             };
           in
