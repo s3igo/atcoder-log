@@ -58,16 +58,38 @@
             toolchain
           ];
         tasks =
+          with pkgs;
           let
-            submit = pkgs.writeShellApplication {
-              name = "s";
-              runtimeInputs = [ pkgs.online-judge-tools ];
+            test = writeShellApplication {
+              name = "t";
+              runtimeInputs = [ online-judge-tools ];
               text = ''
-                oj test && oj submit
+                oj test --command 'cargo run --release'
+              '';
+            };
+            submit = writeShellApplication {
+              name = "s";
+              runtimeInputs = [ online-judge-tools ];
+              text = ''
+                oj submit main.rs
+              '';
+            };
+            testAndSubmit = writeShellApplication {
+              name = "ts";
+              runtimeInputs = [
+                test
+                submit
+              ];
+              text = ''
+                t && s
               '';
             };
           in
-          [ submit ];
+          [
+            test
+            submit
+            testAndSubmit
+          ];
       in
       {
         devShells.default = pkgs.mkShell {

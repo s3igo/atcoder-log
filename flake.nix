@@ -27,7 +27,10 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
         neovim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
           module = {
             imports = [ dotfiles.nixosModules.neovim ];
@@ -65,42 +68,58 @@
         tasks =
           with pkgs;
           let
-            build = writeShellScriptBin "task_build" ''
-              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
-              docker build \
-                --build-arg ATTIC_TOKEN=$(sudo cat /run/agenix/attic-token) \
-                --build-arg COPILOT_TOKEN=$(cat $XDG_CONFIG_HOME/github-copilot/hosts.json) \
-                --tag s3igo/atcoder-rust \
-                $PROJ_ROOT/containers/rust
-            '';
-            run = writeShellScriptBin "task_run" ''
-              docker run --rm -it s3igo/atcoder-rust "$@"
-            '';
-            update = writeShellScriptBin "task_update" ''
-              declare PROJ_ROOT=$(git rev-parse --show-toplevel)
-              docker run --rm -it \
-                --mount type=bind,source=$PROJ_ROOT/containers/rust/flake.lock,target=/workspace/flake.lock \
-                s3igo/atcoder-rust \
-                nix flake update
-            '';
-            new = writeShellScriptBin "task_new" ''
-              # $1: task url
-              # $2: filename (optional)
-              declare FILENAME=''${2:-$(basename $1).rs}
+            build = writeShellApplication {
+              name = "task_build";
+              runtimeInputs = [ _1password ];
+              text = ''
+                PROJ_ROOT=$(git rev-parse --show-toplevel)
 
-              [ -f $FILENAME ] || cat > $FILENAME <<EOF
-              use proconio::input;
+                docker build \
+                  --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
+                  --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
+                  --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
+                  --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
+                  --tag s3igo/atcoder-rust \
+                  "$PROJ_ROOT/containers/rust"
+              '';
+            };
+            run = writeShellApplication {
+              name = "task_run";
+              text = ''
+                docker run --rm -it s3igo/atcoder-rust "$@"
+              '';
+            };
+            update = writeShellApplication {
+              name = "task_update";
+              text = ''
+                PROJ_ROOT=$(git rev-parse --show-toplevel)
+                docker run --rm -it \
+                  --mount type=bind,source="$PROJ_ROOT/containers/rust/flake.lock",target=/workspace/flake.lock \
+                  s3igo/atcoder-rust \
+                  nix flake update
+              '';
+            };
+            new = writeShellApplication {
+              name = "task_new";
+              text = ''
+                # $1: task url
+                # $2: filename (optional)
+                FILENAME=''${2:-$(basename "$1").rs}
 
-              fn main() {
-                  input!();
-              }
-              EOF
+                [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
+                use proconio::input;
 
-              docker run --rm -it \
-                --mount type=bind,source=$(pwd)/$FILENAME,target=/workspace/src/main.rs \
-                s3igo/atcoder-rust \
-                nix develop --command fish --init-command "oj download $1"
-            '';
+                fn main() {
+                    input!();
+                }
+                EOF
+
+                docker run --rm -it \
+                  --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
+                  s3igo/atcoder-rust \
+                  nix develop --command fish --init-command "oj download $1"
+              '';
+            };
           in
           [
             build

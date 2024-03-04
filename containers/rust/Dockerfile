@@ -49,6 +49,15 @@ RUN mkdir -p /root/.config/github-copilot \
 # setup fidget.nvim
 RUN mkdir -p /root/.cache/nvim
 
+# setup online-judge-tools
+ARG ATCODER_USERNAME
+ARG ATCODER_PASSWORD
+RUN nix develop --command \
+    oj login \
+    --username $ATCODER_USERNAME \
+    --password $ATCODER_PASSWORD \
+    -- https://atcoder.jp
+
 # pre-build to cache dependencies
 RUN mkdir ./src && echo 'fn main() {}' > ./src/main.rs
 RUN nix develop --command fish --command 'cargo build --release'
