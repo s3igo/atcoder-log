@@ -39,8 +39,8 @@ let
         nix flake update
     '';
   };
-  new = writeShellApplication {
-    name = "task_new";
+  open = writeShellApplication {
+    name = "task_open";
     text = ''
       # $1: task url (optional)
       # $2: filename (optional)
@@ -63,12 +63,12 @@ let
         docker run --rm -it \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
           s3igo/atcoder-rust \
-          nix develop --command fish --init-command "oj download $1 && nvim src/main.rs"
+          nix develop --command fish --init-command "oj download $1 && nvim ./src/main.rs"
       else
         docker run --rm -it \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
           s3igo/atcoder-rust \
-          nix develop --command fish --init-command 'nvim src/main.rs'
+          nix develop --command fish --init-command 'nvim ./src/main.rs'
       fi
     '';
   };
@@ -77,5 +77,5 @@ in
   build
   run
   update
-  new
+  open
 ]

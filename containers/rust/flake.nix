@@ -25,9 +25,8 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs { inherit system; };
-        deps =
-          let
+        overlays = [
+          (final: prev: {
             neovim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
               module = {
                 imports = [ dotfiles.nixosModules.base ];
@@ -43,19 +42,17 @@
                 };
               };
             };
-            toolchain =
-              with fenix.packages.${system};
-              combine [
-                (fromToolchainFile {
-                  file = ./rust-toolchain.toml;
-                  sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
-                })
-                default.rustfmt # rustfmt nightly
-              ];
-          in
-          [
-            neovim
-            toolchain
+          })
+        ];
+        pkgs = import nixpkgs { inherit system overlays; };
+        toolchain =
+          with fenix.packages.${system};
+          combine [
+            (fromToolchainFile {
+              file = ./rust-toolchain.toml;
+              sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
+            })
+            default.rustfmt # rustfmt nightly
           ];
         tasks =
           with pkgs;
@@ -71,7 +68,7 @@
               name = "s";
               runtimeInputs = [ online-judge-tools ];
               text = ''
-                oj submit main.rs
+                oj submit ./src/main.rs
               '';
             };
             testAndSubmit = writeShellApplication {
@@ -84,11 +81,19 @@
                 t && s
               '';
             };
+            nvim = writeShellApplication {
+              name = "v";
+              runtimeInputs = [ neovim ];
+              text = ''
+                nvim ./src/main.rs
+              '';
+            };
           in
           [
             test
             submit
             testAndSubmit
+            nvim
           ];
       in
       {
@@ -98,8 +103,9 @@
             [
               online-judge-tools
               fish
+              neovim
             ]
-            ++ deps
+            ++ [ toolchain ]
             ++ tasks;
         };
       }
