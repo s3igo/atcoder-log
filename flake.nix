@@ -42,7 +42,6 @@
               };
             };
           };
-          compete = import ./cargo-compete.nix { inherit pkgs; };
         };
 
         devShells.default = pkgs.mkShell { buildInputs = tasks; };

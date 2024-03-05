@@ -58,6 +58,9 @@ RUN nix develop --command \
     --password $ATCODER_PASSWORD \
     -- https://atcoder.jp
 
+# setup environment
+ENV RUST_BACKTRACE=1
+
 # pre-build to cache dependencies
 RUN mkdir ./src && echo 'fn main() {}' > ./src/main.rs
 RUN nix develop --command fish --command 'cargo build && cargo build --release'
