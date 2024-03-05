@@ -22,8 +22,9 @@
         packages = {
           neovim = dotfiles.neovim.${system} {
             inherit pkgs;
-            modules = [
-              dotfiles.nixosModules.nix
+            modules = with dotfiles.nixosModules; [
+              nix
+              im-select
               (_: {
                 plugins = {
                   treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [

@@ -6,41 +6,44 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     dotfiles.url = "github:s3igo/dotfiles";
   };
 
   outputs =
     {
-      self,
       nixpkgs,
       flake-utils,
       fenix,
-      nixvim,
       dotfiles,
+      ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         overlays = [
           (final: prev: {
-            neovim = nixvim.legacyPackages.${system}.makeNixvimWithModule {
-              module = {
-                imports = [ dotfiles.nixosModules.base ];
-
-                plugins.lsp.servers.rust-analyzer = {
-                  enable = true;
-                  installCargo = false;
-                  installRustc = false;
-                  settings = {
-                    check.command = "clippy";
-                    files.excludeDirs = [ ".direnv" ];
+            neovim = dotfiles.neovim.${system} {
+              inherit pkgs;
+              modules = [
+                (_: {
+                  plugins = {
+                    treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+                      rust
+                      toml
+                      regex
+                    ];
+                    lsp.servers.rust-analyzer = {
+                      enable = true;
+                      installCargo = false;
+                      installRustc = false;
+                      settings = {
+                        check.command = "clippy";
+                        files.excludeDirs = [ ".direnv" ];
+                      };
+                    };
                   };
-                };
-              };
+                })
+              ];
             };
           })
         ];
