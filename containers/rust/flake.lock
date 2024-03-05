@@ -105,11 +105,11 @@
         "secrets": "secrets"
       },
       "locked": {
-        "lastModified": 1709631608,
-        "narHash": "sha256-aVKLl410u2J1M7BA9d0DGG6kZoG8h/cvpUu/gTHbAq4=",
+        "lastModified": 1709645907,
+        "narHash": "sha256-9Hd5uTgUmwNN0Mtbtq4dI6NMUnvazlkYCahtxs7hBGE=",
         "owner": "s3igo",
         "repo": "dotfiles",
-        "rev": "8b6e8fc77f2d37fb67fa83b1dcb1998260c19365",
+        "rev": "73ffb94ab4445a4126a1ba07ee36a71cabfd8cd3",
         "type": "github"
       },
       "original": {

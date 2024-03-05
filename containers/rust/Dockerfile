@@ -36,10 +36,10 @@ COPY config.toml ./.cargo/
 # download `Cargo.lock`
 RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa6179d074d3a565d3c3db256db54071a38f9/Cargo.lock -fO
 
-# build devShell
-RUN nix develop --profile /tmp/devshell --command true
-RUN /attic/bin/attic push docker /tmp/devshell
-RUN rm -rf /attic /tmp/devshell
+# build `devShells.default`
+RUN nix develop --profile /tmp/dev-shell --command true
+RUN /attic/bin/attic push docker /tmp/dev-shell
+RUN rm -rf /attic /tmp/dev-shell
 
 # setup copilot.lua
 ARG COPILOT_TOKEN
