@@ -97,6 +97,10 @@
           ];
       in
       {
+        packages = {
+          inherit toolchain;
+        };
+
         devShells.default = pkgs.mkShell {
           buildInputs =
             with pkgs;

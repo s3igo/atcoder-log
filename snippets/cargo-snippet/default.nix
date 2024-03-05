@@ -1,4 +1,5 @@
 { pkgs }:
+
 pkgs.rustPlatform.buildRustPackage rec {
   pname = "cargo-snippet";
   version = "0.6.5";
