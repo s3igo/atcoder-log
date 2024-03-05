@@ -25,7 +25,7 @@
             modules = with dotfiles.nixosModules; [
               nix
               im-select
-              (_: {
+              {
                 plugins = {
                   treesitter.grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
                     rust
@@ -42,7 +42,7 @@
                     };
                   };
                 };
-              })
+              }
             ];
           };
         };

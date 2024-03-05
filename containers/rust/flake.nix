@@ -62,7 +62,10 @@
           let
             test = writeShellApplication {
               name = "t";
-              runtimeInputs = [ online-judge-tools ];
+              runtimeInputs = [
+                time
+                online-judge-tools
+              ];
               text = ''
                 oj test --command 'cargo run --release'
               '';
@@ -71,7 +74,7 @@
               name = "s";
               runtimeInputs = [ online-judge-tools ];
               text = ''
-                oj submit ./src/main.rs
+                oj submit --no-open --yes -- "$URL" ./src/main.rs
               '';
             };
             testAndSubmit = writeShellApplication {

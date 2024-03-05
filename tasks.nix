@@ -63,6 +63,7 @@ let
       if [[ $1 == https://atcoder.jp/* ]]; then
         docker run --rm -it \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
+          --env URL="$1" \
           s3igo/atcoder-rust \
           nix develop --command fish --init-command "oj download $1 && nvim ./src/main.rs"
       else
