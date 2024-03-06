@@ -6,8 +6,8 @@ let
     config.allowUnfree = true;
   };
 in
-with pkgs;
 
+with pkgs;
 let
   build = writeShellApplication {
     name = "task_build";

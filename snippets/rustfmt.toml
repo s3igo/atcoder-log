@@ -8,9 +8,6 @@ use_small_heuristics = "Max"
 # imports
 imports_granularity = "Crate"
 
-# condense
-fn_single_line = true
-
 # match
 match_block_trailing_comma = true
 
@@ -19,12 +16,15 @@ use_field_init_shorthand = true
 use_try_shorthand = true
 
 # nightly ----------------------------------------------------------------------
+unstable_features = true
+
 # imports
 group_imports = "StdExternalCrate"
 
 # condense
 condense_wildcard_suffixes = true
 overflow_delimited_expr = true
+fn_single_line = true
 
 # sorting
 reorder_impl_items = true
