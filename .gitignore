@@ -1,2 +1,6 @@
-/target/
+# nix
 .direnv/
+result
+
+# rust
+/target/

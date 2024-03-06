@@ -17,18 +17,23 @@
       let
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
+        neovim =
+          modules:
+          dotfiles.neovim.${system} {
+            inherit pkgs;
+            modules =
+              with dotfiles.nixosModules;
+              [
+                im-select
+                nix
+              ]
+              ++ modules;
+          };
       in
       {
-        packages = {
-          neovim = dotfiles.neovim.${system} {
-            inherit pkgs;
-            modules = with dotfiles.nixosModules; [
-              im-select
-              nix
-              rust
-            ];
-          };
-        };
+        inherit neovim;
+
+        packages.neovim = neovim [ ];
 
         devShells.default = pkgs.mkShell { buildInputs = tasks; };
       }
