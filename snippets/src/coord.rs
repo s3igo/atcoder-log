@@ -4,10 +4,14 @@ use cargo_snippet::snippet;
 use itertools::Itertools;
 
 #[snippet(name = ";coord_manhattan-distance")]
-fn manhattan_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize { ax.abs_diff(bx) + ay.abs_diff(by) }
+fn manhattan_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {
+    ax.abs_diff(bx) + ay.abs_diff(by)
+}
 
 #[snippet(name = ";coord_chebyshev-distance")]
-fn chebyshev_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize { ax.abs_diff(bx).max(ay.abs_diff(by)) }
+fn chebyshev_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {
+    ax.abs_diff(bx).max(ay.abs_diff(by))
+}
 
 #[snippet(name = ";coord_compress", prefix = "use std::collections::HashMap;\nuse itertools::Itertools;")]
 fn compress(v: &[usize]) -> Vec<usize> {
