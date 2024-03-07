@@ -17,9 +17,6 @@
       let
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
-        neovim = self.neovim.${system} [ ];
-      in
-      {
         neovim =
           modules:
           dotfiles.neovim.${system} {
@@ -32,12 +29,13 @@
               ]
               ++ modules;
           };
+      in
+      {
+        inherit neovim;
 
-        packages = {
-          inherit neovim;
-        };
+        packages.neovim = neovim [ ];
 
-        devShells.default = pkgs.mkShell { buildInputs = tasks ++ [ neovim ]; };
+        devShells.default = pkgs.mkShell { buildInputs = [ self.packages.${system}.neovim ] ++ tasks; };
       }
     );
 }
