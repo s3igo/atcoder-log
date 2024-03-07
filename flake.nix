@@ -7,16 +7,19 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
       dotfiles,
-      ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
+        neovim = self.neovim.${system} [ ];
+      in
+      {
         neovim =
           modules:
           dotfiles.neovim.${system} {
@@ -29,13 +32,12 @@
               ]
               ++ modules;
           };
-      in
-      {
-        inherit neovim;
 
-        packages.neovim = neovim [ ];
+        packages = {
+          inherit neovim;
+        };
 
-        devShells.default = pkgs.mkShell { buildInputs = tasks; };
+        devShells.default = pkgs.mkShell { buildInputs = tasks ++ [ neovim ]; };
       }
     );
 }

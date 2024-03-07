@@ -46,10 +46,7 @@ let
       # $2: filename (optional)
       # at least one of them is required
 
-      [[ $1 == https://atcoder.jp/* ]]
-      URL_IS_SPECIFIED=$?
-
-      [ $URL_IS_SPECIFIED = 0 ] \
+      [[ $1 == https://atcoder.jp/* ]] \
         && FILENAME=''${2:-$(basename "$1").rs} \
         || FILENAME="$1"
 
@@ -63,8 +60,7 @@ let
 
       # NOTE: redundant command due to the complexity of [COMMAND] and [ARG...]
       # received by `docker run`
-      PROJ_ROOT=$(git rev-parse --show-toplevel)
-      if [ $URL_IS_SPECIFIED = 0 ]; then
+      if [[ $1 == https://atcoder.jp/* ]]; then
         docker run --rm -it \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
           --env URL="$1" \
