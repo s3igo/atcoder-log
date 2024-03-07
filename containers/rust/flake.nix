@@ -38,11 +38,20 @@
             })
             default.rustfmt # rustfmt nightly
           ];
+        rustfmt-config = pkgs.stdenv.mkDerivation {
+          name = "rustfmt-config";
+          src = ./rustfmt.toml;
+          phases = [ "installPhase" ];
+          installPhase = ''
+            mkdir -p $out
+            cp $src $out/rustfmt.toml
+          '';
+        };
         tasks = import ./tasks.nix { inherit pkgs; };
       in
       {
         packages = {
-          inherit toolchain;
+          inherit toolchain rustfmt-config;
         };
 
         devShells.default = pkgs.mkShell {

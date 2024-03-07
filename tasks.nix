@@ -26,10 +26,7 @@ let
   run = writeShellApplication {
     name = "task_run";
     text = ''
-      PROJ_ROOT=$(git rev-parse --show-toplevel)
-      docker run --rm -it \
-        --mount type=bind,source="$PROJ_ROOT/snippets/rustfmt.toml",target=/workspace/rustfmt.toml \
-        s3igo/atcoder-rust "$@"
+      docker run --rm -it s3igo/atcoder-rust "$@"
     '';
   };
   update = writeShellApplication {
@@ -69,14 +66,12 @@ let
       PROJ_ROOT=$(git rev-parse --show-toplevel)
       if [ $URL_IS_SPECIFIED = 0 ]; then
         docker run --rm -it \
-          --mount type=bind,source="$PROJ_ROOT/snippets/rustfmt.toml",target=/workspace/rustfmt.toml \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
           --env URL="$1" \
           s3igo/atcoder-rust \
           nix develop --command fish --init-command "oj download $1 && nvim ./src/main.rs"
       else
         docker run --rm -it \
-          --mount type=bind,source="$PROJ_ROOT/snippets/rustfmt.toml",target=/workspace/rustfmt.toml \
           --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
           s3igo/atcoder-rust \
           nix develop --command fish --init-command 'nvim ./src/main.rs'

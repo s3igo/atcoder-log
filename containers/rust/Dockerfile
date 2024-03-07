@@ -30,7 +30,7 @@ RUN /attic/bin/attic use docker
 # setup workspace
 WORKDIR /workspace
 
-COPY tasks.nix flake.nix flake.lock rust-toolchain.toml Cargo.toml ./
+COPY tasks.nix flake.nix flake.lock rust-toolchain.toml rustfmt.toml Cargo.toml ./
 COPY config.toml ./.cargo/
 
 # download `Cargo.lock`

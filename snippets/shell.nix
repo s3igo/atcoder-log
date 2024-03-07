@@ -11,9 +11,17 @@ let
   container = get-flake ../containers/rust;
   pkgs = import parent.inputs.nixpkgs { inherit system; };
 
-  inherit (container.packages.${system}) toolchain;
+  inherit (container.packages.${system}) toolchain rustfmt-config;
   cargo-snippet = import ./cargo-snippet { inherit pkgs; };
-  neovim = parent.neovim.${system} [ parent.inputs.dotfiles.nixosModules.rust ];
+  neovim = parent.neovim.${system} [
+    parent.inputs.dotfiles.nixosModules.rust
+    {
+      plugins.lsp.servers.rust-analyzer.settings.rustfmt.extraArgs = [
+        "--config-path"
+        "${rustfmt-config}/rustfmt.toml"
+      ];
+    }
+  ];
 in
 
 pkgs.mkShell {
