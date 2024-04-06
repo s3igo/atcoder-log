@@ -14,7 +14,7 @@ let
   inherit (container.packages.${system}) toolchain rustfmt-config;
   cargo-snippet = import ./cargo-snippet { inherit pkgs; };
   neovim = super.neovim.${system} [
-    super.inputs.dotfiles.nixosModules.rust
+    super.inputs.neovim.nixosModules.rust
     {
       plugins.lsp.servers.rust-analyzer.settings.rustfmt.extraArgs = [
         "--config-path"

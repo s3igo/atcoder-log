@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    dotfiles.url = "github:s3igo/dotfiles";
+    neovim.url = "github:s3igo/dotfiles?dir=neovim";
   };
 
   outputs =
@@ -10,30 +10,29 @@
       self,
       nixpkgs,
       flake-utils,
-      dotfiles,
+      neovim,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
+      in
+      {
         neovim =
           modules:
-          dotfiles.neovim.${system} {
-            inherit pkgs;
+          neovim.withModules {
+            inherit system pkgs;
             modules =
-              with dotfiles.nixosModules;
+              with neovim.nixosModules;
               [
                 im-select
                 nix
               ]
               ++ modules;
           };
-      in
-      {
-        inherit neovim;
 
-        packages.neovim = neovim [ ];
+        packages.neovim = self.neovim.${system} [ ];
 
         devShells.default = pkgs.mkShell { buildInputs = [ self.packages.${system}.neovim ] ++ tasks; };
       }
