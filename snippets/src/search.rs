@@ -3,13 +3,15 @@ use cargo_snippet::snippet;
 mod usize {
     use super::*;
 
-    #[snippet(name = ";search_binary_usize")]
-    fn binary_search<F>(mut ng: usize, mut ok: usize, f: F) -> usize
+    #[snippet(name = ";search_binary_int")]
+    fn binary_search_int<T, F>(mut ng: T, mut ok: T, f: F) -> T
     where
-        F: Fn(usize) -> bool,
+        T: num::Integer + num::FromPrimitive + Copy,
+        F: Fn(T) -> bool,
     {
-        while ok.abs_diff(ng) > 1 {
-            let mid = (ok + ng) / 2;
+        let diff = if ok > ng { ok - ng } else { ng - ok };
+        while diff > T::one() {
+            let mid = (ng + ok).div(T::from_u8(2).unwrap());
             if f(mid) {
                 ok = mid;
             } else {
@@ -21,17 +23,17 @@ mod usize {
 
     #[test]
     fn test_binary_search() {
-        assert_eq!(binary_search(0, 10, |x| x >= 5), 5);
-        assert_eq!(binary_search(0, 10, |x| x >= 10), 10);
-        assert_eq!(binary_search(0, 10, |x| x >= 11), 10);
-        assert_eq!(binary_search(0, 10, |x| x >= 9), 9);
-        assert_eq!(binary_search(0, 10, |x| x >= 1), 1);
-        assert_eq!(binary_search(0, 10, |x| x >= 4), 4);
-        assert_eq!(binary_search(0, 10, |x| x >= 6), 6);
-        assert_eq!(binary_search(0, 10, |x| x >= 7), 7);
-        assert_eq!(binary_search(0, 10, |x| x >= 8), 8);
-        assert_eq!(binary_search(0, 10, |x| x >= 2), 2);
-        assert_eq!(binary_search(0, 10, |x| x >= 3), 3);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 5), 5);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 10), 10);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 11), 10);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 9), 9);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 1), 1);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 4), 4);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 6), 6);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 7), 7);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 8), 8);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 2), 2);
+        assert_eq!(binary_search_int(0, 10, |x| x >= 3), 3);
     }
 }
 
