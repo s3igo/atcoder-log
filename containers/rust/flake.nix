@@ -6,25 +6,25 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    dotfiles.url = "github:s3igo/dotfiles";
+    neovim.url = "github:s3igo/dotfiles?dir=neovim";
   };
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
       fenix,
-      dotfiles,
-      ...
+      neovim,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         overlays = [
           (final: prev: {
-            neovim = dotfiles.neovim.${system} {
-              inherit pkgs;
-              modules = with dotfiles.nixosModules; [ rust ];
+            neovim = neovim.withModules {
+              inherit system pkgs;
+              modules = with neovim.nixosModules; [ rust ];
             };
           })
         ];
@@ -52,6 +52,7 @@
       {
         packages = {
           inherit toolchain rustfmt-config;
+          inherit (pkgs) neovim;
         };
 
         devShells.default = pkgs.mkShell {
@@ -60,9 +61,11 @@
             [
               online-judge-tools
               fish
-              neovim
             ]
-            ++ [ toolchain ]
+            ++ [
+              toolchain
+              self.packages.${system}.neovim
+            ]
             ++ tasks;
         };
       }

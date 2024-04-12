@@ -1,5 +1,5 @@
 # common config ----------------------------------------------------------------
-FROM nixos/nix:2.20.4 as base
+FROM nixos/nix:2.21.2 as base
 
 # see https://discourse.nixos.org/t/cross-compilation-failing-with-nix-and-docker-on-macos/22169/4
 # when using heredoc, syntax highlighting by treesitter in neovim does not work
