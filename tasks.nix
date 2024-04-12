@@ -20,6 +20,7 @@ let
         --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
         --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
         --tag s3igo/atcoder-rust \
+        "$@" \
         "$PROJ_ROOT/containers/rust"
     '';
   };
