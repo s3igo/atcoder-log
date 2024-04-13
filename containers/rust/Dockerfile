@@ -1,31 +1,14 @@
-# common config ----------------------------------------------------------------
-FROM nixos/nix:2.21.2 as base
+FROM nixos/nix:2.21.2
 
 # see https://discourse.nixos.org/t/cross-compilation-failing-with-nix-and-docker-on-macos/22169/4
 # when using heredoc, syntax highlighting by treesitter in neovim does not work
 RUN echo 'experimental-features = nix-command flakes' >> /etc/nix/nix.conf \
     && echo 'filter-syscalls = false' >> /etc/nix/nix.conf
 
-# attic builder ----------------------------------------------------------------
-FROM base as attic
-
-# build attic
-RUN nix build --out-link /tmp/attic -- github:zhaofengli/attic#attic-client
-
-# copy runtime dependencies
-RUN mkdir /tmp/store && cp -r $(nix-store --query --requisites /tmp/attic) /tmp/store
-
-# final image ------------------------------------------------------------------
-FROM base
-
-# copy result from attic builder
-COPY --from=attic /tmp/store /nix/store
-COPY --from=attic /tmp/attic /attic
-
 # setup binary cache
 ARG ATTIC_TOKEN
-RUN /attic/bin/attic login fly https://s3igo-nix-cache.fly.dev $ATTIC_TOKEN
-RUN /attic/bin/attic use docker
+RUN nix run nixpkgs#attic-client -- login fly https://s3igo-nix-cache.fly.dev $ATTIC_TOKEN
+RUN nix run nixpkgs#attic-client -- use docker
 
 # setup workspace
 WORKDIR /workspace
@@ -38,8 +21,8 @@ RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa61
 
 # build `devShells.default`
 RUN nix develop --profile /tmp/dev-shell --command true
-RUN /attic/bin/attic push docker /tmp/dev-shell
-RUN rm -rf /attic /tmp/dev-shell
+RUN nix run nixpkgs#attic-client -- push docker /tmp/dev-shell
+RUN rm -rf /tmp/dev-shell
 
 # setup copilot.lua
 ARG COPILOT_TOKEN
