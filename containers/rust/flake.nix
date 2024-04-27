@@ -57,15 +57,14 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs =
-            with pkgs;
             [
-              online-judge-tools
-              fish
-            ]
-            ++ [
               toolchain
               self.packages.${system}.neovim
             ]
+            ++ (with pkgs; [
+              online-judge-tools
+              fish
+            ])
             ++ tasks;
         };
       }
