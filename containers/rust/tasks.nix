@@ -9,7 +9,7 @@ let
       online-judge-tools
     ];
     text = ''
-      oj test --command 'cargo run --release'
+      cargo build --release && oj test --command './target/release/main'
     '';
   };
   submit = writeShellApplication {

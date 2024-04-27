@@ -132,7 +132,7 @@ let () =
 EOF
 
         docker run --rm -it \
-          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.ml \
+          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/main.ml \
           --env URL="$URL" \
           atcoder/ocaml \
           nix develop --command fish --init-command "oj download $URL; nvim ./main.ml"

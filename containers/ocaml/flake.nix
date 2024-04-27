@@ -28,9 +28,17 @@
           modules = with neovim.nixosModules; [
             nix
             {
+              autoCmd = [
+                {
+                  event = "FileType";
+                  pattern = "ocaml";
+                  command = "setlocal shiftwidth=2";
+                }
+              ];
               plugins.lsp.servers.ocamllsp = {
                 enable = true;
                 package = ocamlPackages.ocaml-lsp;
+                rootDir = "function() return '/workspace' end";
                 cmd = [
                   "ocamllsp"
                   "--fallback-read-dot-merlin"
