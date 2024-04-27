@@ -14,65 +14,144 @@ let
     runtimeInputs = [ _1password ];
     text = ''
       PROJ_ROOT=$(git rev-parse --show-toplevel)
-      docker build \
-        --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
-        --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
-        --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
-        --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
-        --tag s3igo/atcoder-rust \
-        "$@" \
-        "$PROJ_ROOT/containers/rust"
+
+      case $1 in
+        rust)
+          shift
+          docker build \
+            --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
+            --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
+            --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
+            --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
+            --tag atcoder/rust \
+            "$@" \
+            "$PROJ_ROOT/containers/rust"
+          ;;
+        ocaml)
+          shift
+          docker build \
+            --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
+            --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
+            --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
+            --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
+            --tag atcoder/ocaml \
+            "$@" \
+            "$PROJ_ROOT/containers/ocaml"
+          ;;
+        *)
+          echo "Unsupported language: $1"
+          ;;
+      esac
     '';
   };
   run = writeShellApplication {
     name = "task_run";
     text = ''
-      docker run --rm -it s3igo/atcoder-rust "$@"
+      case $1 in
+        rust)
+          shift
+          docker run --rm -it -p 2222:2222 atcoder/rust "$@"
+          ;;
+        ocaml)
+          shift
+          docker run --rm -it -p 2222:2222 atcoder/ocaml "$@"
+          ;;
+        *)
+          echo "Unsupported language: $1"
+          ;;
+      esac
     '';
   };
   update = writeShellApplication {
     name = "task_update";
     text = ''
       PROJ_ROOT=$(git rev-parse --show-toplevel)
-      docker run --rm -it \
-        --mount type=bind,source="$PROJ_ROOT/flake.lock",target=/workspace/flake.lock \
-        s3igo/atcoder-rust \
-        nix flake update
+
+      case $1 in
+        rust)
+          docker run --rm -it \
+            --mount type=bind,source="$PROJ_ROOT/flake.lock",target=/workspace/flake.lock \
+            atcoder/rust \
+            nix flake update
+          ;;
+        ocaml)
+          docker run --rm -it \
+            --mount type=bind,source="$PROJ_ROOT/flake.lock",target=/workspace/flake.lock \
+            atcoder/ocaml \
+            nix flake update
+          ;;
+        *)
+          echo "Unsupported language: $1"
+          ;;
+      esac
     '';
   };
   open = writeShellApplication {
     name = "task_open";
     text = ''
-      # $1: task url (optional)
-      # $2: filename (optional)
-      # at least one of them is required
+      # $1: language
+      # $2: task url (optional)
+      # $3: filename (optional)
+      # $2, $3 are optional but one of them is required
 
-      [[ $1 == https://atcoder.jp/* ]] \
-        && FILENAME=''${2:-$(basename "$1").rs} \
-        || FILENAME="$1"
+      function rust() {
+        if [[ $1 == https://atcoder.jp/* ]]; then
+          FILENAME=''${2:-$(basename "$1").rs}
+          URL="$1"
+        else
+          FILENAME="$1"
+          URL="https://atcoder.jp/contests/$(basename "$PWD")/tasks/''${1%.*}"
+        fi
 
-      [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
-      use proconio::input;
+        [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
+use proconio::input;
 
-      fn main() {
-          input!();
+fn main() {
+    input!();
+}
+EOF
+
+        docker run --rm -it \
+          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
+          --env URL="$URL" \
+          atcoder/rust \
+          nix develop --command fish --init-command "oj download $URL; nvim ./src/main.rs"
       }
-      EOF
 
-      # NOTE: redundant command due to the complexity of [COMMAND] and [ARG...]
-      # received by `docker run`
-      if [[ $1 == https://atcoder.jp/* ]]; then
+      function ocaml() {
+        if [[ $1 == https://atcoder.jp/* ]]; then
+          FILENAME=''${3:-$(basename "$1").ml}
+          URL="$1"
+        else
+          FILENAME="$1"
+          URL="https://atcoder.jp/contests/$(basename "$PWD")/tasks/''${1%.*}"
+        fi
+
+        [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
+let () =
+EOF
+
         docker run --rm -it \
-          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
-          --env URL="$1" \
-          s3igo/atcoder-rust \
-          nix develop --command fish --init-command "oj download $1 && nvim ./src/main.rs"
-      else
-        docker run --rm -it \
-          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.rs \
-          s3igo/atcoder-rust \
-          nix develop --command fish --init-command 'nvim ./src/main.rs'
-      fi
+          --mount type=bind,source="$(pwd)/$FILENAME",target=/workspace/src/main.ml \
+          --env URL="$URL" \
+          atcoder/ocaml \
+          nix develop --command fish --init-command "oj download $URL; nvim ./main.ml"
+      }
+
+      case $1 in
+        rust)
+          shift
+          rust "$@"
+          ;;
+        ocaml)
+          shift
+          ocaml "$@"
+          ;;
+        *)
+          echo "Unsupported language: $1"
+          ;;
+      esac
+
     '';
   };
 in

@@ -12,11 +12,7 @@ RUN nix run nixpkgs#attic-client -- use docker
 
 # setup workspace
 WORKDIR /workspace
-COPY tasks.nix flake.nix flake.lock rust-toolchain.toml rustfmt.toml Cargo.toml ./
-COPY config.toml ./.cargo/
-
-# download `Cargo.lock`
-RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa6179d074d3a565d3c3db256db54071a38f9/Cargo.lock -fO
+COPY tasks.nix flake.nix flake.lock .merlin .ocamlformat ./
 
 # build `devShells.default`
 RUN nix develop --profile /tmp/dev-shell --command true
@@ -39,11 +35,3 @@ RUN nix develop --command \
     --username $ATCODER_USERNAME \
     --password $ATCODER_PASSWORD \
     -- https://atcoder.jp
-
-# setup environment
-ENV RUST_BACKTRACE=1
-
-# pre-build to cache dependencies
-RUN mkdir ./src && echo 'fn main() {}' > ./src/main.rs
-RUN nix develop --command fish --command 'cargo build && cargo build --release'
-RUN rm ./src/main.rs
