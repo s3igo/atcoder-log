@@ -129,10 +129,8 @@ EOF
 
         [ -f "$FILENAME" ] || cat > "$FILENAME" <<EOF
 open Core
-open Scanf
 
 let () =
-  scanf "" @@ fun  ->
 EOF
 
         docker run --rm -it \
