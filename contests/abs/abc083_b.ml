@@ -4,7 +4,7 @@ open Scanf
 let contains l r x =
   let sum =
     let chars = string_of_int x |> String.to_list in
-    List.(chars >>| String.make 1 >>| int_of_string |> fold ~init:0 ~f:( + ))
+    List.(chars >>| String.make 1 |> sum (module Int) ~f:int_of_string)
   in
   l <= sum && sum <= r
 
