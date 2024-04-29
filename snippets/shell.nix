@@ -8,7 +8,7 @@ let
   );
 
   super = get-flake ../.;
-  container = get-flake ../containers/rust;
+  container = get-flake ../languages/rust;
   pkgs = import super.inputs.nixpkgs { inherit system; };
 
   inherit (container.packages.${system}) toolchain rustfmt-config;

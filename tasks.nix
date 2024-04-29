@@ -25,7 +25,7 @@ let
             --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
             --tag atcoder/rust \
             "$@" \
-            "$PROJ_ROOT/containers/rust"
+            "$PROJ_ROOT/languages/rust"
           ;;
         ocaml)
           shift
@@ -36,7 +36,7 @@ let
             --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
             --tag atcoder/ocaml \
             "$@" \
-            "$PROJ_ROOT/containers/ocaml"
+            "$PROJ_ROOT/languages/ocaml"
           ;;
         *)
           echo "Unsupported language: $1"
