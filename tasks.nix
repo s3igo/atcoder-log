@@ -70,13 +70,13 @@ let
       case $1 in
         rust)
           docker run --rm -it \
-            --mount type=bind,source="$PROJ_ROOT/flake.lock",target=/workspace/flake.lock \
+            --mount type=bind,source="$PROJ_ROOT/languages/rust/flake.lock",target=/workspace/flake.lock \
             atcoder/rust \
             nix flake update
           ;;
         ocaml)
           docker run --rm -it \
-            --mount type=bind,source="$PROJ_ROOT/flake.lock",target=/workspace/flake.lock \
+            --mount type=bind,source="$PROJ_ROOT/languages/ocaml/flake.lock",target=/workspace/flake.lock \
             atcoder/ocaml \
             nix flake update
           ;;
