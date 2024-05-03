@@ -13,6 +13,21 @@ let
 
   inherit (container.packages.${system}) toolchain rustfmt-config;
   cargo-snippet = import ./cargo-snippet { inherit pkgs; };
+  build = pkgs.writeShellApplication {
+    name = "task_build";
+    runtimeInputs = [
+      pkgs.jq
+      toolchain
+      cargo-snippet
+    ];
+    text = ''
+      PROJ_ROOT=$(git rev-parse --show-toplevel)
+
+      cargo test --lib \
+        && jq -s add rust.json <(cargo-snippet -t vscode) \
+          > "$PROJ_ROOT/languages/rust/rust.code-snippets"
+    '';
+  };
   neovim = super.neovim.${system} [
     super.inputs.neovim.nixosModules.rust
     {
@@ -28,6 +43,7 @@ pkgs.mkShell {
   buildInputs = [
     toolchain
     cargo-snippet
+    build
     neovim
   ];
 }

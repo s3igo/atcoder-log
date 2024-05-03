@@ -1,0 +1,60 @@
+{
+  "Yes or No": {
+    "prefix": ";print_yn",
+    "body": [
+      "println!(\"{}\", if cond { \"Yes\" } else { \"No\" });"
+    ],
+    "description": "Print Yes or No"
+  },
+  "Answer": {
+    "prefix": ";print_ans",
+    "body": [
+      "println!(\"{ans}\");"
+    ],
+    "description": "Print Answer"
+  },
+  "List Answer": {
+    "prefix": ";print_ans_list",
+    "body": [
+      "use itertools::Itertools;",
+      "println!(\"{}\", ans.iter().join(\"$1\"));"
+    ],
+    "description": "Print Answer"
+  },
+  "Collect vec": {
+    "prefix": ";collect_vec",
+    "body": [
+      "collect::<Vec<_>>()"
+    ],
+    "description": "collect to Vec"
+  },
+  "Vec type annotation": {
+    "prefix": ";vec",
+    "body": [
+      "Vec<_>"
+    ],
+    "description": "Vec type annotation"
+  },
+  "Between": {
+    "prefix": ";between",
+    "body": [
+      ".skip_while(|&${1:c}| ${1:c} != $2).skip(1).take_while(|&${1:c}| ${1:c} != $2)"
+    ],
+    "description": "get the slice between two elements"
+  },
+  "Ceiling of division": {
+    "prefix": ";ceil_div",
+    "body": [
+      "($1 + $2 - 1) / $2"
+    ],
+    "description": "ceiling of a / b is (a + b - 1) / b"
+  },
+  "Wrap with closure": {
+    "prefix": ";lazy",
+    "body": [
+      "macro_rules! lazy {",
+      "\t($tuple:expr) => { (|| $tuple.0, || $tuple.1) };",
+      "}"
+    ]
+  }
+}

@@ -14,6 +14,7 @@ RUN nix run nixpkgs#attic-client -- use docker
 WORKDIR /workspace
 COPY tasks.nix flake.nix flake.lock rust-toolchain.toml rustfmt.toml Cargo.toml ./
 COPY config.toml ./.cargo/
+COPY rust.code-snippets ./.vscode/
 
 # download `Cargo.lock`
 RUN curl https://raw.githubusercontent.com/rust-lang-ja/atcoder-proposal/fe6aa6179d074d3a565d3c3db256db54071a38f9/Cargo.lock -fO
