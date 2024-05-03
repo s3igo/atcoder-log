@@ -7,8 +7,8 @@ let
     builtins.fetchTarball "https://api.github.com/repos/ursi/get-flake/tarball/ac54750e3b95dab6ec0726d77f440efe6045bec1"
   );
 
-  super = get-flake ../.;
-  container = get-flake ../languages/rust;
+  super = get-flake ../../.;
+  container = get-flake ../../languages/rust;
   pkgs = import super.inputs.nixpkgs { inherit system; };
 
   inherit (container.packages.${system}) toolchain rustfmt-config;
@@ -24,7 +24,7 @@ let
       PROJ_ROOT=$(git rev-parse --show-toplevel)
 
       cargo test --lib \
-        && jq -s add rust.json <(cargo-snippet -t vscode) \
+        && jq -s add rust.json <(cargo snippet -t vscode) \
           > "$PROJ_ROOT/languages/rust/rust.code-snippets"
     '';
   };

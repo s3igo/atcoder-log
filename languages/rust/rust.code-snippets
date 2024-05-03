@@ -56,5 +56,323 @@
       "\t($tuple:expr) => { (|| $tuple.0, || $tuple.1) };",
       "}"
     ]
+  },
+  ";coord_chebyshev-distance": {
+    "prefix": ";coord_chebyshev-distance",
+    "body": [
+      "fn chebyshev_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "    ax.abs_diff(bx).max(ay.abs_diff(by))",
+      "}"
+    ]
+  },
+  ";coord_compress": {
+    "prefix": ";coord_compress",
+    "body": [
+      "use itertools::Itertools;",
+      "use std::collections::HashMap;",
+      "fn compress(v: &[usize]) -> Vec<usize> {",
+      "    let ranks: HashMap<_, _> = v.iter().sorted().dedup().zip(1..).collect();",
+      "    v.iter().map(|x| ranks[x]).collect()",
+      "}"
+    ]
+  },
+  ";coord_manhattan-distance": {
+    "prefix": ";coord_manhattan-distance",
+    "body": [
+      "fn manhattan_dst((ax, ay): (usize, usize), (bx, by): (usize, usize)) -> usize {",
+      "    ax.abs_diff(bx) + ay.abs_diff(by)",
+      "}"
+    ]
+  },
+  ";iter_split-adjacent": {
+    "prefix": ";iter_split-adjacent",
+    "body": [
+      "use itertools::Itertools;",
+      "fn split_adjacent<I, T>(iter: I) -> Vec<Vec<T>>",
+      "where",
+      "    I: Iterator<Item = T>,",
+      "    T: PartialEq + Copy,",
+      "{",
+      "    iter.group_by(|&s| s)",
+      "        .into_iter()",
+      "        .map(|(_, group)| group.collect())",
+      "        .collect()",
+      "}"
+    ]
+  },
+  ";math_divisors": {
+    "prefix": ";math_divisors",
+    "body": [
+      "fn divisors(n: usize) -> Vec<usize> {",
+      "    let (mut lhs, mut rhs) = (vec![], vec![]);",
+      "    for i in (1..).take_while(|&i| i * i <= n) {",
+      "        if n % i == 0 {",
+      "            lhs.push(i);",
+      "            rhs.push(n / i);",
+      "        }",
+      "    }",
+      "    let lhs = lhs;",
+      "    if rhs.last() == lhs.last() {",
+      "        rhs.pop();",
+      "    }",
+      "    rhs.reverse();",
+      "    [lhs, rhs].concat()",
+      "}"
+    ]
+  },
+  ";math_is-prime": {
+    "prefix": ";math_is-prime",
+    "body": [
+      "fn is_prime(n: usize) -> bool {",
+      "    if n < 2 {",
+      "        return false;",
+      "    }",
+      "    for i in (2..).take_while(|&i| i * i <= n) {",
+      "        if n % i == 0 {",
+      "            return false;",
+      "        }",
+      "    }",
+      "    true",
+      "}"
+    ]
+  },
+  ";math_primes": {
+    "prefix": ";math_primes",
+    "body": [
+      "fn primes(n: usize) -> Vec<usize> {",
+      "    if n == 0 {",
+      "        return vec![];",
+      "    }",
+      "    let mut is_prime = vec![true; n + 1];",
+      "    is_prime[0] = false;",
+      "    is_prime[1] = false;",
+      "    for i in (2..).take_while(|&i| i * i <= n) {",
+      "        if !is_prime[i] {",
+      "            continue;",
+      "        }",
+      "        for j in (2 * i..=n).step_by(i) {",
+      "            is_prime[j] = false;",
+      "        }",
+      "    }",
+      "    is_prime",
+      "        .iter()",
+      "        .enumerate()",
+      "        .filter(|(_, &is)| is)",
+      "        .map(|(x, _)| x)",
+      "        .collect()",
+      "}"
+    ]
+  },
+  ";math_to-radix": {
+    "prefix": ";math_to-radix",
+    "body": [
+      "fn to_radix(mut n: usize, radix: usize) -> Vec<usize> {",
+      "    if n == 0 {",
+      "        return vec![0];",
+      "    }",
+      "    let mut digits = vec![];",
+      "    while n != 0 {",
+      "        digits.push(n % radix);",
+      "        n /= radix;",
+      "    }",
+      "    digits.into_iter().rev().collect()",
+      "}"
+    ]
+  },
+  ";matrix_chunks": {
+    "prefix": ";matrix_chunks",
+    "body": [
+      "fn chunks<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    assert!(n % side == 0 && m % side == 0);",
+      "    iproduct!((0..n).step_by(side), (0..m).step_by(side))",
+      "        .map(|(i, j)| {",
+      "            (0..side)",
+      "                .map(|k| matrix[i + k][j..j + side].to_vec())",
+      "                .collect()",
+      "        })",
+      "        .collect()",
+      "}"
+    ]
+  },
+  ";matrix_rotate": {
+    "prefix": ";matrix_rotate",
+    "body": [
+      "fn rotate<T: Copy>(matrix: &Vec<Vec<T>>, times: usize) -> Vec<Vec<T>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    match times {",
+      "        0 => matrix.clone(),",
+      "        _ => rotate(",
+      "            &(0..m)",
+      "                .map(|i| (0..n).map(|j| matrix[n - 1 - j][i]).collect())",
+      "                .collect(),",
+      "            times - 1,",
+      "        ),",
+      "    }",
+      "}"
+    ]
+  },
+  ";matrix_transpose": {
+    "prefix": ";matrix_transpose",
+    "body": [
+      "fn transpose<T: Copy>(matrix: &Vec<Vec<T>>) -> Vec<Vec<T>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    (0..m)",
+      "        .map(|i| (0..n).map(|j| matrix[j][i]).collect())",
+      "        .collect()",
+      "}"
+    ]
+  },
+  ";matrix_windows": {
+    "prefix": ";matrix_windows",
+    "body": [
+      "fn windows<T: Copy>(matrix: &Vec<Vec<T>>, side: usize) -> Vec<Vec<Vec<T>>> {",
+      "    let (n, m) = (matrix.len(), matrix[0].len());",
+      "    assert!(matrix.iter().all(|row| row.len() == m));",
+      "    assert!(n >= side && m >= side);",
+      "    iproduct!(0..n - side + 1, 0..m - side + 1)",
+      "        .map(|(i, j)| {",
+      "            (0..side)",
+      "                .map(|k| matrix[i + k][j..j + side].to_vec())",
+      "                .collect()",
+      "        })",
+      "        .collect()",
+      "}"
+    ]
+  },
+  ";search_binary_f64": {
+    "prefix": ";search_binary_f64",
+    "body": [
+      "fn binary_search_float<F>(mut ng: f64, mut ok: f64, eps: f64, f: F) -> f64",
+      "where",
+      "    F: Fn(f64) -> bool,",
+      "{",
+      "    while (ok - ng).abs() > eps {",
+      "        let mid = (ok + ng) / 2.;",
+      "        if f(mid) {",
+      "            ok = mid;",
+      "        } else {",
+      "            ng = mid;",
+      "        }",
+      "    }",
+      "    ok",
+      "}"
+    ]
+  },
+  ";search_binary_int": {
+    "prefix": ";search_binary_int",
+    "body": [
+      "fn binary_search_int<T, F>(mut ng: T, mut ok: T, f: F) -> T",
+      "where",
+      "    T: num::Integer + num::FromPrimitive + Copy,",
+      "    F: Fn(T) -> bool,",
+      "{",
+      "    while ng.min(ok) + T::one() < ok.max(ng) {",
+      "        let mid = (ng + ok).div(T::from_u8(2).unwrap());",
+      "        if f(mid) {",
+      "            ok = mid;",
+      "        } else {",
+      "            ng = mid;",
+      "        }",
+      "    }",
+      "    ok",
+      "}"
+    ]
+  },
+  ";time_digits": {
+    "prefix": ";time_digits",
+    "body": [
+      "use std::ops::RangeInclusive;",
+      "use std::ops::{Bound, RangeBounds};",
+      "#[derive(Debug, PartialEq)]",
+      "struct Digits {",
+      "    value: Vec<usize>,",
+      "    range: Vec<RangeInclusive<usize>>,",
+      "}",
+      "impl Digits {",
+      "    fn new<T: RangeBounds<usize>>(value: &[usize], range: &[T]) -> Self {",
+      "        assert!(value.len() >= range.len());",
+      "        assert!(value.iter().zip(range).all(|(v, r)| r.contains(v)));",
+      "        let decide_range = |r: &T| {",
+      "            let start = match r.start_bound() {",
+      "                Bound::Included(&s) => s,",
+      "                Bound::Excluded(&s) => s + 1,",
+      "                Bound::Unbounded => 0,",
+      "            };",
+      "            let end = match r.end_bound() {",
+      "                Bound::Included(&e) => e,",
+      "                Bound::Excluded(&e) => e - 1,",
+      "                Bound::Unbounded => unreachable!(),",
+      "            };",
+      "            start..=end",
+      "        };",
+      "        let mut range: Vec<_> = range.iter().map(decide_range).collect();",
+      "        if value.len() > range.len() {",
+      "            range = std::iter::repeat(0..=usize::MAX)",
+      "                .take(value.len() - range.len())",
+      "                .chain(range)",
+      "                .collect();",
+      "        }",
+      "        Self {",
+      "            value: value.to_vec(),",
+      "            range,",
+      "        }",
+      "    }",
+      "    fn inc(&self) -> Option<Self> {",
+      "        let mut value = self.value.clone();",
+      "        for i in (0..self.value.len()).rev() {",
+      "            if value[i] < *self.range[i].end() {",
+      "                value[i] += 1;",
+      "                break;",
+      "            } else {",
+      "                value[i] = *self.range[i].start();",
+      "            }",
+      "        }",
+      "        if value",
+      "            .iter()",
+      "            .enumerate()",
+      "            .all(|(i, v)| v == self.range[i].start())",
+      "        {",
+      "            None",
+      "        } else {",
+      "            Some(Self {",
+      "                value,",
+      "                range: self.range.clone(),",
+      "            })",
+      "        }",
+      "    }",
+      "    fn value(self) -> Vec<usize> {",
+      "        self.value",
+      "    }",
+      "}"
+    ]
+  },
+  ";time_digits_struct": {
+    "prefix": ";time_digits_struct",
+    "body": [
+      "use std::ops::RangeInclusive;",
+      "#[derive(Debug, PartialEq)]",
+      "struct Digits {",
+      "    value: Vec<usize>,",
+      "    range: Vec<RangeInclusive<usize>>,",
+      "}"
+    ]
+  },
+  "string_rot": {
+    "prefix": "string_rot",
+    "body": [
+      "fn rot(s: &str, offset: u8) -> String {",
+      "    s.bytes()",
+      "        .map(|c| match c {",
+      "            b'a'..=b'z' => b'a' + (c - b'a' + offset) % 26,",
+      "            b'A'..=b'Z' => b'A' + (c - b'A' + offset) % 26,",
+      "            _ => c,",
+      "        } as char)",
+      "        .collect()",
+      "}"
+    ]
   }
 }
