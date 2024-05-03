@@ -45,8 +45,8 @@
         "prefix": ";position2",
         "body": [
             "let position2 ~f a b =",
-            "  List.(zip_exn a b |> filter ~f |> map ~f:fst)"
+            "  List.(zip_exn a b |> findi ~f:(fun _ (x, y) -> f x y)) |> Option.map ~f:fst"
         ],
-        "description": "Get the positions of elements in two lists"
+        "description": "Find the position of the first pair that satisfies a predicate"
     }
 }
