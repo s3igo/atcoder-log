@@ -1,0 +1,52 @@
+{
+    "Read line": {
+        "prefix": ";read_line",
+        "body": [
+            "let read_line () = In_channel.(input_line_exn stdin)"
+        ],
+        "description": "Read a line from stdin"
+    },
+    "Read lines": {
+        "prefix": ";read_lines",
+        "body": [
+            "let read_lines () = In_channel.(input_lines stdin)"
+        ],
+        "description": "Read lines from stdin"
+    },
+    "Enumerate": {
+        "prefix": ";enumerate",
+        "body": [
+            "let enumerate l = List.mapi ~f:(fun i x -> (i, x)) l"
+        ],
+        "description": "Enumerate a list"
+    },
+    "String to Int list": {
+        "prefix": ";string_to_int_list",
+        "body": [
+            "let string_to_int_list s = String.split ~on:' ' s |> List.map ~f:int_of_string"
+        ],
+        "description": "Convert a string to a list of integers"
+    },
+    "List to Tuple2": {
+        "prefix": ";list_to_tuple2",
+        "body": [
+            "let list_to_tuple2 = function [a; b] -> (a, b) | _ -> assert false"
+        ],
+        "description": "Convert a list to a Tuple2"
+    },
+    "List to Tuple3": {
+        "prefix": ";list_to_tuple3",
+        "body": [
+            "let list_to_tuple3 = function [a; b; c] -> (a, b, c) | _ -> assert false"
+        ],
+        "description": "Convert a list to a Tuple3"
+    },
+    "position2": {
+        "prefix": ";position2",
+        "body": [
+            "let position2 ~f a b =",
+            "  List.(zip_exn a b |> filter ~f |> map ~f:fst)"
+        ],
+        "description": "Get the positions of elements in two lists"
+    }
+}

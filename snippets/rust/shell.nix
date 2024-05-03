@@ -29,7 +29,7 @@ let
     '';
   };
   neovim = super.neovim.${system} [
-    super.inputs.neovim.nixosModules.rust
+    super.inputs.neovim.modules.rust
     {
       plugins.lsp.servers.rust-analyzer.settings.rustfmt.extraArgs = [
         "--config-path"
