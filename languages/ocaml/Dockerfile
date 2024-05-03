@@ -12,7 +12,7 @@ RUN nix run nixpkgs#attic-client -- use docker
 
 # setup workspace
 WORKDIR /workspace
-COPY tasks.nix flake.nix flake.lock .merlin .ocamlformat ./
+COPY tasks.nix flake.nix flake.lock .merlin .ocamlformat typos.toml ./
 COPY ocaml.code-snippets ./.vscode/
 
 # build `devShells.default`

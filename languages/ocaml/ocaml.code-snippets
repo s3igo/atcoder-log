@@ -48,5 +48,13 @@
             "  List.(zip_exn a b |> findi ~f:(fun _ (x, y) -> f x y)) |> Option.map ~f:fst"
         ],
         "description": "Find the position of the first pair that satisfies a predicate"
+    },
+    "Encode": {
+        "prefix": ";encode",
+        "body": [
+            "let encode lst =",
+            "  List.(group ~break:Poly.( <> ) lst >>| fun l -> (length l, hd_exn l))"
+        ],
+        "description": "Run-length encoding of a list"
     }
 }
