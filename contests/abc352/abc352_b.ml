@@ -1,7 +1,7 @@
 open Core
+open Scanf
 
 let ( >> ) f g x = g (f x)
-let read_line () = In_channel.(input_line_exn stdin)
 let int_list_to_string = List.map ~f:string_of_int >> String.concat ~sep:" "
 
 let solve l l' =
@@ -14,6 +14,5 @@ let solve l l' =
   aux l l' 1 [] |> List.rev
 
 let () =
-  let s = read_line () in
-  let t = read_line () in
+  scanf "%s %s" @@ fun s t ->
   solve (String.to_list s) (String.to_list t) |> int_list_to_string |> print_endline

@@ -2,9 +2,9 @@ open Core
 
 let read_line () = In_channel.(input_line_exn stdin)
 let read_lines () = In_channel.(input_lines stdin)
-let string_to_int_list s = String.split ~on:' ' s |> List.map ~f:int_of_string
-let list_to_tuple2 = function [ a; b ] -> (a, b) | _ -> assert false
 let ( >> ) f g x = g (f x)
+let string_to_int_list = String.split ~on:' ' >> List.map ~f:int_of_string
+let list_to_tuple2 = function [ a; b ] -> (a, b) | _ -> assert false
 
 let () =
   let _ = read_line () in

@@ -13,19 +13,33 @@
         ],
         "description": "Read lines from stdin"
     },
-    "Enumerate": {
-        "prefix": ";enumerate",
+    "Compose": {
+        "prefix": ";compose",
         "body": [
-            "let enumerate l = List.mapi ~f:(fun i x -> (i, x)) l"
+            "let ( >> ) f g x = g (f x)"
         ],
-        "description": "Enumerate a list"
+        "description": "Compose two functions"
+    },
+    "Contains": {
+        "prefix": ";contains",
+        "body": [
+            "let contains ~lower ~upper x = lower <= x && x <= upper"
+        ],
+        "description": "Check if a number is in a range"
     },
     "String to Int list": {
         "prefix": ";string_to_int_list",
         "body": [
-            "let string_to_int_list s = String.split ~on:' ' s |> List.map ~f:int_of_string"
+            "let string_to_int_list = String.split ~on:' ' >> List.map ~f:int_of_string"
         ],
         "description": "Convert a string to a list of integers"
+    },
+    "Int List to String": {
+        "prefix": ";int_list_to_string",
+        "body": [
+            "let int_list_to_string = List.map ~f:string_of_int >> String.concat ~sep:\" \""
+        ],
+        "description": "Convert a list of integers to a string"
     },
     "List to Tuple2": {
         "prefix": ";list_to_tuple2",
@@ -52,8 +66,8 @@
     "Encode": {
         "prefix": ";encode",
         "body": [
-            "let encode lst =",
-            "  List.(group ~break:Poly.( <> ) lst >>| fun l -> (length l, hd_exn l))"
+            "let encode l =",
+            "  List.(group ~break:Poly.( <> ) l >>| fun l -> (length l, hd_exn l))"
         ],
         "description": "Run-length encoding of a list"
     }

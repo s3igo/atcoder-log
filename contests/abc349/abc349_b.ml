@@ -1,9 +1,7 @@
 open Core
 
 let read_line () = In_channel.(input_line_exn stdin)
-
-let encode lst =
-  List.(group ~break:Poly.( <> ) lst >>| fun l -> (length l, hd_exn l))
+let encode l = List.(group ~break:Poly.( <> ) l >>| fun l -> (length l, hd_exn l))
 
 let () =
   let s = read_line () in
