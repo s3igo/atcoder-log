@@ -5,13 +5,12 @@ let ( >> ) f g x = g (f x)
 let int_list_to_string = List.map ~f:string_of_int >> String.concat ~sep:" "
 
 let solve l l' =
-  let rec aux l l' cnt acc =
-    match (l, l') with
+  let rec aux cnt acc = function
+    | [], _ | _, [] -> List.rev acc
     | (x :: xs as xl), y :: ys ->
-        if Poly.equal x y then aux xs ys (cnt + 1) (cnt :: acc) else aux xl ys (cnt + 1) acc
-    | _ -> acc
+        if Poly.equal x y then aux (cnt + 1) (cnt :: acc) (xs, ys) else aux (cnt + 1) acc (xl, ys)
   in
-  aux l l' 1 [] |> List.rev
+  aux 1 [] (l, l')
 
 let () =
   scanf "%s %s" @@ fun s t ->
