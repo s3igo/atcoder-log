@@ -24,7 +24,7 @@
           neovim.withModules {
             inherit system pkgs;
             modules =
-              with neovim.nixosModules;
+              with neovim.modules;
               [
                 im-select
                 nix
@@ -32,7 +32,7 @@
               ++ modules;
           };
 
-        packages.neovim = self.neovim.${system} [ ];
+        packages.neovim = self.neovim.${system} (with neovim.modules; [ markdown ]);
 
         devShells.default = pkgs.mkShell { buildInputs = [ self.packages.${system}.neovim ] ++ tasks; };
       }

@@ -1,55 +1,35 @@
-# AtCoder Rust
+# AtCoder Log
 
-Log of My AtCoder solutions written in Rust.
-
-## Requirements
-
-- direnv
-- rustup
-- GNU Make
-- jq
+Log of my AtCoder solutions.
+This repository also includes snippets for competitive programming.
 
 ## Usage
 
+### Prepare
+
 ```sh
-# Install cargo-compete
-make install
+# build image
+task_build <language>
 
-# Init project
-make init
+# update lockfile
+task_update <language>
 
-# Update cargo-compete
-make update
-
-# Logout from AtCoder
-make logout
-
-# Check format of all contests with nightly rustfmt feature
-make check
-
-# Create new contest directory
-cd contests/1.70.0
-## only create new contest
-cargo compete new <contest>
-## or create new contest, commit and change directory
-source new <contest>
-
-# Execute Testcases
-cargo compete t <problem>
-
-# Submit code
-cargo compete s <problem>
+# run container (for debug)
+task_run <language>
 ```
-## Build
+
+### Solve
 
 ```sh
-# check hashes and inputs
-nix run 'nixpkgs#nix-init' -- \
-    --url https://github.com/qryxip/cargo-compete \
-    --config <(echo "nixpkgs = 'builtins.getFlake \"nixpkgs\"'")
+# open task
+task_open <language> <task url or existing file>
 
-nix run 'nixpkgs#nix-init' -- \
-    --url https://github.com/hatoo/cargo-snippet \
-    --config <(echo "nixpkgs = 'builtins.getFlake \"nixpkgs\"'")
+# execute testcases
+t
 
+# submit code
+s
+
+# execute and submit code
+ts
 ```
