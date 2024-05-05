@@ -20,6 +20,13 @@
         ],
         "description": "Compose two functions"
     },
+    "Cond": {
+        "prefix": ";cond",
+        "body": [
+            "let cond b = if b then \"Yes\" else \"No\""
+        ],
+        "description": "Conditional string"
+    },
     "Contains": {
         "prefix": ";contains",
         "body": [
@@ -73,8 +80,7 @@
     "Encode": {
         "prefix": ";encode",
         "body": [
-            "let encode l =",
-            "  List.(group ~break:Poly.( <> ) l >>| fun l -> (length l, hd_exn l))"
+            "let encode l = List.(group l ~break:Poly.( <> ) >>| fun l -> (length l, hd_exn l))"
         ],
         "description": "Run-length encoding of a list"
     }

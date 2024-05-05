@@ -1,11 +1,11 @@
 open Core
 
 let read_line () = In_channel.(input_line_exn stdin)
-let encode l = List.(group ~break:Poly.( <> ) l >>| fun l -> (length l, hd_exn l))
+let encode l = List.(group l ~break:Poly.( <> ) >>| fun l -> (length l, hd_exn l))
+let cond b = if b then "Yes" else "No"
 
 let () =
-  let s = read_line () in
-  List.(
-    let cnt l = sort ~compare:Poly.compare l |> encode >>| fst in
-    cnt (String.to_list s) |> cnt |> for_all ~f:(fun x -> x = 2))
-  |> fun b -> (if b then "Yes" else "No") |> print_endline
+  let cnts l = List.(sort l ~compare:Poly.compare |> encode >>| fst) in
+  read_line () |> String.to_list |> cnts |> cnts
+  |> List.for_all ~f:(( = ) 2)
+  |> cond |> print_endline
