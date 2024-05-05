@@ -10,9 +10,10 @@ let diff (x1, y1) (x2, y2) = Int.(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 let () =
   let _ = read_line () in
   let xy = read_lines () |> List.map ~f:(string_to_int_list >> list_to_tuple2) in
-  List.(
-    map xy ~f:(fun p -> (p, xy)) >>| fun ((x0, y0), l) ->
-    mapi l ~f:(fun i e -> (i + 1, e))
-    |> fold ~init:(0, 0) ~f:(fun acc (i, (x, y)) ->
-           match diff (x0, y0) (x, y) with d when d > snd acc -> (i, d) | _ -> acc))
-  |> List.iter ~f:(fun (i, _) -> printf "%d\n" i)
+  let max_idx p =
+    List.foldi xy ~init:(0, 0) ~f:(fun i (idx, max) p' ->
+        let d = diff p p' in
+        if d > max then (i + 1, d) else (idx, max))
+    |> fst
+  in
+  List.(xy >>| max_idx |> iter ~f:(printf "%d\n"))
