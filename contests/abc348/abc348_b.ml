@@ -5,7 +5,7 @@ let read_lines () = In_channel.(input_lines stdin)
 let ( >> ) f g x = g (f x)
 let string_to_int_list = String.split ~on:' ' >> List.map ~f:int_of_string
 let list_to_tuple2 = function [ a; b ] -> (a, b) | _ -> assert false
-let diff (x1, y1) (x2, y2) = Int.(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
+let diff (x, y) (x', y') = Int.(((x - x') ** 2) + ((y - y') ** 2))
 
 let () =
   let _ = read_line () in
