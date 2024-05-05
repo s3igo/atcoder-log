@@ -6,10 +6,9 @@ let () =
   let _ = read_line () in
   let a = read_line () |> String.split ~on:' ' |> List.map ~f:int_of_string in
   List.(
-    sort ~compare:Int.descending a
+    sort a ~compare:Int.descending
     |> mapi ~f:(fun i x -> (i, x))
-    |> partition_tf ~f:(fun (i, _) -> i % 2 = 0)
-    |> fun (a, b) ->
-    let snd_sum = sum (module Int) ~f:snd in
-    snd_sum a - snd_sum b)
-  |> printf "%d\n"
+    |> partition_tf ~f:(fun (i, _) -> i % 2 = 0))
+  |> fun (a, b) ->
+  let snd_sum = List.sum (module Int) ~f:snd in
+  snd_sum a - snd_sum b |> printf "%d\n"

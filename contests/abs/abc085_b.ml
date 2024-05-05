@@ -5,5 +5,5 @@ let read_lines () = In_channel.(input_lines stdin)
 
 let () =
   let _ = read_line () in
-  let d = read_lines () |> List.map ~f:int_of_string in
-  List.(dedup_and_sort ~compare:Int.compare d |> length) |> printf "%d\n"
+  List.(read_lines () >>| int_of_string |> dedup_and_sort ~compare:Int.compare |> length)
+  |> printf "%d\n"
