@@ -14,7 +14,7 @@ task_build <language>
 # update lockfile
 task_update <language>
 
-# run container (for debug)
+# run the container (for debug)
 task_run <language>
 ```
 
