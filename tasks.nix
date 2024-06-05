@@ -15,28 +15,23 @@ let
     text = ''
       PROJ_ROOT=$(git rev-parse --show-toplevel)
 
+      docker build \
+        --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
+        --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
+        --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
+        --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
+        --build-arg ATCODER_TOKEN="$(cat /Users/s3igo/Library/Application\ Support/online-judge-tools/cookie.jar)" \
+        --tag atcoder/base \
+        "$PROJ_ROOT/languages"
+
       case $1 in
         rust)
           shift
-          docker build \
-            --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
-            --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
-            --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
-            --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
-            --tag atcoder/rust \
-            "$@" \
-            "$PROJ_ROOT/languages/rust"
+          docker build --tag atcoder/rust "$@" "$PROJ_ROOT/languages/rust"
           ;;
         ocaml)
           shift
-          docker build \
-            --build-arg ATTIC_TOKEN="$(sudo cat /run/agenix/attic-token)" \
-            --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
-            --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
-            --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
-            --tag atcoder/ocaml \
-            "$@" \
-            "$PROJ_ROOT/languages/ocaml"
+          docker build --tag atcoder/ocaml "$@" "$PROJ_ROOT/languages/ocaml"
           ;;
         *)
           echo "Unsupported language: $1"

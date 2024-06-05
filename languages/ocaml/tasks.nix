@@ -33,7 +33,6 @@ let
   };
   nvim = writeShellApplication {
     name = "v";
-    runtimeInputs = [ neovim ];
     text = ''
       nvim ./main.ml
     '';

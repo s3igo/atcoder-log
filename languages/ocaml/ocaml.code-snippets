@@ -1,4 +1,18 @@
 {
+    "Open Scanf": {
+        "prefix": ";scanf",
+        "body": [
+            "open Scanf"
+        ],
+        "description": "Open Scanf module"
+    },
+    "Open Poly": {
+        "prefix": ";poly",
+        "body": [
+            "open Poly"
+        ],
+        "description": "Open Poly module"
+    },
     "Read line": {
         "prefix": ";read_line",
         "body": [
@@ -12,6 +26,13 @@
             "let read_lines () = In_channel.(input_lines stdin)"
         ],
         "description": "Read lines from stdin"
+    },
+    "Xor": {
+        "prefix": ";xor",
+        "body": [
+            "let xor a b = (a && not b) || (not a && b)"
+        ],
+        "description": "XOR operator"
     },
     "Compose": {
         "prefix": ";compose",
@@ -69,7 +90,7 @@
         ],
         "description": "Convert a list to a Tuple3"
     },
-    "position2": {
+    "Position2": {
         "prefix": ";position2",
         "body": [
             "let position2 ~f a b =",
@@ -83,5 +104,38 @@
             "let encode l = List.(group l ~break:Poly.( <> ) >>| fun l -> (length l, hd_exn l))"
         ],
         "description": "Run-length encoding of a list"
+    },
+    "Split first": {
+        "prefix": ";split_first",
+        "body": [
+           "let split_first = function [] -> None | h :: t -> Some (h, t)"
+        ],
+        "description": "Split the first element of a list"
+    },
+    "Windows": {
+        "prefix": ";windows",
+        "body": [
+            "let windows l =",
+            "  let rec aux acc = function a :: (b :: _ as t) -> aux ((a, b) :: acc) t | _ -> List.rev acc in",
+            "  aux [] l"
+        ],
+        "description": "Generate a list of adjacent pairs"
+    },
+    "Zipi": {
+        "prefix": ";zipi",
+        "body": [
+            "let zipi l = l |> List.(zip_exn (init (length l) ~f:Fn.id))"
+        ],
+        "description": "Zip a list with its index"
+    },
+    "Split2": {
+        "prefix": ";split2",
+        "body": [
+            "let split2 ~l ~r lst =",
+            "  let prefix, suffix = List.split_n lst l in",
+            "  let body, suffix = List.split_n suffix (r - l) in",
+            "  (prefix, body, suffix)"
+        ],
+        "description": "Split a list into three parts"
     }
 }
