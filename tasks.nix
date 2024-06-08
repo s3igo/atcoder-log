@@ -20,7 +20,6 @@ let
         --build-arg COPILOT_TOKEN="$(cat "$XDG_CONFIG_HOME/github-copilot/hosts.json")" \
         --build-arg ATCODER_USERNAME="$(op read op://Personal/AtCoder/username)" \
         --build-arg ATCODER_PASSWORD="$(op read op://Personal/AtCoder/password)" \
-        --build-arg ATCODER_TOKEN="$(cat /Users/s3igo/Library/Application\ Support/online-judge-tools/cookie.jar)" \
         --tag atcoder/base \
         "$PROJ_ROOT/languages"
 

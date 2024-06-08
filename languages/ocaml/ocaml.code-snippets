@@ -137,5 +137,42 @@
             "  (prefix, body, suffix)"
         ],
         "description": "Split a list into three parts"
+    },
+    "Power set": {
+        "prefix": ";power_set",
+        "body": [
+            "let power_set l =",
+            "  let rec aux acc = function",
+            "    | [] -> acc",
+            "    | h :: t -> aux (acc |> List.fold ~init:[] ~f:(fun acc x -> (h :: x) :: x :: acc)) t",
+            "  in",
+            "  aux [[]] l"
+        ],
+        "description": "Generate the power set of a list"
+    },
+    "All substrings": {
+        "prefix": ";all_substrs",
+        "body": [
+            "let all_substrs s =",
+            "  let n = String.length s in",
+            "  let rec aux i acc =",
+            "    if i >= n then acc",
+            "    else",
+            "      let rec inner j acc' =",
+            "        if j > n then acc' else inner (j + 1) (Stdlib.String.sub s i (j - i) :: acc')",
+            "      in",
+            "      aux (i + 1) (inner (i + 1) acc)",
+            "  in",
+            "  aux 0 []"
+        ],
+        "description": "Generate all substrings of a string"
+    },
+    "Ceiling division": {
+        "prefix": ";ceil_div",
+        "body": [
+            "let ceil_div x y =",
+            "  if x + y - 1 < 0 && (x + y - 1) % y <> 0 then ((x + y - 1) / y) - 1 else (x + y - 1) / y"
+        ],
+        "description": "Ceiling division"
     }
 }

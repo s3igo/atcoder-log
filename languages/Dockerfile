@@ -18,14 +18,11 @@ RUN mkdir -p /root/.config/github-copilot \
 # setup online-judge-tools
 ARG ATCODER_USERNAME
 ARG ATCODER_PASSWORD
-# RUN nix run nixpkgs#online-judge-tools -- login \
-#     --username $ATCODER_USERNAME \
-#     --password $ATCODER_PASSWORD \
-#     https://atcoder.jp
-
-ARG ATCODER_TOKEN
-RUN mkdir -p /root/.local/share/online-judge-tools \
-   && echo $ATCODER_TOKEN > /root/.local/share/online-judge-tools/cookie.jar
+RUN nix run nixpkgs#online-judge-tools -- login \
+    --username $ATCODER_USERNAME \
+    --password $ATCODER_PASSWORD \
+    --use-browser never \
+    https://atcoder.jp
 
 # setup fidget.nvim
 RUN mkdir -p /root/.cache/nvim
