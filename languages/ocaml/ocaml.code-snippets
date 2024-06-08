@@ -174,5 +174,14 @@
             "  if x + y - 1 < 0 && (x + y - 1) % y <> 0 then ((x + y - 1) / y) - 1 else (x + y - 1) / y"
         ],
         "description": "Ceiling division"
+    },
+    "Count": {
+        "prefix": ";count",
+        "body": [
+            "let count l =",
+            "  List.fold l ~init:Char.Map.empty ~f:(fun acc x ->",
+            "      Map.update acc x ~f:(function None -> 1 | Some cnt -> cnt + 1))"
+        ],
+        "description": "Count the occurrences of each element in a list"
     }
 }
