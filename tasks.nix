@@ -44,11 +44,11 @@ let
       case $1 in
         rust)
           shift
-          docker run --rm -it -p 2222:2222 atcoder/rust "$@"
+          docker run --rm -it atcoder/rust "$@"
           ;;
         ocaml)
           shift
-          docker run --rm -it -p 2222:2222 atcoder/ocaml "$@"
+          docker run --rm -it atcoder/ocaml "$@"
           ;;
         *)
           echo "Unsupported language: $1"

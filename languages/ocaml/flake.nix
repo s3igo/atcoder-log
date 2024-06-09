@@ -61,7 +61,7 @@
               findlib
               # for ocamllsp
               dot-merlin-reader
-              ocamlformat
+              ocamlformat_0_26_1
               # deps
               num
               containers

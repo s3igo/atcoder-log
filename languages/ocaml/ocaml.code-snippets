@@ -51,7 +51,7 @@
     "Contains": {
         "prefix": ";contains",
         "body": [
-            "let contains ~lower ~upper x = lower <= x && x <= upper"
+            "let contains ~l ~r x = l <= x && x <= r"
         ],
         "description": "Check if a number is in a range"
     },
@@ -178,10 +178,26 @@
     "Count": {
         "prefix": ";count",
         "body": [
-            "let count l =",
-            "  List.fold l ~init:Char.Map.empty ~f:(fun acc x ->",
+            "let count =",
+            "  List.fold ~init:Char.Map.empty ~f:(fun acc x ->",
             "      Map.update acc x ~f:(function None -> 1 | Some cnt -> cnt + 1))"
         ],
         "description": "Count the occurrences of each element in a list"
+    },
+    "Flat matrix": {
+        "prefix": ";flat_matrix",
+        "body": [
+            "let flat_matrix m =",
+            "  let rows, cols, sub_rows, sub_cols =",
+            "    Array.(length m, length m.(0), length m.(0).(0), length m.(0).(0).(0))",
+            "  in",
+            "  Iter.(0 -- (rows - 1) >>= fun i ->",
+            "    0 -- (sub_rows - 1) >>= fun j ->",
+            "    0 -- (cols - 1) >>= fun k -> return m.(i).(k).(j))",
+            "  |> Iter.to_list |> Array.concat |> Array.to_list",
+            "  |> List.chunks_of ~length:(sub_cols * cols)",
+            "  |> List.map ~f:List.to_array |> List.to_array"
+        ],
+        "description": "Flatten a 4D array into a 2D array"
     }
 }

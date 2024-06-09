@@ -3,8 +3,8 @@ open Poly
 
 let read_line () = In_channel.(input_line_exn stdin)
 
-let count l =
-  List.fold l ~init:Char.Map.empty ~f:(fun acc x ->
+let count =
+  List.fold ~init:Char.Map.empty ~f:(fun acc x ->
       Map.update acc x ~f:(function None -> 1 | Some cnt -> cnt + 1))
 
 let () =
