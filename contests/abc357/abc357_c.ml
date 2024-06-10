@@ -16,9 +16,8 @@ let flat_matrix m =
 let rec carpet n =
   if n = 0 then [| [| '#' |] |]
   else
-    let subcarpet = carpet (n - 1) in
-    let full = Array.make_matrix ~dimx:3 ~dimy:3 subcarpet in
-    full.(1).(1) <- Array.make_matrix ~dimx:Int.(3 ** (n - 1)) ~dimy:Int.(3 ** (n - 1)) '.';
-    full |> flat_matrix
+    let arranged = carpet (n - 1) |> Array.make_matrix ~dimx:3 ~dimy:3 in
+    arranged.(1).(1) <- '.' |> Array.make_matrix ~dimx:Int.(3 ** (n - 1)) ~dimy:Int.(3 ** (n - 1));
+    arranged |> flat_matrix
 
 let () = scanf "%d" @@ carpet |> Array.map ~f:String.of_array |> Array.iter ~f:print_endline
