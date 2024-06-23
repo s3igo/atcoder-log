@@ -121,6 +121,18 @@
         ],
         "description": "Generate a list of adjacent pairs"
     },
+    "Windows3": {
+        "prefix": ";windows3",
+        "body": [
+            "let windows3 l =",
+            "  let rec aux acc = function",
+            "    | a :: (b :: c :: _ as t) -> aux ((a, b, c) :: acc) t",
+            "    | _ -> List.rev acc",
+            "  in",
+            "  aux [] l"
+        ],
+        "description": "Generate a list of adjacent triples"
+    },
     "Zipi": {
         "prefix": ";zipi",
         "body": [
