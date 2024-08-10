@@ -17,8 +17,5 @@ fn main() {
         Args::Clear { lang, file } => {
             println!("Clearing file {:?} for language {:?}", file, lang);
         },
-        Args::Version { .. } => {
-            println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-        },
     }
 }

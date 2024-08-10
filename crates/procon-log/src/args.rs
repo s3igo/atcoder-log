@@ -34,6 +34,7 @@ pub enum Lang {
     },
 }
 
+/// procon-log: A tool for managing competitive programming logs
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options, version)]
 pub enum Args {
@@ -71,11 +72,6 @@ pub enum Args {
         lang: Lang,
         #[bpaf(positional("FILE"))]
         file: PathBuf,
-    },
-    Version {
-        /// Print version information
-        #[bpaf(long, short('V'), switch)]
-        version: bool,
     },
 }
 
