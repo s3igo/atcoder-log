@@ -1,21 +1,11 @@
-use procon_log::args::Args;
+use procon_log::{args::Args, cmds::Run as _};
 
 fn main() {
     match Args::parse() {
-        Args::Open { lang, file } => {
-            println!("Opening file {:?} for language {:?}", file, lang);
-        },
-        Args::Test { lang, file } => {
-            println!("Testing file {:?} for language {:?}", file, lang);
-        },
-        Args::Submit { lang, file } => {
-            println!("Submitting file {:?} for language {:?}", file, lang);
-        },
-        Args::Save { lang, file } => {
-            println!("Saving file {:?} for language {:?}", file, lang);
-        },
-        Args::Clear { lang, file } => {
-            println!("Clearing file {:?} for language {:?}", file, lang);
-        },
+        Args::Open(cmd) => cmd.run().unwrap(),
+        Args::Test(cmd) => cmd.run().unwrap(),
+        Args::Submit(cmd) => cmd.run().unwrap(),
+        Args::Save(cmd) => cmd.run().unwrap(),
+        Args::Clear(cmd) => cmd.run().unwrap(),
     }
 }

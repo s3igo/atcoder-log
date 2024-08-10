@@ -1,78 +1,25 @@
-use std::path::PathBuf;
+use bpaf::Bpaf;
 
-use bpaf::{literal, Bpaf, Parser};
-
-macro_rules! generate_parsers {
-    ($($lang:ident),*) => {
-        $(
-            fn $lang() -> impl Parser<bool> {
-                literal(stringify!($lang)).map(|_| true)
-            }
-        )*
-    };
-}
-
-generate_parsers!(ocaml, rust, haskell, nim);
-
-#[derive(Debug, Clone, Bpaf)]
-pub enum Lang {
-    Rust {
-        #[bpaf(external)]
-        rust: bool,
-    },
-    Ocaml {
-        #[bpaf(external)]
-        ocaml: bool,
-    },
-    Haskell {
-        #[bpaf(external)]
-        haskell: bool,
-    },
-    Nim {
-        #[bpaf(external)]
-        nim: bool,
-    },
-}
+use crate::cmds;
 
 /// procon-log: A tool for managing competitive programming logs
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options, version)]
 pub enum Args {
     #[bpaf(command)]
-    Open {
-        #[bpaf(external)]
-        lang: Lang,
-        #[bpaf(positional("FILE"))]
-        file: PathBuf,
-    },
+    Open(#[bpaf(external(cmds::open::open))] cmds::open::Open),
+
     #[bpaf(command)]
-    Test {
-        #[bpaf(external)]
-        lang: Lang,
-        #[bpaf(positional("FILE"))]
-        file: PathBuf,
-    },
+    Test(#[bpaf(external(cmds::test::test))] cmds::test::Test),
+
     #[bpaf(command)]
-    Submit {
-        #[bpaf(external)]
-        lang: Lang,
-        #[bpaf(positional("FILE"))]
-        file: PathBuf,
-    },
+    Submit(#[bpaf(external(cmds::submit::submit))] cmds::submit::Submit),
+
     #[bpaf(command)]
-    Save {
-        #[bpaf(external)]
-        lang: Lang,
-        #[bpaf(positional("FILE"))]
-        file: PathBuf,
-    },
+    Save(#[bpaf(external(cmds::save::save))] cmds::save::Save),
+
     #[bpaf(command)]
-    Clear {
-        #[bpaf(external)]
-        lang: Lang,
-        #[bpaf(positional("FILE"))]
-        file: PathBuf,
-    },
+    Clear(#[bpaf(external(cmds::clear::clear))] cmds::clear::Clear),
 }
 
 impl Args {
