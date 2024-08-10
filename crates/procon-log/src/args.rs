@@ -1,25 +1,25 @@
 use bpaf::Bpaf;
 
-use crate::cmds;
+use crate::cmds::{clear, open, save, submit, test};
 
 /// procon-log: A tool for managing competitive programming logs
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options, version)]
 pub enum Args {
     #[bpaf(command)]
-    Open(#[bpaf(external(cmds::open::open))] cmds::open::Open),
+    Open(#[bpaf(external(open::open))] open::Open),
 
     #[bpaf(command)]
-    Test(#[bpaf(external(cmds::test::test))] cmds::test::Test),
+    Test(#[bpaf(external(test::test))] test::Test),
 
     #[bpaf(command)]
-    Submit(#[bpaf(external(cmds::submit::submit))] cmds::submit::Submit),
+    Submit(#[bpaf(external(submit::submit))] submit::Submit),
 
     #[bpaf(command)]
-    Save(#[bpaf(external(cmds::save::save))] cmds::save::Save),
+    Save(#[bpaf(external(save::save))] save::Save),
 
     #[bpaf(command)]
-    Clear(#[bpaf(external(cmds::clear::clear))] cmds::clear::Clear),
+    Clear(#[bpaf(external(clear::clear))] clear::Clear),
 }
 
 impl Args {
