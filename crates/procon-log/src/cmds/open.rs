@@ -1,8 +1,9 @@
-use std::process::Command;
+use std::{env, path::PathBuf, process::Command};
 
 use anyhow::{bail, ensure, Context as _, Result};
 use bpaf::{Bpaf, Parser};
 use regex::Regex;
+use url::Url;
 
 use super::Run;
 use crate::langs;
@@ -64,33 +65,36 @@ impl Run for Open {
             },
         };
 
-        // TODO: Use url crate
-
         let (url, contest) = match &self.url {
-            Some(url) => (
-                url.to_string(),
-                url.split('/')
-                    .nth(4)
+            Some(url) => {
+                let parsed_url = Url::parse(url).context("Invalid URL")?;
+                let contest = parsed_url
+                    .path_segments()
+                    .and_then(|mut segments| segments.nth(1))
                     .context("No contest found")?
-                    .to_string(),
-            ),
+                    .to_string();
+                (url.to_string(), contest)
+            },
             None => {
                 let contest = self.contest.as_ref().unwrap(); // guarded by the parser
-                (
-                    format!("{ATCODER_CONTEST_URL}/tasks/{contest}"),
-                    contest.to_string(),
-                )
+                let url = Url::parse(&format!("{ATCODER_CONTEST_URL}/tasks/{contest}"))?;
+                (url.to_string(), contest.to_string())
             },
         };
 
-        // TODO: cd to contest dir before opening the file
+        let proj_root = get_proj_root()?;
+
+        // TODO: cd to "{proj_root"/runtimes/{lang}"
+        let contest_path = proj_root.join("contests").join(&contest);
+        env::set_current_dir(contest_path)?;
 
         Command::new("oj").arg("download").arg(url).status()?;
 
-        let proj_root = get_proj_root()?;
-
         Command::new("nvim")
-            .arg(format!("{proj_root}/contests/{contest}/{target}"))
+            .arg(format!(
+                "{}/contests/{contest}/{target}",
+                proj_root.display()
+            ))
             .status()?;
 
         // TODO: Cleanup test dir
@@ -99,12 +103,12 @@ impl Run for Open {
     }
 }
 
-fn get_proj_root() -> Result<String> {
+fn get_proj_root() -> Result<PathBuf> {
     let output = Command::new("git")
         .args(["rev-parse", "--show-toplevel"])
         .output()?;
 
     ensure!(output.status.success(), "Failed to get project root");
 
-    Ok(String::from_utf8(output.stdout)?.trim().to_string())
+    Ok(PathBuf::from(String::from_utf8(output.stdout)?.trim()))
 }
