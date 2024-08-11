@@ -29,6 +29,7 @@
         tasks = import ./tasks.nix { inherit nixpkgs system; };
         fenix' = fenix.packages.${system};
         procon-log = import ./crates/procon-log { inherit pkgs fenix' crane; };
+        procon-log' = procon-log.package;
       in
       {
         neovim =
@@ -46,9 +47,18 @@
 
         inherit (procon-log) checks;
 
+        apps = {
+          procon-log = {
+            type = "app";
+            program = "${procon-log'}/bin/log";
+          };
+          default = self.apps.${system}.procon-log;
+        };
+
         packages = {
           neovim = self.neovim.${system} (with neovim.modules; [ markdown ]);
-          procon-log = procon-log.package;
+          procon-log = procon-log';
+          default = procon-log';
         };
 
         devShells.default = pkgs.mkShell {
@@ -60,6 +70,7 @@
               neovim
               procon-log
             ]
+            ++ (with pkgs; [ online-judge-tools ])
             ++ tasks;
         };
       }
