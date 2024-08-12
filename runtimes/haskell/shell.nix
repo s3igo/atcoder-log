@@ -7,19 +7,64 @@ let
     fetchTarball "https://api.github.com/repos/ursi/get-flake/tarball/ac54750e3b95dab6ec0726d77f440efe6045bec1"
   );
   super = get-flake ../../.;
-  inherit (super) neovim;
-  pkgs = import super.inputs.nixpkgs { inherit system; };
+  inherit (super.inputs) nixpkgs neovim;
+
+  pkgs = import nixpkgs { inherit system; };
   pkgs-cabal-install_3_8_1_0 =
     import
       (builtins.fetchTarball "https://api.github.com/repos/nixos/nixpkgs/tarball/98f3b08f58ff125ef02d55cd52a83f44f245f2ea")
       { inherit system; };
+  pkgs-haskell-language-server_2_2_0_0 =
+    import
+      (builtins.fetchTarball "https://api.github.com/repos/nixos/nixpkgs/tarball/a2eb207f45e4a14a1e3019d9e3863d1e208e2295")
+      { inherit system; };
+
+  # cabal-install 3.8.1.0
+  inherit (pkgs-cabal-install_3_8_1_0) cabal-install;
+
+  # ghc 9.4.5
+  # Use pkgs-haskell-language-server_2_2_0_0 instead of pkgs
+  # due to ABI don't match with haskell-language-server
+  ghc = pkgs-haskell-language-server_2_2_0_0.haskell.compiler.ghc945;
+
+  # For ghc 9.4.5
+  # See: https://haskell-language-server.readthedocs.io/en/latest/support/ghc-version-support.html
+  #      https://nixos.org/manual/nixpkgs/unstable/#haskell-language-server
+  haskell-language-server = pkgs-haskell-language-server_2_2_0_0.haskell-language-server.override {
+    supportedGhcVersions = [ "945" ];
+  };
+
   buildInputs = with pkgs; [ llvm_14 ];
+
+  neovim' = neovim.withModules {
+    inherit system pkgs;
+    modules = with neovim.modules; [
+      im-select
+      {
+        autoCmd = [
+          {
+            event = "FileType";
+            pattern = "haskell";
+            command = "setlocal shiftwidth=2";
+          }
+        ];
+        plugins = {
+          lsp.servers.hls = {
+            enable = true;
+            package = haskell-language-server;
+          };
+        };
+      }
+    ];
+    grammars = [ "haskell" ];
+  };
 in
 
 pkgs.mkShell {
   inherit buildInputs;
   packages = [
-    pkgs.haskell.compiler.ghc945 # ghc 9.4.5
-    pkgs-cabal-install_3_8_1_0.cabal-install # cabal-install 3.8.1.0
+    cabal-install
+    ghc
+    neovim'
   ];
 }
