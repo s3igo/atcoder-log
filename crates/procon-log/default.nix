@@ -8,9 +8,8 @@ let
   toolchain = import ./toolchain.nix { inherit fenix'; };
   craneLib = (crane.mkLib pkgs).overrideToolchain toolchain;
   src = craneLib.cleanCargoSource ./.;
-  buildInputs = with pkgs; lib.optionals stdenv.isDarwin [ libiconv ];
   commonArgs = {
-    inherit src buildInputs;
+    inherit src;
     strictDeps = true;
   };
   cargoArtifacts = craneLib.buildDepsOnly commonArgs;

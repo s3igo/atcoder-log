@@ -1,6 +1,8 @@
+use std::fmt;
+
 use bpaf::{literal, Bpaf, Parser};
 
-// Use `()` for enum variant restrictions
+// Use `()` due to restrictions on enum variants of bpaf
 
 #[derive(Debug, Clone, Bpaf)]
 pub enum Lang {
@@ -10,13 +12,32 @@ pub enum Lang {
     Nim(#[bpaf(external(nim))] ()),
 }
 
+impl fmt::Display for Lang {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Lang::Rust(_) => write!(f, "rust"),
+            Lang::Ocaml(_) => write!(f, "ocaml"),
+            Lang::Haskell(_) => write!(f, "haskell"),
+            Lang::Nim(_) => write!(f, "nim"),
+        }
+    }
+}
+
 impl Lang {
-    pub fn extension(&self) -> &'static str {
+    pub(crate) fn extension(&self) -> &'static str {
         match self {
             Lang::Rust(_) => "rs",
             Lang::Ocaml(_) => "ml",
             Lang::Haskell(_) => "hs",
             Lang::Nim(_) => "nim",
+        }
+    }
+
+    pub(crate) fn entrypoint(&self) -> String {
+        match self {
+            Lang::Rust(_) => "src/main.rs".to_string(),
+            Lang::Haskell(_) => "app/Main.hs".to_string(),
+            _ => format!("main.{}", self.extension()),
         }
     }
 }

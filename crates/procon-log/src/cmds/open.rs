@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf, process::Command};
+use std::{env, fs, path::PathBuf, process::Command};
 
 use anyhow::{bail, ensure, Context as _, Result};
 use bpaf::{Bpaf, Parser};
@@ -46,8 +46,7 @@ const ATCODER_CONTEST_URL: &str = "https://atcoder.jp/contests";
 
 impl Run for Open {
     fn run(&self) -> Result<()> {
-        // Filename to open
-        let target = match &self.file {
+        let file = match &self.file {
             Some(file) => file.to_string(),
             None => match self.url.as_ref() {
                 Some(url) if url.starts_with(ATCODER_CONTEST_URL) => {
@@ -84,20 +83,34 @@ impl Run for Open {
 
         let proj_root = get_proj_root()?;
 
-        // TODO: cd to "{proj_root"/runtimes/{lang}"
-        let contest_path = proj_root.join("contests").join(&contest);
-        env::set_current_dir(contest_path)?;
+        // cd to the runtime directory
+        let lang_root = proj_root.join("runtimes").join(self.lang.to_string());
+        dbg!(&lang_root);
+        env::set_current_dir(&lang_root)?;
 
+        // Download the test cases
         Command::new("oj").arg("download").arg(url).status()?;
 
-        Command::new("nvim")
-            .arg(format!(
-                "{}/contests/{contest}/{target}",
-                proj_root.display()
-            ))
+        let solution = proj_root.join("contests").join(contest).join(file);
+        let runtime_path = lang_root.join(self.lang.entrypoint());
+
+        // Copy the solution file if it exists
+        if solution.exists() {
+            fs::copy(&solution, &runtime_path)
+                .context("Failed to copy an existing solution file")?;
+        }
+
+        // Open the editor
+        Command::new("nix-shell")
+            .arg("--run")
+            .arg(format!("nvim {}", runtime_path.display()))
             .status()?;
 
-        // TODO: Cleanup test dir
+        // Clean up the test directory
+        let test_dir = lang_root.join("test");
+        if test_dir.exists() {
+            fs::remove_dir_all(test_dir).context("Failed to clean up test directory")?;
+        }
 
         Ok(())
     }
