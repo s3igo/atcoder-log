@@ -81,6 +81,7 @@ impl Run for Open {
             },
         };
 
+        // (1) Set up the runtime directory
         let proj_root = get_proj_root()?;
 
         // cd to the runtime directory
@@ -100,17 +101,28 @@ impl Run for Open {
                 .context("Failed to copy an existing solution file")?;
         }
 
+        // (2) Solve the task
         // Open the editor
         Command::new("nix-shell")
             .arg("--run")
             .arg(format!("nvim {}", runtime_path.display()))
             .status()?;
 
-        // Clean up the test directory
+        // Save the solution file
+        fs::copy(&runtime_path, &solution).context("Failed to save the solution file")?;
+
+        // (3) Clean up the runtime directory
+        // Remove the test directory
         let test_dir = lang_root.join("test");
         if test_dir.exists() {
             fs::remove_dir_all(test_dir).context("Failed to clean up test directory")?;
         }
+
+        // Restore the runtime file
+        Command::new("git")
+            .arg("restore")
+            .arg(runtime_path)
+            .status()?;
 
         Ok(())
     }
