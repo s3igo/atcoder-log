@@ -7,3 +7,7 @@ readInts = unfoldr (BS.readInt . BS.dropWhile isSpace) <$> BS.getLine
 
 main :: IO ()
 main = do
+  [a] <- readInts
+  [b, c] <- readInts
+  s <- BS.getLine
+  putStrLn $ unwords [show (a + b + c), BS.unpack s]
