@@ -2,7 +2,7 @@ import Control.Monad (replicateM)
 import Data.ByteString.Char8 qualified as BS
 
 addAsterisks :: Int -> [BS.ByteString] -> [BS.ByteString]
-addAsterisks n = map (\s -> s `BS.append` BS.replicate (n - BS.length s) '*')
+addAsterisks n = map $ \s -> s `BS.append` BS.replicate (n - BS.length s) '*'
 
 main :: IO ()
 main = do
