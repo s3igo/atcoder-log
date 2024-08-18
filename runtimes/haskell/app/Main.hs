@@ -7,3 +7,4 @@ readInts = unfoldr (BS.readInt . BS.dropWhile isSpace) <$> BS.getLine
 
 main :: IO ()
 main = do
+  undefined
