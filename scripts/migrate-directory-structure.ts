@@ -49,7 +49,7 @@ fn main() {
 }
 `;
 
-async function processFilesFor_1_70_0(baseDir: string) {
+async function _processFilesFor_1_70_0(baseDir: string) {
     for await (const entry of walk(baseDir, { exts: [".rs"] })) {
         if (entry.isFile) {
             const filePath = entry.path;
@@ -86,4 +86,4 @@ async function processFilesFor_1_70_0(baseDir: string) {
     }
 }
 
-await processFilesFor_1_70_0(`${contestRoot}/1.70.0`);
+//await processFilesFor_1_70_0(`${contestRoot}/1.70.0`);
