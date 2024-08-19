@@ -3,7 +3,9 @@ packages: ./submission.cabal
 constraints: bitvec +libgmp,
              clock +llvm,
              vector-algorithms +llvm
-optimization: 2
+
+-- 2 in the judge environment
+optimization: False
 
 package *
     compiler: ghc

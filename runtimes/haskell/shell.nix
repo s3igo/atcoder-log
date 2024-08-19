@@ -58,6 +58,42 @@ let
     ];
     grammars = [ "haskell" ];
   };
+
+  test = pkgs.writeShellApplication {
+    name = "t";
+    runtimeInputs = [
+      pkgs.time
+      pkgs.online-judge-tools
+      cabal-install
+    ];
+    text = ''
+      cabal v2-build --offline && oj test --command "$(cabal list-bin main)"
+    '';
+  };
+  submit = pkgs.writeShellApplication {
+    name = "s";
+    runtimeInputs = [ pkgs.online-judge-tools ];
+    text = ''
+      oj submit --no-open --yes -- "$URL" ./app/Main.hs
+    '';
+  };
+  testAndSubmit = pkgs.writeShellApplication {
+    name = "ts";
+    runtimeInputs = [
+      test
+      submit
+    ];
+    text = ''
+      t && s
+    '';
+  };
+  run = pkgs.writeShellApplication {
+    name = "r";
+    runtimeInputs = [ cabal-install ];
+    text = ''
+      cabal v2-run --offline
+    '';
+  };
 in
 
 pkgs.mkShell {
@@ -66,5 +102,9 @@ pkgs.mkShell {
     cabal-install
     ghc
     neovim'
+    test
+    submit
+    testAndSubmit
+    run
   ];
 }
