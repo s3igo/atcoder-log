@@ -7,7 +7,7 @@ use crate::cmds::{clear, open, save, submit, test};
 #[bpaf(options, version)]
 pub enum Args {
     /// Open a file to solve a task
-    #[bpaf(command)]
+    #[bpaf(command, short('o'))]
     Open(#[bpaf(external(open::open))] open::Open),
 
     #[bpaf(command)]

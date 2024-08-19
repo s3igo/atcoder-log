@@ -86,11 +86,10 @@ impl Run for Open {
 
         // cd to the runtime directory
         let lang_root = proj_root.join("runtimes").join(self.lang.to_string());
-        dbg!(&lang_root);
         env::set_current_dir(&lang_root)?;
 
         // Download the test cases
-        Command::new("oj").arg("download").arg(url).status()?;
+        Command::new("oj").arg("download").arg(&url).status()?;
 
         let solution = proj_root.join("contests").join(contest).join(file);
         let runtime_path = lang_root.join(self.lang.entrypoint());
@@ -104,11 +103,16 @@ impl Run for Open {
         // (2) Solve the task
         // Open the editor
         Command::new("nix-shell")
+            .env("URL", url)
             .arg("--run")
             .arg(format!("nvim {}", runtime_path.display()))
             .status()?;
 
         // Save the solution file
+        Command::new("mkdir")
+            .arg("-p")
+            .arg(solution.parent().unwrap())
+            .status()?;
         fs::copy(&runtime_path, &solution).context("Failed to save the solution file")?;
 
         // (3) Clean up the runtime directory
