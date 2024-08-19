@@ -1,6 +1,6 @@
 use bpaf::Bpaf;
 
-use crate::cmds::{clear, open, save, submit, test};
+use crate::cmds::open;
 
 /// procon-log: A tool for managing competitive programming logs
 #[derive(Debug, Clone, Bpaf)]
@@ -9,18 +9,6 @@ pub enum Args {
     /// Open a file to solve a task
     #[bpaf(command, short('o'))]
     Open(#[bpaf(external(open::open))] open::Open),
-
-    #[bpaf(command)]
-    Test(#[bpaf(external(test::test))] test::Test),
-
-    #[bpaf(command)]
-    Submit(#[bpaf(external(submit::submit))] submit::Submit),
-
-    #[bpaf(command)]
-    Save(#[bpaf(external(save::save))] save::Save),
-
-    #[bpaf(command)]
-    Clear(#[bpaf(external(clear::clear))] clear::Clear),
 }
 
 impl Args {
