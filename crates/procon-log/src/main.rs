@@ -1,10 +1,8 @@
 use anyhow::Result;
-use procon_log::{args::Args, cmds::Run as _};
+use procon_log::cmds::Cmds;
 
 fn main() -> Result<()> {
-    match Args::parse() {
-        Args::Open(cmd) => cmd.run()?,
-    }
+    Cmds::dispatch()?;
 
     Ok(())
 }
