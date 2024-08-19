@@ -15,5 +15,5 @@ regex = "1.10.6"
 url = "2.5.2"
 
 [[bin]]
-name = "log"
+name = "aclog"
 path = "src/main.rs"

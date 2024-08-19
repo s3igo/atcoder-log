@@ -50,7 +50,7 @@
         apps = {
           procon-log = {
             type = "app";
-            program = "${procon-log'}/bin/log";
+            program = "${procon-log'}/bin/aclog";
           };
           default = self.apps.${system}.procon-log;
         };
