@@ -1,4 +1,4 @@
-import Control.Monad.Extra (replicateM)
+import Control.Monad (replicateM)
 import Data.Function (on)
 import Data.List
 
