@@ -1,5 +1,5 @@
 import Data.ByteString.Char8 qualified as BS
-import Data.Char (isSpace)
+import Data.Char
 import Data.List
 
 readInts :: IO [Int]
