@@ -26,11 +26,55 @@ let
       rust
     ];
   };
+  tasks =
+    let
+      test = pkgs.writeShellApplication {
+        name = "t";
+        runtimeInputs = [
+          pkgs.time
+          pkgs.online-judge-tools
+          toolchain
+        ];
+        text = ''
+          cargo build --release && oj test --command './target/release/main'
+        '';
+      };
+      submit = pkgs.writeShellApplication {
+        name = "s";
+        runtimeInputs = [ pkgs.online-judge-tools ];
+        text = ''
+          oj submit --no-open --yes -- "$URL" ./src/main.rs
+        '';
+      };
+      testAndSubmit = pkgs.writeShellApplication {
+        name = "ts";
+        runtimeInputs = [
+          test
+          submit
+        ];
+        text = ''
+          t && s
+        '';
+      };
+      run = pkgs.writeShellApplication {
+        name = "r";
+        runtimeInputs = [ toolchain ];
+        text = ''
+          cargo run --release
+        '';
+      };
+    in
+    [
+      test
+      submit
+      testAndSubmit
+      run
+    ];
 in
-
 pkgs.mkShell {
   packages = [
+    pkgs.time
     toolchain
     neovim'
-  ];
+  ] ++ tasks;
 }
