@@ -32,19 +32,6 @@
         procon-log' = procon-log.package;
       in
       {
-        neovim =
-          modules:
-          neovim.withModules {
-            inherit system pkgs;
-            modules =
-              with neovim.modules;
-              [
-                im-select
-                nix
-              ]
-              ++ modules;
-          };
-
         inherit (procon-log) checks;
 
         apps = {
@@ -56,7 +43,13 @@
         };
 
         packages = {
-          neovim = self.neovim.${system} (with neovim.modules; [ markdown ]);
+          neovim = neovim.withModules {
+            inherit system pkgs;
+            modules = with neovim.modules; [
+              nix
+              markdown
+            ];
+          };
           procon-log = procon-log';
           default = procon-log';
         };

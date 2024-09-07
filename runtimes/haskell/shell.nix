@@ -38,8 +38,7 @@ let
 
   neovim' = neovim.withModules {
     inherit system pkgs;
-    modules = with neovim.modules; [
-      im-select
+    modules = [
       {
         autoCmd = [
           {
@@ -56,7 +55,6 @@ let
         };
       }
     ];
-    grammars = [ "haskell" ];
   };
   tasks =
     let

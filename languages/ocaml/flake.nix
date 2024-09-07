@@ -24,8 +24,7 @@
       {
         packages.neovim = neovim.withModules {
           inherit system pkgs;
-          grammars = [ "ocaml" ];
-          modules = with neovim.nixosModules; [
+          modules = with neovim.modules; [
             nix
             {
               autoCmd = [

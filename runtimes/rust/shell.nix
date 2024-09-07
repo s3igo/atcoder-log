@@ -21,10 +21,7 @@ let
     ];
   neovim' = neovim.withModules {
     inherit system pkgs;
-    modules = with neovim.modules; [
-      im-select
-      rust
-    ];
+    modules = [ neovim.modules.rust ];
   };
   tasks =
     let

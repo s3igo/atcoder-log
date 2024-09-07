@@ -24,7 +24,7 @@
           (final: prev: {
             neovim = neovim.withModules {
               inherit system pkgs;
-              modules = with neovim.nixosModules; [ rust ];
+              modules = [ neovim.modules.rust ];
             };
           })
         ];
