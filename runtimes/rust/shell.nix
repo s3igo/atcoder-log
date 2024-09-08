@@ -7,7 +7,12 @@ let
     fetchTarball "https://api.github.com/repos/ursi/get-flake/tarball/ac54750e3b95dab6ec0726d77f440efe6045bec1"
   );
   super = get-flake ../../.;
-  inherit (super.inputs) nixpkgs fenix neovim;
+  inherit (super.inputs)
+    nixpkgs
+    fenix
+    nixvim
+    neovim-config
+    ;
   pkgs = import nixpkgs { inherit system; };
 
   toolchain =
@@ -19,9 +24,11 @@ let
       })
       default.rustfmt # rustfmt nightly
     ];
-  neovim' = neovim.withModules {
-    inherit system pkgs;
-    modules = [ neovim.modules.rust ];
+  neovim = nixvim.legacyPackages.${system}.makeNixvim {
+    imports = with neovim-config.nixosModules; [
+      default
+      rust
+    ];
   };
   tasks =
     let
@@ -72,6 +79,6 @@ pkgs.mkShell {
   packages = [
     pkgs.time
     toolchain
-    neovim'
+    neovim
   ] ++ tasks;
 }

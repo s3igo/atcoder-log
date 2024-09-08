@@ -18,7 +18,6 @@
     "devshell": {
       "inputs": {
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -75,7 +74,6 @@
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -133,18 +131,15 @@
     "git-hooks": {
       "inputs": {
         "flake-compat": [
-          "neovim",
           "nixvim",
           "flake-compat"
         ],
         "gitignore": "gitignore",
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ],
         "nixpkgs-stable": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -166,7 +161,6 @@
     "gitignore": {
       "inputs": {
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "git-hooks",
           "nixpkgs"
@@ -189,7 +183,6 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -208,21 +201,18 @@
         "type": "github"
       }
     },
-    "neovim": {
-      "inputs": {
-        "nixvim": "nixvim"
-      },
+    "neovim-config": {
       "locked": {
-        "dir": "neovim",
-        "lastModified": 1725620256,
-        "narHash": "sha256-b9oBlcLfbEowD20ApZW7yPl9njbXNyZhhJKIJok0kh0=",
+        "dir": "neovim-config",
+        "lastModified": 1725718273,
+        "narHash": "sha256-fystniortNUL/2HPA12KoivA44agS9h008n3dLm36AI=",
         "owner": "s3igo",
         "repo": "dotfiles",
-        "rev": "29f7f49ff50ac78f3b128112823dea3a467c191c",
+        "rev": "87e3cf9a4e6f6e7cea7f4a05c713f114f1b53611",
         "type": "github"
       },
       "original": {
-        "dir": "neovim",
+        "dir": "neovim-config",
         "owner": "s3igo",
         "repo": "dotfiles",
         "type": "github"
@@ -231,7 +221,6 @@
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -251,22 +240,6 @@
       }
     },
     "nixpkgs": {
-      "locked": {
-        "lastModified": 1724819573,
-        "narHash": "sha256-GnR7/ibgIH1vhoy8cYdmXE6iyZqKqFxQSVkFgosBh6w=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "71e91c409d1e654808b2621f28a327acfdad8dc2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
       "locked": {
         "lastModified": 1725534445,
         "narHash": "sha256-Yd0FK9SkWy+ZPuNqUgmVPXokxDgMJoGuNpMEtkfcf84=",
@@ -290,16 +263,18 @@
         "git-hooks": "git-hooks",
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "nuschtosSearch": "nuschtosSearch",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1725556350,
-        "narHash": "sha256-uuVLTCMtaY6Mm6l7iO2Zh3gIt/K6r95IjhYdJxsdJAs=",
+        "lastModified": 1725669404,
+        "narHash": "sha256-Bbp1GVgKVLz9mSfzgwBdQ96Pxm+RgPEdYjS4kKSFrAI=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "83aed0e6a331a95f7948a29ffe9b9f34d224f620",
+        "rev": "86a4021597c860a6cd1953305a9995f44e60d4d5",
         "type": "github"
       },
       "original": {
@@ -312,7 +287,6 @@
       "inputs": {
         "flake-utils": "flake-utils_2",
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]
@@ -336,8 +310,9 @@
         "crane": "crane",
         "fenix": "fenix",
         "flake-utils": "flake-utils",
-        "neovim": "neovim",
-        "nixpkgs": "nixpkgs_2"
+        "neovim-config": "neovim-config",
+        "nixpkgs": "nixpkgs",
+        "nixvim": "nixvim"
       }
     },
     "rust-analyzer-src": {
@@ -390,7 +365,6 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
-          "neovim",
           "nixvim",
           "nixpkgs"
         ]

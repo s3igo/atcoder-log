@@ -7,7 +7,12 @@ let
     fetchTarball "https://api.github.com/repos/ursi/get-flake/tarball/ac54750e3b95dab6ec0726d77f440efe6045bec1"
   );
   super = get-flake ../../.;
-  inherit (super.inputs) nixpkgs neovim;
+  inherit (super.inputs)
+    nixpkgs
+    fenix
+    nixvim
+    neovim-config
+    ;
 
   pkgs = import nixpkgs { inherit system; };
   pkgs-cabal-install_3_8_1_0 =
@@ -36,9 +41,9 @@ let
 
   buildInputs = with pkgs; [ llvm_14 ];
 
-  neovim' = neovim.withModules {
-    inherit system pkgs;
-    modules = [
+  neovim = nixvim.legacyPackages.${system}.makeNixvim {
+    imports = [
+      neovim-config.nixosModules.default
       {
         autoCmd = [
           {
@@ -109,6 +114,6 @@ pkgs.mkShell {
     pkgs.time
     cabal-install
     ghc
-    neovim'
+    neovim
   ] ++ tasks;
 }

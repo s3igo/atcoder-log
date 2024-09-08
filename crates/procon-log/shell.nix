@@ -8,14 +8,24 @@ let
   );
 
   super = get-flake ../../.;
-  inherit (super.inputs) nixpkgs fenix;
+  inherit (super.inputs)
+    nixpkgs
+    fenix
+    nixvim
+    neovim-config
+    ;
 
   pkgs = import nixpkgs { inherit system; };
   fenix' = fenix.packages.${system};
   toolchain = import ./toolchain.nix { inherit fenix'; };
   inherit (fenix'.default) rustfmt; # rustfmt nightly
 
-  neovim = super.neovim.${system} [ super.inputs.neovim.modules.rust ];
+  neovim = nixvim.legacyPackages.${system}.makeNixvim {
+    imports = with neovim-config.nixosModules; [
+      default
+      rust
+    ];
+  };
 in
 
 pkgs.mkShell {

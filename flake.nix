@@ -10,7 +10,11 @@
       url = "github:ipetkov/crane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    neovim.url = "github:s3igo/dotfiles?dir=neovim";
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    neovim-config.url = "github:s3igo/dotfiles?dir=neovim-config";
   };
 
   outputs =
@@ -20,7 +24,8 @@
       flake-utils,
       fenix,
       crane,
-      neovim,
+      nixvim,
+      neovim-config,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -43,9 +48,9 @@
         };
 
         packages = {
-          neovim = neovim.withModules {
-            inherit system pkgs;
-            modules = with neovim.modules; [
+          neovim = nixvim.legacyPackages.${system}.makeNixvim {
+            imports = with neovim-config.nixosModules; [
+              default
               nix
               markdown
             ];
