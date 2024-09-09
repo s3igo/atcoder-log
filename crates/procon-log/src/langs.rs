@@ -10,6 +10,7 @@ pub enum Lang {
     Ocaml(#[bpaf(external(ocaml))] ()),
     Haskell(#[bpaf(external(haskell))] ()),
     Nim(#[bpaf(external(nim))] ()),
+    Cpp(#[bpaf(external(cpp))] ()),
 }
 
 impl fmt::Display for Lang {
@@ -19,6 +20,7 @@ impl fmt::Display for Lang {
             Lang::Ocaml(_) => write!(f, "ocaml"),
             Lang::Haskell(_) => write!(f, "haskell"),
             Lang::Nim(_) => write!(f, "nim"),
+            Lang::Cpp(_) => write!(f, "cpp"),
         }
     }
 }
@@ -30,6 +32,7 @@ impl Lang {
             Lang::Ocaml(_) => "ml",
             Lang::Haskell(_) => "hs",
             Lang::Nim(_) => "nim",
+            Lang::Cpp(_) => "cpp",
         }
     }
 
@@ -52,4 +55,4 @@ macro_rules! generate_parsers {
     };
 }
 
-generate_parsers!(rust, ocaml, haskell, nim);
+generate_parsers!(rust, ocaml, haskell, nim, cpp);

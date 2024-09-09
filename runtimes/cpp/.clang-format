@@ -1,0 +1,40 @@
+---
+BasedOnStyle: Google
+
+AlignAfterOpenBracket: BlockIndent
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: None
+AlignEscapedNewlines: DontAlign
+AlignOperands: DontAlign
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Attach
+BreakStringLiterals: false
+ColumnLimit: 100
+ContinuationIndentWidth: 4
+IndentExternBlock: Indent
+IndentPPDirectives: BeforeHash
+IndentWidth: 4
+PointerAlignment: Right
+---
+Language: Cpp
+
+AlwaysBreakTemplateDeclarations: Yes
+AllowShortLambdasOnASingleLine: All
+BreakBeforeConceptDeclarations: Always
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+CompactNamespaces: true
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: false
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+FixNamespaceComments: true
+IndentAccessModifiers: false
+LambdaBodyIndentation: Signature
+NamespaceIndentation: All
+RequiresClausePosition: WithPreceding
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: true
+...
