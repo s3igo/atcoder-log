@@ -9,14 +9,10 @@ let
   super = get-flake ../../.;
   inherit (super.inputs) nixpkgs nixvim neovim-config;
   pkgs = import nixpkgs { inherit system; };
-  pkgs-nim_1_6_14 =
-    import
-      (builtins.fetchTarball "https://api.github.com/repos/nixos/nixpkgs/tarball/a71323f68d4377d12c04a5410e214495ec598d4c")
-      { inherit system; };
 
-  nativeBuildInputs = with pkgs-nim_1_6_14; [
-    nim
-    nimPackages.nimble
+  nativeBuildInputs = with pkgs; [
+    crystal_1_9
+    shards
   ];
 
   neovim = nixvim.legacyPackages.${system}.makeNixvim {
@@ -26,28 +22,16 @@ let
         autoCmd = [
           {
             event = "FileType";
-            pattern = "nim";
+            pattern = "crystal";
             command = "setlocal shiftwidth=2";
           }
         ];
 
         plugins.none-ls = {
           enable = true;
-          sources.formatting.nimpretty.enable = true;
+          sources.formatting.crystal_format.enable = true;
         };
-
-        extraPackages = [
-          pkgs-nim_1_6_14.nim
-          pkgs.nimlangserver
-        ];
-
-        extraConfigLuaPost = ''
-          require('lspconfig').nim_langserver.setup({
-            settings = {
-              nim = { nimsuggestPath = "${pkgs-nim_1_6_14.nim}/bin/nimsuggest" }
-            }
-          })
-        '';
+        # crystaline
       }
     ];
   };
@@ -63,14 +47,14 @@ let
           ]
           ++ nativeBuildInputs;
         text = ''
-          nimble build && oj test --command './main'
+          shards build --release --no-debug --no-color && oj test --command './bin/main'
         '';
       };
       submit = pkgs.writeShellApplication {
         name = "s";
         runtimeInputs = [ pkgs.online-judge-tools ];
         text = ''
-          oj submit --no-open --yes -- "$URL" ./main.nim
+          oj submit --no-open --yes -- "$URL" ./main.cr
         '';
       };
       testAndSubmit = pkgs.writeShellApplication {
@@ -87,7 +71,7 @@ let
         name = "r";
         runtimeInputs = nativeBuildInputs;
         text = ''
-          nimble run
+          shards run --release --no-debug --no-color
         '';
       };
     in
@@ -102,7 +86,4 @@ in
 pkgs.mkShell {
   inherit nativeBuildInputs;
   packages = [ neovim ] ++ tasks;
-  # shellHook = ''
-  #   nimble setup
-  # '';
 }

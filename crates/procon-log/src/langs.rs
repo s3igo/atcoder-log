@@ -11,6 +11,7 @@ pub enum Lang {
     Haskell(#[bpaf(external(haskell))] ()),
     Nim(#[bpaf(external(nim))] ()),
     Cpp(#[bpaf(external(cpp))] ()),
+    Crystal(#[bpaf(external(crystal))] ()),
 }
 
 impl fmt::Display for Lang {
@@ -21,6 +22,7 @@ impl fmt::Display for Lang {
             Lang::Haskell(_) => write!(f, "haskell"),
             Lang::Nim(_) => write!(f, "nim"),
             Lang::Cpp(_) => write!(f, "cpp"),
+            Lang::Crystal(_) => write!(f, "crystal"),
         }
     }
 }
@@ -33,6 +35,7 @@ impl Lang {
             Lang::Haskell(_) => "hs",
             Lang::Nim(_) => "nim",
             Lang::Cpp(_) => "cpp",
+            Lang::Crystal(_) => "cr",
         }
     }
 
@@ -55,4 +58,4 @@ macro_rules! generate_parsers {
     };
 }
 
-generate_parsers!(rust, ocaml, haskell, nim, cpp);
+generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal);

@@ -1,0 +1,6 @@
+# Shards
+/lib
+/bin/main
+/bin/main.dwarf
+/bin/main.exe
+/bin/main.pdb

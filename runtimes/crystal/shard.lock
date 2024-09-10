@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  atcoder:
+    git: https://github.com/hakatashi/ac-library.cr.git
+    version: 0.1.0+git.commit.85d122475032a51fdd47f11c193b61630d8d5b80
+

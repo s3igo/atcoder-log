@@ -9,7 +9,6 @@ let
   super = get-flake ../../.;
   inherit (super.inputs)
     nixpkgs
-    fenix
     nixvim
     neovim-config
     ;
@@ -63,7 +62,6 @@ let
   };
   tasks =
     let
-
       test = pkgs.writeShellApplication {
         name = "t";
         runtimeInputs = [

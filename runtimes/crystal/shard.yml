@@ -1,0 +1,13 @@
+name: submission
+version: 0.1.0
+
+dependencies:
+  atcoder:
+    github: hakatashi/ac-library.cr
+    commit: 85d122475032a51fdd47f11c193b61630d8d5b80
+
+targets:
+  main:
+    main: main.cr
+
+crystal: 1.9.2
