@@ -1,0 +1,82 @@
+{
+  "version": 2,
+  "packages": {
+    "nimcuda": {
+      "version": "0.1.9",
+      "vcsRevision": "5c3cf233726549b63266f6dba14788f30e0405b6",
+      "url": "https://github.com/andreaferretti/nimcuda",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "9d6c8461e8f6f1acdacc55fe2353c27650be6a10"
+      }
+    },
+    "nimblas": {
+      "version": "0.3.1",
+      "vcsRevision": "93ffdd705496990983eefa0507d52f6a6c533ca7",
+      "url": "https://github.com/andreaferretti/nimblas",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "e1ecdea4bb8176f12d66efd4aa0c7b3bea970027"
+      }
+    },
+    "atcoder": {
+      "version": "0.1.0",
+      "vcsRevision": "52761787964c590495eec34d366fd325afb4ae3e",
+      "url": "https://github.com/zer0-star/Nim-ACL",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "992db06af8710eae85b8134f9061c452bc5b6a94"
+      }
+    },
+    "nimlapack": {
+      "version": "0.3.1",
+      "vcsRevision": "231430b3d2156f5cbe8fe16bb8967cd9a93964c5",
+      "url": "https://github.com/andreaferretti/nimlapack",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "fcb25795c6fb43f9251b7f34c3ad84c39e645afd"
+      }
+    },
+    "neo": {
+      "version": "0.3.4",
+      "vcsRevision": "6f015e4252bfd111dc522ac8d3f9919bad66b0b7",
+      "url": "https://github.com/andreaferretti/neo",
+      "downloadMethod": "git",
+      "dependencies": [
+        "nimblas",
+        "nimcuda",
+        "nimlapack"
+      ],
+      "checksums": {
+        "sha1": "f2d7901bc3ac553b15063d8354faf34b4bdb5464"
+      }
+    },
+    "gmp": {
+      "version": "0.2.5",
+      "vcsRevision": "7dfd4570c2a986c2e90ea16bb917a1b99668c460",
+      "url": "https://github.com/subsetpark/nim-gmp",
+      "downloadMethod": "git",
+      "dependencies": [],
+      "checksums": {
+        "sha1": "cce1b5109d5895d4fc16921076834863a7747ee3"
+      }
+    },
+    "bignum": {
+      "version": "1.0.4",
+      "vcsRevision": "39b6e9a76d7c519b5383fa81c2a0fe20242953ad",
+      "url": "https://github.com/SciNim/bignum",
+      "downloadMethod": "git",
+      "dependencies": [
+        "gmp"
+      ],
+      "checksums": {
+        "sha1": "07341899e4f19d8550a2f902dccb09b5564e842a"
+      }
+    }
+  },
+  "tasks": {}
+}
