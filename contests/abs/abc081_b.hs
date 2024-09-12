@@ -1,16 +1,7 @@
-import Data.ByteString.Char8 qualified as BS
-import Data.Char (isSpace)
-import Data.List
-
-readInts :: IO [Int]
-readInts = unfoldr (BS.readInt . BS.dropWhile isSpace) <$> BS.getLine
-
 solve :: [Int] -> Int
-solve = aux 0
-  where
-    aux acc xs
-      | all even xs = aux (acc + 1) $ map (`div` 2) xs
-      | otherwise = acc
+solve xs
+  | all even xs = 1 + solve (map (`div` 2) xs)
+  | otherwise = 0
 
 main :: IO ()
-main = getLine >> readInts >>= print . solve
+main = print . solve . map (read @Int) . words =<< (getLine >> getLine)

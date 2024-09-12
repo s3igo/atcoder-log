@@ -1,8 +1,10 @@
-import Data.Array (Ix (inRange))
+import Data.Ix (inRange)
 
 digits :: Int -> [Int]
 digits 0 = []
-digits n = n `mod` 10 : digits (n `div` 10)
+digits n = m : digits d
+  where
+    (d, m) = n `divMod` 10
 
 main :: IO ()
 main = do

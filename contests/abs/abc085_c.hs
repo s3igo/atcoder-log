@@ -1,14 +1,6 @@
-import Data.ByteString.Char8 qualified as BS
-import Data.Char (isSpace)
-import Data.List
-
-readInts :: IO [Int]
-readInts = unfoldr (BS.readInt . BS.dropWhile isSpace) <$> BS.getLine
-
 main :: IO ()
 main = do
-  [n, y] <- readInts
-  let result = [[a, b, c] | a <- [0 .. n], b <- [0 .. n - a], let c = n - a - b, 10000 * a + 5000 * b + 1000 * c == y]
-  putStrLn $ case result of
+  [n, y] <- map (read @Int) . words <$> getLine
+  putStrLn $ case [[i, j, k] | i <- [0 .. n], j <- [0 .. n - i], let k = n - i - j, 10000 * i + 5000 * j + 1000 * k == y] of
     [] -> "-1 -1 -1"
     x : _ -> unwords $ map show x
