@@ -7,7 +7,9 @@ fn main() {
     let mut sum = 0;
     for (a, s) in r#as {
         let hand = if s == 'L' { 0 } else { 1 };
-        pos[hand].map(|p| sum += a.abs_diff(p));
+        if let Some(p) = pos[hand] {
+            sum += a.abs_diff(p);
+        }
         pos[hand] = Some(a);
     }
 
