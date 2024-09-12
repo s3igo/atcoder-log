@@ -13,7 +13,8 @@ let
     nixvim
     neovim-config
     ;
-  pkgs = import nixpkgs { inherit system; };
+  overlays = [ super.outputs.overlays.time ];
+  pkgs = import nixpkgs { inherit system overlays; };
 
   toolchain =
     with fenix.packages.${system};
@@ -25,10 +26,17 @@ let
       default.rustfmt # rustfmt nightly
     ];
   neovim = nixvim.legacyPackages.${system}.makeNixvim {
-    imports = with neovim-config.nixosModules; [
-      default
-      rust
-    ];
+    imports =
+      with neovim-config.nixosModules;
+      [
+        default
+        rust
+      ]
+      ++ [
+        {
+          plugins.lsp.servers.rust-analyzer.package = toolchain;
+        }
+      ];
   };
   tasks =
     let
@@ -75,9 +83,9 @@ let
       run
     ];
 in
+
 pkgs.mkShell {
   packages = [
-    pkgs.time
     toolchain
     neovim
   ] ++ tasks;
