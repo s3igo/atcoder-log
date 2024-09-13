@@ -8,7 +8,9 @@ let
   );
   super = get-flake ../../.;
   inherit (super.inputs) nixpkgs nixvim neovim-config;
-  pkgs = import nixpkgs { inherit system; };
+
+  overlays = [ (import ../overlay.nix) ];
+  pkgs = import nixpkgs { inherit system overlays; };
   pkgs-gmp_6_2_1 =
     import
       (builtins.fetchTarball "https://api.github.com/repos/nixos/nixpkgs/tarball/0b07d4957ee1bd7fd3bdfd12db5f361bd70175a6")

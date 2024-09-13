@@ -13,7 +13,8 @@ let
     nixvim
     neovim-config
     ;
-  overlays = [ super.outputs.overlays.time ];
+
+  overlays = [ (import ../overlay.nix) ];
   pkgs = import nixpkgs { inherit system overlays; };
 
   toolchain =

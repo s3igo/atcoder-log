@@ -13,7 +13,8 @@ let
     neovim-config
     ;
 
-  pkgs = import nixpkgs { inherit system; };
+  overlays = [ (import ../overlay.nix) ];
+  pkgs = import nixpkgs { inherit system overlays; };
   pkgs-cabal-install_3_8_1_0 =
     import
       (builtins.fetchTarball "https://api.github.com/repos/nixos/nixpkgs/tarball/98f3b08f58ff125ef02d55cd52a83f44f245f2ea")

@@ -8,7 +8,9 @@ let
   );
   super = get-flake ../../.;
   inherit (super.inputs) nixpkgs nixvim neovim-config;
-  pkgs = import nixpkgs { inherit system; };
+
+  overlays = [ (import ../overlay.nix) ];
+  pkgs = import nixpkgs { inherit system overlays; };
 
   nativeBuildInputs = with pkgs; [
     crystal_1_9
