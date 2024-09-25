@@ -13,7 +13,7 @@ let
     strictDeps = true;
   };
   cargoArtifacts = craneLib.buildDepsOnly commonArgs;
-  procon-log = craneLib.buildPackage (
+  package = craneLib.buildPackage (
     commonArgs
     // {
       inherit cargoArtifacts;
@@ -24,14 +24,14 @@ in
 
 {
   checks = {
-    inherit procon-log;
-    procon-log-clippy = craneLib.cargoClippy (commonArgs // { inherit cargoArtifacts; });
-    procon-log-fmt = craneLib.cargoFmt {
+    aclog = package;
+    aclog-clippy = craneLib.cargoClippy (commonArgs // { inherit cargoArtifacts; });
+    aclog-fmt = craneLib.cargoFmt {
       inherit src;
       buildInputs = [ fenix'.default.rustfmt ];
     };
-    procon-log-nextest = craneLib.cargoNextest (commonArgs // { inherit cargoArtifacts; });
+    aclog-nextest = craneLib.cargoNextest (commonArgs // { inherit cargoArtifacts; });
   };
 
-  package = procon-log;
+  inherit package;
 }

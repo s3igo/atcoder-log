@@ -33,19 +33,10 @@
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
         fenix' = fenix.packages.${system};
-        procon-log = import ./crates/procon-log { inherit pkgs fenix' crane; };
-        procon-log' = procon-log.package;
+        aclog = import ./crates/procon-log { inherit pkgs fenix' crane; };
       in
       {
-        inherit (procon-log) checks;
-
-        apps = {
-          procon-log = {
-            type = "app";
-            program = "${procon-log'}/bin/aclog";
-          };
-          default = self.apps.${system}.procon-log;
-        };
+        inherit (aclog) checks;
 
         packages = {
           neovim = nixvim.legacyPackages.${system}.makeNixvim {
@@ -55,18 +46,18 @@
               markdown
             ];
           };
-          procon-log = procon-log';
-          default = procon-log';
+          aclog = aclog.package;
+          default = aclog.package;
         };
 
         devShells.default = pkgs.mkShell {
           packages =
             let
-              inherit (self.packages.${system}) neovim procon-log;
+              inherit (self.packages.${system}) neovim aclog;
             in
             [
               neovim
-              procon-log
+              aclog
             ]
             ++ (with pkgs; [ online-judge-tools ])
             ++ tasks;

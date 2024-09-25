@@ -6,7 +6,7 @@ pub trait Run {
     fn run(&self) -> Result<()>;
 }
 
-/// procon-log: A tool for managing competitive programming logs
+/// aclog: A tool for managing AtCoder logs
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options, version)]
 pub enum Cmds {
