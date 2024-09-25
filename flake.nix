@@ -33,7 +33,7 @@
         pkgs = import nixpkgs { inherit system; };
         tasks = import ./tasks.nix { inherit nixpkgs system; };
         fenix' = fenix.packages.${system};
-        aclog = import ./crates/procon-log { inherit pkgs fenix' crane; };
+        aclog = import ./crates/aclog { inherit pkgs fenix' crane; };
       in
       {
         inherit (aclog) checks;
