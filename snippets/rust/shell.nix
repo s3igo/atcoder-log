@@ -12,7 +12,7 @@ let
   pkgs = import super.inputs.nixpkgs { inherit system; };
 
   inherit (container.packages.${system}) toolchain rustfmt-config;
-  cargo-snippet = import ./cargo-snippet { inherit pkgs; };
+  cargo-snippet = pkgs.callPackage ./cargo-snippet { };
   build = pkgs.writeShellApplication {
     name = "task_build";
     runtimeInputs = [

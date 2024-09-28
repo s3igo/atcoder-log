@@ -1,28 +1,34 @@
-{ pkgs }:
+{
+  lib,
+  rustPlatform,
+  fetchFromGitHub,
+}:
 
-pkgs.rustPlatform.buildRustPackage rec {
+rustPlatform.buildRustPackage rec {
   pname = "cargo-snippet";
   version = "0.6.5";
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "hatoo";
-    repo = pname;
+    repo = "cargo-snippet";
     rev = "v${version}";
     hash = "sha256-70UETnz7TOTjWoxKrYXq/9WskKJnC65hLWtzdZnc1nE=";
   };
 
-  cargoHash = "sha256-z5VOo6nCDK5IZcKY0qocjcXeX0dKeTrr+i13jCqHm8c=";
-
-  cargoPatches = [ ./add-lockfile.patch ];
-
-  doCheck = false;
+  cargoLock.lockFile = ./Cargo.lock;
 
   buildFeatures = [ "binaries" ];
 
-  meta = with pkgs.lib; {
+  postPatch = ''
+    ln -s ${./Cargo.lock} Cargo.lock
+  '';
+
+  doCheck = false;
+
+  meta = {
     description = "A snippet extrator for competitive programmers";
     homepage = "https://github.com/hatoo/cargo-snippet";
-    license = licenses.mit;
+    license = lib.licenses.mit;
     maintainers = [ ];
     mainProgram = "cargo-snippet";
   };
