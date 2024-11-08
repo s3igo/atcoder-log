@@ -1,8 +1,9 @@
 { inputs, ... }:
 
-{
+rec {
   flake.neovimModules.aclog = with inputs.neovim-config.nixosModules; [
     default
+    nix
     rust
   ];
 
@@ -46,16 +47,21 @@
         aclog-build = config.packages.aclog;
         aclog-clippy = craneLib.cargoClippy (commonArgs // { inherit cargoArtifacts; });
         aclog-fmt = craneLib.cargoFmt { inherit src; };
+        aclog-audit = craneLib.cargoAudit {
+          inherit src;
+          inherit (inputs) advisory-db;
+        };
         aclog-nextest = craneLib.cargoNextest (commonArgs // { inherit cargoArtifacts; });
       };
 
-      devShells.aclog = pkgs.mkShellNoCC {
+      devShells.aclog = pkgs.mkShell {
         packages = [
           toolchain
+          pkgs.cargo-nextest
           (inputs.neovim-config.lib.customName {
             inherit pkgs;
             nvim = inputs'.nixvim.legacyPackages.makeNixvim {
-              imports = config.flake.neovimModules.aclog;
+              imports = flake.neovimModules.aclog;
             };
           })
         ];

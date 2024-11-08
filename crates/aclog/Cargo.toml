@@ -8,12 +8,12 @@ strip = true
 lto = true
 codegen-units = 1
 
+# [lints.clippy]
+# pedantic = { level = "warn", priority = -1 }
+# nursery = { level = "warn", priority = -1 }
+
 [dependencies]
 anyhow = "1.0.86"
 bpaf = { version = "0.9.12", features = ["derive"] }
 regex = "1.10.6"
 url = "2.5.2"
-
-[[bin]]
-name = "aclog"
-path = "src/main.rs"
