@@ -1,6 +1,6 @@
-# nix
+# Nix
 .direnv/
 result
 
-# rust
+# Rust
 target/
