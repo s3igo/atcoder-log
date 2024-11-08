@@ -1,15 +1,16 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    systems.url = "github:nix-systems/default";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    crane = {
-      url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,50 +19,43 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-      fenix,
-      crane,
-      nixvim,
-      neovim-config,
-    }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-        tasks = import ./tasks.nix { inherit nixpkgs system; };
-        fenix' = fenix.packages.${system};
-        aclog = import ./crates/aclog { inherit pkgs fenix' crane; };
-      in
-      {
-        inherit (aclog) checks;
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ ./crates/aclog ];
 
-        packages = {
-          neovim = nixvim.legacyPackages.${system}.makeNixvim {
-            imports = with neovim-config.nixosModules; [
-              default
-              nix
-              markdown
+      systems = import inputs.systems;
+
+      perSystem =
+        {
+          config,
+          pkgs,
+          inputs',
+          system,
+          ...
+        }:
+
+        {
+          packages = {
+            default = config.packages.aclog;
+            neovim = inputs'.nixvim.legacyPackages.makeNixvim {
+              imports = with inputs.neovim-config.nixosModules; [
+                default
+                nix
+                markdown
+              ];
+            };
+          };
+
+          devShells.default = pkgs.mkShellNoCC {
+            packages = [
+              pkgs.online-judge-tools
+              config.packages.aclog
+              (inputs.neovim-config.lib.customName {
+                inherit pkgs;
+                nvim = config.packages.neovim;
+              })
             ];
           };
-          aclog = aclog.package;
-          default = aclog.package;
         };
-
-        devShells.default = pkgs.mkShell {
-          packages =
-            let
-              inherit (self.packages.${system}) neovim aclog;
-            in
-            [
-              neovim
-              aclog
-            ]
-            ++ (with pkgs; [ online-judge-tools ])
-            ++ tasks;
-        };
-      }
-    );
+    };
 }
