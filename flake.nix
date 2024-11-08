@@ -25,7 +25,10 @@
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ ./crates/aclog ];
+      imports = [
+        ./crates/aclog
+        ./runtimes/rust
+      ];
 
       systems = import inputs.systems;
 
@@ -39,6 +42,20 @@
         }:
 
         {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              (final: prev: {
+                time = prev.time.overrideAttrs {
+                  # Rename the binary from 'time' to 'gtime'
+                  postInstall = ''
+                    mv $out/bin/time $out/bin/gtime
+                  '';
+                };
+              })
+            ];
+          };
+
           packages = {
             default = config.packages.aclog;
             neovim = inputs'.nixvim.legacyPackages.makeNixvim {
