@@ -17,13 +17,13 @@ rustPlatform.buildRustPackage rec {
 
   cargoLock.lockFile = ./Cargo.lock;
 
-  buildFeatures = [ "binaries" ];
-
   postPatch = ''
     ln -s ${./Cargo.lock} Cargo.lock
   '';
 
   doCheck = false;
+
+  buildFeatures = [ "binaries" ];
 
   meta = {
     description = "A snippet extrator for competitive programmers";
