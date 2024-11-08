@@ -1,6 +1,6 @@
-{ inputs, ... }:
+{ inputs, self, ... }:
 
-rec {
+{
   flake.neovimModules.aclog = with inputs.neovim-config.nixosModules; [
     default
     nix
@@ -61,7 +61,7 @@ rec {
           (inputs.neovim-config.lib.customName {
             inherit pkgs;
             nvim = inputs'.nixvim.legacyPackages.makeNixvim {
-              imports = flake.neovimModules.aclog;
+              imports = self.neovimModules.aclog;
             };
           })
         ];
