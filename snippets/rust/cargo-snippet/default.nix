@@ -26,7 +26,7 @@ rustPlatform.buildRustPackage rec {
   buildFeatures = [ "binaries" ];
 
   meta = {
-    description = "A snippet extrator for competitive programmers";
+    description = "A snippet extractor for competitive programmers";
     homepage = "https://github.com/hatoo/cargo-snippet";
     license = lib.licenses.mit;
     maintainers = [ ];

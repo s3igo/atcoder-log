@@ -28,6 +28,7 @@
       imports = [
         ./crates/aclog
         ./runtimes/rust
+        ./snippets/rust
       ];
 
       systems = import inputs.systems;

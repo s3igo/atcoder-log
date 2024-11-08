@@ -66,21 +66,35 @@
     in
 
     {
-      packages.rust-toolchain =
-        with inputs'.fenix.packages;
-        combine [
-          (fromToolchainFile {
-            file = ./rust-toolchain.toml;
-            sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
-          })
-          default.rustfmt # rustfmt nightly
-        ];
+      packages = {
+        rust-toolchain =
+          with inputs'.fenix.packages;
+          combine [
+            (fromToolchainFile {
+              file = ./rust-toolchain.toml;
+              sha256 = "sha256-gdYqng0y9iHYzYPAdkC/ka3DRny3La/S5G8ASj0Ayyc=";
+            })
+            default.rustfmt # rustfmt nightly
+          ];
+        rustfmt-config = pkgs.stdenvNoCC.mkDerivation {
+          name = "rustfmt-config";
+          src = ./rustfmt.toml;
+          phases = [ "installPhase" ];
+          installPhase = ''
+            mkdir -p $out/share
+            cp $src $out/share/rustfmt.toml
+          '';
+        };
+      };
 
       devShells.rust = pkgs.mkShell {
         packages = [
           config.packages.rust-toolchain
           neovim
         ] ++ tasks;
+        shellHook = ''
+          export RUST_BACKTRACE=1
+        '';
       };
     };
 }
