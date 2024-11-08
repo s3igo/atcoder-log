@@ -10,15 +10,6 @@
     }:
 
     let
-      neovim = inputs'.nixvim.legacyPackages.makeNixvim {
-        imports = with inputs.neovim-config.nixosModules; [
-          default
-          rust
-          {
-            plugins.lsp.servers.rust-analyzer.package = toolchain;
-          }
-        ];
-      };
       tasks =
         let
           test = pkgs.writeShellApplication {
@@ -90,7 +81,15 @@
       devShells.rust = pkgs.mkShell {
         packages = [
           config.packages.rust-toolchain
-          neovim
+          (inputs'.nixvim.legacyPackages.makeNixvim {
+            imports = with inputs.neovim-config.nixosModules; [
+              default
+              rust
+              {
+                plugins.lsp.servers.rust-analyzer.package = config.packages.rust-toolchain;
+              }
+            ];
+          })
         ] ++ tasks;
         shellHook = ''
           export RUST_BACKTRACE=1
