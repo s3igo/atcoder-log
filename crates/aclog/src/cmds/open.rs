@@ -1,6 +1,6 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
-use anyhow::{bail, ensure, Context as _, Result};
+use anyhow::{bail, ensure, Context as _};
 use bpaf::{Bpaf, Parser};
 use regex::Regex;
 use url::Url;
@@ -45,7 +45,7 @@ pub fn open() -> impl Parser<Open> {
 const ATCODER_CONTEST_URL: &str = "https://atcoder.jp/contests";
 
 impl Run for Open {
-    fn run(&self) -> Result<()> {
+    fn run(&self) -> anyhow::Result<()> {
         let file = match &self.file {
             Some(file) => file.to_string(),
             None => match self.url.as_ref() {
@@ -99,10 +99,13 @@ impl Run for Open {
 
         // (2) Solve the task
         // Open the editor
-        Command::new("nix-shell")
+        Command::new("nix")
+            .arg("develop")
+            .arg(format!("{}#{}", proj_root.display(), self.lang))
+            .arg("--command")
+            .arg("nvim")
+            .arg(runtime_path.display().to_string())
             .env("URL", url)
-            .arg("--run")
-            .arg(format!("nvim {}", runtime_path.display()))
             .status()?;
 
         // Save the solution file
@@ -129,7 +132,7 @@ impl Run for Open {
     }
 }
 
-fn get_proj_root() -> Result<PathBuf> {
+fn get_proj_root() -> anyhow::Result<PathBuf> {
     let output = Command::new("git")
         .args(["rev-parse", "--show-toplevel"])
         .output()?;

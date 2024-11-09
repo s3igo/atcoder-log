@@ -70,7 +70,7 @@
             };
           };
 
-          devShells.default = pkgs.mkShellNoCC {
+          devShells.default = pkgs.mkShell {
             packages = [
               pkgs.online-judge-tools
               config.packages.aclog
