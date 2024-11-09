@@ -29,8 +29,10 @@
       imports = [
         ./crates/aclog
         ./runtimes/rust
+        ./runtimes/haskell
         ./snippets/rust
       ];
+      # ++ (map (path: ./runtimes/${path}) (with builtins; attrNames (readDir ./runtimes)));
 
       systems = import inputs.systems;
 
