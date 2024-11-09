@@ -5,7 +5,6 @@
     {
       config,
       pkgs,
-      lib,
       inputs',
       ...
     }:
@@ -35,9 +34,11 @@
           config.packages.cargo-snippet
         ];
         text = ''
+          PROJ_ROOT=$(git rev-parse --show-toplevel)
+
           cargo test --lib \
             && jq -s add rust.json <(cargo snippet -t vscode) \
-              > "$(${lib.getExe config.flake-root.package})"/languages/rust/rust.code-snippets
+              > "$PROJ_ROOT/languages/rust/rust.code-snippets"
         '';
       };
     in
@@ -49,7 +50,6 @@
         packages = [
           config.packages.rust-toolchain
           config.packages.cargo-snippet
-          pkgs.cargo-nextest
           (inputs.neovim-config.lib.customName { inherit pkgs nvim; })
           build
         ];
