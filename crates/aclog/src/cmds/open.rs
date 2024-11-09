@@ -64,21 +64,18 @@ impl Run for Open {
             },
         };
 
-        let (url, contest) = match &self.url {
-            Some(url) => {
-                let parsed_url = Url::parse(url).context("Invalid URL")?;
-                let contest = parsed_url
-                    .path_segments()
-                    .and_then(|mut segments| segments.nth(1))
-                    .context("No contest found")?
-                    .to_string();
-                (url.to_string(), contest)
-            },
-            None => {
-                let contest = self.contest.as_ref().unwrap(); // guarded by the parser
-                let url = Url::parse(&format!("{ATCODER_CONTEST_URL}/tasks/{contest}"))?;
-                (url.to_string(), contest.to_string())
-            },
+        let (url, contest) = if let Some(url) = &self.url {
+            let parsed_url = Url::parse(url).context("Invalid URL")?;
+            let contest = parsed_url
+                .path_segments()
+                .and_then(|mut segments| segments.nth(1))
+                .context("No contest found")?
+                .to_string();
+            (url.to_string(), contest)
+        } else {
+            let contest = self.contest.as_ref().unwrap(); // guarded by the parser
+            let url = Url::parse(&format!("{ATCODER_CONTEST_URL}/tasks/{contest}"))?;
+            (url.to_string(), contest.to_string())
         };
 
         // (1) Set up the runtime directory

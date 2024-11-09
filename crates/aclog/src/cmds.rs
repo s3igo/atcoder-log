@@ -1,12 +1,14 @@
 mod open;
-use anyhow::Result;
 use bpaf::Bpaf;
 
 pub trait Run {
-    fn run(&self) -> Result<()>;
+    /// # Errors
+    /// Returns an error if the command fails
+    fn run(&self) -> anyhow::Result<()>;
 }
 
 /// aclog: A tool for managing AtCoder logs
+#[allow(clippy::doc_markdown)]
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options, version)]
 pub enum Cmds {
@@ -16,7 +18,9 @@ pub enum Cmds {
 }
 
 impl Cmds {
-    pub fn dispatch() -> Result<()> {
+    /// # Errors
+    /// Returns an error if the command fails
+    pub fn dispatch() -> anyhow::Result<()> {
         match cmds().run() {
             Self::Open(cmd) => cmd.run(),
         }
