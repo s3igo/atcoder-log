@@ -86,7 +86,7 @@
               default
               rust
               {
-                plugins.lsp.servers.rust-analyzer.package = config.packages.rust-toolchain;
+                plugins.lsp.servers.rust_analyzer.package = config.packages.rust-toolchain;
               }
             ];
           })
