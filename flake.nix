@@ -1,11 +1,11 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    systems.url = "github:nix-systems/default";
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,9 +32,8 @@
 
       perSystem =
         {
-          config,
           pkgs,
-          inputs',
+          self',
           system,
           ...
         }:
@@ -45,7 +44,7 @@
             overlays = [
               (final: prev: {
                 time = prev.time.overrideAttrs {
-                  # Rename the binary from 'time' to 'gtime'
+                  # Renaming the binary because oj expects "gtime"
                   postInstall = ''
                     mv $out/bin/time $out/bin/gtime
                   '';
@@ -54,27 +53,19 @@
             ];
           };
 
-          packages = {
-            default = config.packages.aclog;
-            neovim = inputs'.nixvim.legacyPackages.makeNixvim {
-              imports = with inputs.neovim-config.nixosModules; [
-                default
-                nix
-                markdown
-              ];
-            };
-          };
+          packages.default = self'.packages.aclog;
 
           devShells.default = pkgs.mkShell {
+            inputsFrom = [ self'.devShells.aclog ];
             packages = [
+              pkgs.nil
+              pkgs.nixd
               pkgs.online-judge-tools
-              config.packages.aclog
-              (inputs.neovim-config.lib.customName {
-                inherit pkgs;
-                nvim = config.packages.neovim;
-              })
+              self'.packages.aclog
             ];
           };
         };
+
+      flake.metadata.neovimFeatures = inputs.nixpkgs.lib.concat [ "rust" ];
     };
 }

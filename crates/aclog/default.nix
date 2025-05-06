@@ -1,17 +1,13 @@
 { inputs, self, ... }:
 
 {
-  flake.neovimModules.aclog = with inputs.neovim-config.nixosModules; [
-    default
-    nix
-    rust
-  ];
-
   perSystem =
     {
       config,
+      lib,
       pkgs,
       inputs',
+      self',
       ...
     }:
 
@@ -32,38 +28,34 @@
         strictDeps = true;
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+      commonArgs' = commonArgs // {
+        inherit cargoArtifacts;
+      };
     in
 
     {
-      packages.aclog = craneLib.buildPackage (
-        commonArgs
-        // {
-          inherit cargoArtifacts;
-          doCheck = false;
-        }
-      );
+      packages = {
+        _deps-aclog = cargoArtifacts;
+        aclog = craneLib.buildPackage commonArgs';
+      };
 
       checks = {
-        aclog-build = config.packages.aclog;
-        aclog-clippy = craneLib.cargoClippy (commonArgs // { inherit cargoArtifacts; });
+        aclog-build = craneLib.buildPackage (commonArgs' // { doCheck = false; });
+        aclog-clippy = craneLib.cargoClippy (
+          commonArgs' // { cargoClippyExtraArgs = "--all-targets -- -D warnings"; }
+        );
         aclog-fmt = craneLib.cargoFmt { inherit src; };
+        aclog-nextest = craneLib.cargoNextest commonArgs';
         aclog-audit = craneLib.cargoAudit {
           inherit src;
           inherit (inputs) advisory-db;
         };
-        aclog-nextest = craneLib.cargoNextest (commonArgs // { inherit cargoArtifacts; });
       };
 
-      devShells.aclog = pkgs.mkShell {
+      devShells.aclog = craneLib.devShell {
+        checks = lib.filterAttrs (name: _: builtins.match "^aclog-.*" name != null) self'.checks;
         packages = [
           toolchain
-          pkgs.cargo-nextest
-          (inputs.neovim-config.lib.customName {
-            inherit pkgs;
-            nvim = inputs'.nixvim.legacyPackages.makeNixvim {
-              imports = self.neovimModules.aclog;
-            };
-          })
         ];
       };
     };
