@@ -1,9 +1,8 @@
-{ inputs, self, ... }:
+{ inputs, ... }:
 
 {
   perSystem =
     {
-      config,
       lib,
       pkgs,
       inputs',
@@ -22,10 +21,20 @@
           default.rustfmt # rustfmt nightly
         ];
       craneLib = (inputs.crane.mkLib pkgs).overrideToolchain toolchain;
-      src = craneLib.cleanCargoSource ./.;
+      src = lib.fileset.toSource {
+        root = ../..;
+        fileset = lib.fileset.unions [
+          ../../Cargo.toml
+          ../../Cargo.lock
+          (craneLib.fileset.commonCargoSources ./.)
+        ];
+      };
       commonArgs = {
         inherit src;
+        inherit (craneLib.crateNameFromCargoToml { src = ./.; }) pname;
+        inherit (craneLib.crateNameFromCargoToml { src = ../..; }) version;
         strictDeps = true;
+        CARGO_PROFILE = "ci";
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
       commonArgs' = commonArgs // {
@@ -44,7 +53,6 @@
         aclog-clippy = craneLib.cargoClippy (
           commonArgs' // { cargoClippyExtraArgs = "--all-targets -- -D warnings"; }
         );
-        aclog-fmt = craneLib.cargoFmt { inherit src; };
         aclog-nextest = craneLib.cargoNextest commonArgs';
         aclog-audit = craneLib.cargoAudit {
           inherit src;
@@ -54,9 +62,7 @@
 
       devShells.aclog = craneLib.devShell {
         checks = lib.filterAttrs (name: _: builtins.match "^aclog-.*" name != null) self'.checks;
-        packages = [
-          toolchain
-        ];
+        packages = [ toolchain ];
       };
     };
 }

@@ -57,11 +57,11 @@
 
           devShells.default = pkgs.mkShell {
             inputsFrom = [ self'.devShells.aclog ];
-            packages = [
-              pkgs.nil
-              pkgs.nixd
-              pkgs.online-judge-tools
-              self'.packages.aclog
+            packages = with pkgs; [
+              just
+              nil
+              nixd
+              online-judge-tools
             ];
           };
         };

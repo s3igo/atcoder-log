@@ -1,0 +1,7 @@
+[no-exit-message]
+build *args:
+    cargo build -- {{ args }}
+
+[no-exit-message]
+run *args:
+    cargo run -- {{ args }}
