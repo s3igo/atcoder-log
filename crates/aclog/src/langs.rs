@@ -1,6 +1,7 @@
 use std::fmt;
 
-use bpaf::{literal, Bpaf, Parser};
+use anyhow::{Result, bail};
+use bpaf::{Bpaf, Parser, literal};
 
 // Use `()` due to restrictions on enum variants of bpaf
 
@@ -12,6 +13,7 @@ pub enum Lang {
     Nim(#[bpaf(external(nim))] ()),
     Cpp(#[bpaf(external(cpp))] ()),
     Crystal(#[bpaf(external(crystal))] ()),
+    Zig(#[bpaf(external(zig))] ()),
 }
 
 impl fmt::Display for Lang {
@@ -23,6 +25,7 @@ impl fmt::Display for Lang {
             Self::Nim(()) => write!(f, "nim"),
             Self::Cpp(()) => write!(f, "cpp"),
             Self::Crystal(()) => write!(f, "crystal"),
+            Self::Zig(()) => write!(f, "zig"),
         }
     }
 }
@@ -36,6 +39,7 @@ impl Lang {
             Self::Nim(()) => "nim",
             Self::Cpp(()) => "cpp",
             Self::Crystal(()) => "cr",
+            Self::Zig(()) => "zig",
         }
     }
 
@@ -43,7 +47,25 @@ impl Lang {
         match self {
             Self::Rust(()) => "src/main.rs".to_string(),
             Self::Haskell(()) => "app/Main.hs".to_string(),
+            Self::Zig(()) => "src/main.zig".to_string(),
             _ => format!("main.{}", self.extension()),
+        }
+    }
+
+    /// Convert a string representation to a Lang enum
+    ///
+    /// # Errors
+    /// Returns an error if the string doesn't match any supported language
+    pub fn from(lang_str: &str) -> Result<Self> {
+        match lang_str {
+            "rust" => Ok(Self::Rust(())),
+            "ocaml" => Ok(Self::Ocaml(())),
+            "haskell" => Ok(Self::Haskell(())),
+            "nim" => Ok(Self::Nim(())),
+            "cpp" => Ok(Self::Cpp(())),
+            "crystal" => Ok(Self::Crystal(())),
+            "zig" => Ok(Self::Zig(())),
+            _ => bail!("Unsupported language: {lang_str}"),
         }
     }
 }
@@ -58,4 +80,4 @@ macro_rules! generate_parsers {
     };
 }
 
-generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal);
+generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal, zig);

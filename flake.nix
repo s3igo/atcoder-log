@@ -1,19 +1,14 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    systems.url = "github:nix-systems/default";
     fenix = {
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-    crane.url = "github:ipetkov/crane";
-    advisory-db = {
-      url = "github:rustsec/advisory-db";
-      flake = false;
     };
   };
 
@@ -21,7 +16,6 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        ./crates/aclog
         ./runtimes/rust
         ./runtimes/haskell
         ./snippets/rust
@@ -31,50 +25,32 @@
       systems = import inputs.systems;
 
       perSystem =
-        {
-          config,
-          pkgs,
-          inputs',
-          system,
-          ...
-        }:
+        { pkgs, inputs', ... }:
 
-        {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              (final: prev: {
-                time = prev.time.overrideAttrs {
-                  # Rename the binary from 'time' to 'gtime'
-                  postInstall = ''
-                    mv $out/bin/time $out/bin/gtime
-                  '';
-                };
+        let
+          toolchain =
+            with inputs'.fenix.packages;
+            combine [
+              (fromToolchainFile {
+                file = ./rust-toolchain.toml;
+                sha256 = "sha256-X/4ZBHO3iW0fOenQ3foEvscgAPJYl2abspaBThDOukI=";
               })
+              default.rustfmt # rustfmt nightly
             ];
-          };
+        in
 
-          packages = {
-            default = config.packages.aclog;
-            neovim = inputs'.nixvim.legacyPackages.makeNixvim {
-              imports = with inputs.neovim-config.nixosModules; [
-                default
-                nix
-                markdown
-              ];
-            };
-          };
-
+        {
           devShells.default = pkgs.mkShell {
             packages = [
-              pkgs.online-judge-tools
-              config.packages.aclog
-              (inputs.neovim-config.lib.customName {
-                inherit pkgs;
-                nvim = config.packages.neovim;
-              })
+              toolchain
+              pkgs.cargo-nextest
+              pkgs.just
+              pkgs.nil
+              pkgs.nixd
             ];
           };
         };
+
+      flake.metadata.neovimFeatures = inputs.nixpkgs.lib.concat [ "rust" ];
     };
 }
