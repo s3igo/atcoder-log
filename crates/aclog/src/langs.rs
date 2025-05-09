@@ -1,6 +1,7 @@
 use std::fmt;
 
-use bpaf::{literal, Bpaf, Parser};
+use anyhow::{Result, bail};
+use bpaf::{Bpaf, Parser, literal};
 
 // Use `()` due to restrictions on enum variants of bpaf
 
@@ -59,3 +60,19 @@ macro_rules! generate_parsers {
 }
 
 generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal);
+
+/// Convert a string representation to a Lang enum
+///
+/// # Errors
+/// Returns an error if the string doesn't match any supported language
+pub fn from_string(lang_str: &str) -> Result<Lang> {
+    match lang_str {
+        "rust" => Ok(Lang::Rust(())),
+        "ocaml" => Ok(Lang::Ocaml(())),
+        "haskell" => Ok(Lang::Haskell(())),
+        "nim" => Ok(Lang::Nim(())),
+        "cpp" => Ok(Lang::Cpp(())),
+        "crystal" => Ok(Lang::Crystal(())),
+        _ => bail!("Unsupported language: {}", lang_str),
+    }
+}

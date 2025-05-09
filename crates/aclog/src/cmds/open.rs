@@ -85,12 +85,20 @@ impl Run for Open {
         let solution = proj_root.join("contests").join(&contest).join(&file);
 
         // Create a temporary directory using tempfile
-        let temp_dir_prefix = format!("atcoder-{}-{}-", contest, file.replace(".", "-"));
+        // Format: atcoder-{contest}-{filename}_{extension}-{lang}-
+        // This naming convention allows us to parse the metadata back from the
+        // directory name
+        let temp_dir_prefix = format!(
+            "atcoder-{}-{}-{}-",
+            contest,
+            file.replace(".", "_"),
+            self.lang.to_string()
+        );
         let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
         let temp_dir_path = temp_dir.path().to_path_buf();
 
-        // Print temporary directory location for reference
-        println!("Working directory: {}", temp_dir_path.display());
+        // Print temporary directory location to stderr for reference
+        eprintln!("Working directory: {}", temp_dir_path.display());
 
         // Copy runtime directory contents to the temporary directory
         copy_dir_contents(&lang_root, &temp_dir_path)?;
@@ -125,53 +133,8 @@ impl Run for Open {
                 .context("Failed to copy an existing solution file")?;
         }
 
-        // Solve the task
-        // Open the editor
-        Command::new("nix")
-            .arg("develop")
-            .arg(format!("{}#{}", proj_root.display(), self.lang))
-            .arg("--command")
-            .arg("nvim")
-            .arg(temp_entrypoint.display().to_string())
-            .env("URL", url)
-            .status()?;
-
-        // Create solution directory if it doesn't exist
-        Command::new("mkdir")
-            .arg("-p")
-            .arg(solution.parent().unwrap())
-            .status()?;
-
-        // Try to save the solution file
-        let save_result = fs::copy(&temp_entrypoint, &solution);
-
-        match save_result {
-            Ok(_) if solution_existed => {
-                // If this was an existing solution and save was successful, clean up temp dir
-                println!("\nUpdated existing solution at: {}", solution.display());
-                // temp_dir will be automatically cleaned up when dropped at the
-                // end of function
-            },
-            Ok(_) => {
-                // This is a new solution file and save succeeded
-                println!("\nSaved new solution at: {}", solution.display());
-                // temp_dir will be automatically cleaned up when dropped at the
-                // end of function
-            },
-            Err(err) => {
-                // If save failed, keep the temp directory
-                let kept_path = temp_dir.into_path();
-                println!(
-                    "\nFailed to save solution, but your work is preserved in: {}",
-                    kept_path.display()
-                );
-                println!(
-                    "To remove this directory when you're done, run: rm -rf {}",
-                    kept_path.display()
-                );
-                return Err(anyhow::Error::from(err).context("Failed to save the solution file"));
-            },
-        }
+        // Output the temp directory path to stdout
+        println!("{}", temp_dir_path.display());
 
         Ok(())
     }
