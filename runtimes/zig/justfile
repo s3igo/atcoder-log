@@ -1,0 +1,21 @@
+filename := './src/main.zig'
+object := "./zig-out/bin/judge"
+
+default: test submit
+
+compile:
+    zig build --release -Doptimize=ReleaseFast
+
+execution:
+    {{ object }}
+
+alias t := test
+test: compile
+    oj test --command {{ object }}
+
+alias s := submit
+submit:
+    oj submit --no-open --yes -- {{ read(".url.txt") }} {{ filename }}
+
+alias r := run
+run: copile execution
