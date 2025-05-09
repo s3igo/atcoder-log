@@ -1,4 +1,4 @@
-use std::{env, fs};
+use std::{cmp, env, fs, time::SystemTime};
 
 use anyhow::Context as _;
 use bpaf::{Bpaf, Parser};
@@ -25,11 +25,15 @@ impl Run for List {
             format!("Failed to read temporary directory: {}", temp_dir.display())
         })?;
 
-        // No need for regex compilation here as it's now encapsulated in
-        // WorkspaceInfo::parse_from_dir_name
+        // Collect workspaces first to calculate max field lengths
+        let mut workspaces = Vec::new();
+        let mut max_path_len = "PATH".len();
+        let mut max_contest_len = "CONTEST".len();
+        let mut max_problem_len = "PROBLEM".len();
+        let mut max_lang_len = "LANGUAGE".len();
+        let mut max_created_len = "CREATED".len();
 
-        // Filter entries that match our format (aclog-atcoder-*)
-        let mut found = false;
+        // First pass: collect data and calculate max field lengths
         for entry in entries {
             let entry = entry?;
             let path = entry.path();
@@ -40,16 +44,81 @@ impl Run for List {
 
                 if file_name_str.starts_with("aclog-atcoder-") {
                     if let Some(info) = WorkspaceInfo::parse_from_dir_name(file_name.as_ref()) {
-                        // Output the path to stdout with metadata info
-                        println!("{}", path.display());
-                        eprintln!(
-                            "  Contest: {}, Problem: {}, Lang: {}",
-                            info.contest, info.file, info.lang
-                        );
-                        found = true;
+                        // Get creation time (display "unknown" if not available)
+                        let created_time = match path.metadata().and_then(|meta| meta.created()) {
+                            Ok(time) => {
+                                let duration =
+                                    SystemTime::now().duration_since(time).unwrap_or_default();
+                                if duration.as_secs() < 60 {
+                                    format!("{}s ago", duration.as_secs())
+                                } else if duration.as_secs() < 3600 {
+                                    format!("{}m ago", duration.as_secs() / 60)
+                                } else if duration.as_secs() < 86400 {
+                                    format!("{}h ago", duration.as_secs() / 3600)
+                                } else {
+                                    format!("{}d ago", duration.as_secs() / 86400)
+                                }
+                            },
+                            Err(_) => "unknown".to_string(),
+                        };
+
+                        // Update max field lengths
+                        let path_str = path.display().to_string();
+                        max_path_len = cmp::max(max_path_len, path_str.len());
+                        max_contest_len = cmp::max(max_contest_len, info.contest.len());
+                        max_problem_len = cmp::max(max_problem_len, info.file.len());
+                        max_lang_len = cmp::max(max_lang_len, info.lang.len());
+                        max_created_len = cmp::max(max_created_len, created_time.len());
+
+                        // Store workspace data
+                        workspaces.push((path_str, info, created_time));
                     }
                 }
             }
+        }
+
+        // Add padding to max field lengths (3 characters)
+        max_path_len += 3;
+        max_contest_len += 3;
+        max_problem_len += 3;
+        max_lang_len += 3;
+        max_created_len += 3;
+
+        // Output table headers with calculated widths
+        println!(
+            "{:<width_path$} {:<width_contest$} {:<width_problem$} {:<width_lang$} \
+             {:<width_created$}",
+            "PATH",
+            "CONTEST",
+            "PROBLEM",
+            "LANGUAGE",
+            "CREATED",
+            width_path = max_path_len,
+            width_contest = max_contest_len,
+            width_problem = max_problem_len,
+            width_lang = max_lang_len,
+            width_created = max_created_len
+        );
+
+        // Check if any workspaces were found
+        let found = !workspaces.is_empty();
+
+        // Second pass: output data with calculated widths
+        for (path, info, created_time) in workspaces {
+            println!(
+                "{:<width_path$} {:<width_contest$} {:<width_problem$} {:<width_lang$} \
+                 {:<width_created$}",
+                path,
+                info.contest,
+                info.file,
+                info.lang,
+                created_time,
+                width_path = max_path_len,
+                width_contest = max_contest_len,
+                width_problem = max_problem_len,
+                width_lang = max_lang_len,
+                width_created = max_created_len
+            );
         }
 
         if !found {
