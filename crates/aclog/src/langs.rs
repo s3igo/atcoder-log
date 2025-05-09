@@ -47,6 +47,7 @@ impl Lang {
         match self {
             Self::Rust(()) => "src/main.rs".to_string(),
             Self::Haskell(()) => "app/Main.hs".to_string(),
+            Self::Zig(()) => "src/main.zig".to_string(),
             _ => format!("main.{}", self.extension()),
         }
     }
