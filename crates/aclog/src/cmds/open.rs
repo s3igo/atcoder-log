@@ -85,11 +85,11 @@ impl Run for Open {
         let solution = proj_root.join("contests").join(&contest).join(&file);
 
         // Create a temporary directory using tempfile
-        // Format: atcoder-{contest}-{filename}_{extension}-{lang}-
+        // Format: aclog-atcoder-{contest}-{filename}_{extension}-{lang}-
         // This naming convention allows us to parse the metadata back from the
         // directory name
         let temp_dir_prefix = format!(
-            "atcoder-{}-{}-{}-",
+            "aclog-atcoder-{}-{}-{}-",
             contest,
             file.replace(".", "_"),
             self.lang.to_string()
@@ -102,6 +102,10 @@ impl Run for Open {
 
         // Copy runtime directory contents to the temporary directory
         copy_dir_contents(&lang_root, &temp_dir_path)?;
+
+        // Write URL to .url.txt file
+        let url_file_path = temp_dir_path.join(".url.txt");
+        fs::write(&url_file_path, &url).context("Failed to write URL to .url.txt")?;
 
         // Change to the temporary directory
         env::set_current_dir(&temp_dir_path)?;
