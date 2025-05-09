@@ -13,6 +13,7 @@ pub enum Lang {
     Nim(#[bpaf(external(nim))] ()),
     Cpp(#[bpaf(external(cpp))] ()),
     Crystal(#[bpaf(external(crystal))] ()),
+    Zig(#[bpaf(external(zig))] ()),
 }
 
 impl fmt::Display for Lang {
@@ -24,6 +25,7 @@ impl fmt::Display for Lang {
             Self::Nim(()) => write!(f, "nim"),
             Self::Cpp(()) => write!(f, "cpp"),
             Self::Crystal(()) => write!(f, "crystal"),
+            Self::Zig(()) => write!(f, "zig"),
         }
     }
 }
@@ -37,6 +39,7 @@ impl Lang {
             Self::Nim(()) => "nim",
             Self::Cpp(()) => "cpp",
             Self::Crystal(()) => "cr",
+            Self::Zig(()) => "zig",
         }
     }
 
@@ -60,6 +63,7 @@ impl Lang {
             "nim" => Ok(Self::Nim(())),
             "cpp" => Ok(Self::Cpp(())),
             "crystal" => Ok(Self::Crystal(())),
+            "zig" => Ok(Self::Zig(())),
             _ => bail!("Unsupported language: {}", lang_str),
         }
     }
@@ -75,4 +79,4 @@ macro_rules! generate_parsers {
     };
 }
 
-generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal);
+generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal, zig);
