@@ -98,8 +98,10 @@ impl Run for Open {
             file.replace('.', "_"),
             self.lang
         );
+        // Use into_path() to prevent automatic cleanup of the temporary directory
+        // This ensures the directory remains after the function exits
         let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
-        let temp_dir_path = temp_dir.path().to_path_buf();
+        let temp_dir_path = temp_dir.into_path();
 
         // Print temporary directory location to stderr for reference
         eprintln!("Working directory: {}", temp_dir_path.display());
