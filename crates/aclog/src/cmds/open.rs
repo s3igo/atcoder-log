@@ -1,8 +1,9 @@
 use std::{env, fs, path::PathBuf, process::Command};
 
-use anyhow::{bail, ensure, Context as _};
+use anyhow::{Context as _, bail, ensure};
 use bpaf::{Bpaf, Parser};
 use regex::Regex;
+use tempfile::Builder as TempBuilder;
 use url::Url;
 
 use super::Run;
@@ -78,55 +79,99 @@ impl Run for Open {
             (url.to_string(), contest.to_string())
         };
 
-        // (1) Set up the runtime directory
+        // Set up the temporary directory
         let proj_root = get_proj_root()?;
-
-        // cd to the runtime directory
         let lang_root = proj_root.join("runtimes").join(self.lang.to_string());
-        env::set_current_dir(&lang_root)?;
+        let solution = proj_root.join("contests").join(&contest).join(&file);
+
+        // Create a temporary directory using tempfile
+        let temp_dir_prefix = format!("atcoder-{}-{}-", contest, file.replace(".", "-"));
+        let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
+        let temp_dir_path = temp_dir.path().to_path_buf();
+
+        // Print temporary directory location for reference
+        println!("Working directory: {}", temp_dir_path.display());
+
+        // Copy runtime directory contents to the temporary directory
+        copy_dir_contents(&lang_root, &temp_dir_path)?;
+
+        // Change to the temporary directory
+        env::set_current_dir(&temp_dir_path)?;
+
+        // Initialize git repository
+        Command::new("git").args(["init"]).status()?;
+        Command::new("git")
+            .args(["config", "user.name", "AtCoder Solver"])
+            .status()?;
+        Command::new("git")
+            .args(["config", "user.email", "solver@example.com"])
+            .status()?;
+
+        // Add all files to git and commit
+        Command::new("git").args(["add", "."]).status()?;
+        Command::new("git")
+            .args(["commit", "-m", "Initial state"])
+            .status()?;
 
         // Download the test cases
         Command::new("oj").arg("download").arg(&url).status()?;
 
-        let solution = proj_root.join("contests").join(contest).join(file);
-        let runtime_path = lang_root.join(self.lang.entrypoint());
+        let temp_entrypoint = temp_dir_path.join(self.lang.entrypoint());
 
-        // Copy the solution file if it exists
-        if solution.exists() {
-            fs::copy(&solution, &runtime_path)
+        // Check if solution file already exists
+        let solution_existed = solution.exists();
+        if solution_existed {
+            fs::copy(&solution, &temp_entrypoint)
                 .context("Failed to copy an existing solution file")?;
         }
 
-        // (2) Solve the task
+        // Solve the task
         // Open the editor
         Command::new("nix")
             .arg("develop")
             .arg(format!("{}#{}", proj_root.display(), self.lang))
             .arg("--command")
             .arg("nvim")
-            .arg(runtime_path.display().to_string())
+            .arg(temp_entrypoint.display().to_string())
             .env("URL", url)
             .status()?;
 
-        // Save the solution file
+        // Create solution directory if it doesn't exist
         Command::new("mkdir")
             .arg("-p")
             .arg(solution.parent().unwrap())
             .status()?;
-        fs::copy(&runtime_path, &solution).context("Failed to save the solution file")?;
 
-        // (3) Clean up the runtime directory
-        // Remove the test directory
-        let test_dir = lang_root.join("test");
-        if test_dir.exists() {
-            fs::remove_dir_all(test_dir).context("Failed to clean up test directory")?;
+        // Try to save the solution file
+        let save_result = fs::copy(&temp_entrypoint, &solution);
+
+        match save_result {
+            Ok(_) if solution_existed => {
+                // If this was an existing solution and save was successful, clean up temp dir
+                println!("\nUpdated existing solution at: {}", solution.display());
+                // temp_dir will be automatically cleaned up when dropped at the
+                // end of function
+            },
+            Ok(_) => {
+                // This is a new solution file and save succeeded
+                println!("\nSaved new solution at: {}", solution.display());
+                // temp_dir will be automatically cleaned up when dropped at the
+                // end of function
+            },
+            Err(err) => {
+                // If save failed, keep the temp directory
+                let kept_path = temp_dir.into_path();
+                println!(
+                    "\nFailed to save solution, but your work is preserved in: {}",
+                    kept_path.display()
+                );
+                println!(
+                    "To remove this directory when you're done, run: rm -rf {}",
+                    kept_path.display()
+                );
+                return Err(anyhow::Error::from(err).context("Failed to save the solution file"));
+            },
         }
-
-        // Restore the runtime file
-        Command::new("git")
-            .arg("restore")
-            .arg(runtime_path)
-            .status()?;
 
         Ok(())
     }
@@ -140,4 +185,28 @@ fn get_proj_root() -> anyhow::Result<PathBuf> {
     ensure!(output.status.success(), "Failed to get project root");
 
     Ok(PathBuf::from(String::from_utf8(output.stdout)?.trim()))
+}
+
+fn copy_dir_contents(src: &PathBuf, dst: &PathBuf) -> anyhow::Result<()> {
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let file_type = entry.file_type()?;
+        let src_path = entry.path();
+
+        // Skip .git directory
+        if src_path.file_name().unwrap_or_default() == ".git" {
+            continue;
+        }
+
+        let dst_path = dst.join(src_path.file_name().unwrap());
+
+        if file_type.is_dir() {
+            fs::create_dir_all(&dst_path)?;
+            copy_dir_contents(&src_path, &dst_path)?;
+        } else {
+            fs::copy(&src_path, &dst_path)?;
+        }
+    }
+
+    Ok(())
 }
