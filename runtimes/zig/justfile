@@ -18,4 +18,4 @@ submit:
     oj submit --no-open --yes -- {{ read(".url.txt") }} {{ filename }}
 
 alias r := run
-run: copile execution
+run: compile execution
