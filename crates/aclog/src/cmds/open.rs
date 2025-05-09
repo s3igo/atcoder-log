@@ -1,4 +1,8 @@
-use std::{env, fs, path::PathBuf, process::Command};
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use anyhow::{Context as _, bail, ensure};
 use bpaf::{Bpaf, Parser};
@@ -91,8 +95,8 @@ impl Run for Open {
         let temp_dir_prefix = format!(
             "aclog-atcoder-{}-{}-{}-",
             contest,
-            file.replace(".", "_"),
-            self.lang.to_string()
+            file.replace('.', "_"),
+            self.lang
         );
         let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
         let temp_dir_path = temp_dir.path().to_path_buf();
@@ -154,7 +158,7 @@ fn get_proj_root() -> anyhow::Result<PathBuf> {
     Ok(PathBuf::from(String::from_utf8(output.stdout)?.trim()))
 }
 
-fn copy_dir_contents(src: &PathBuf, dst: &PathBuf) -> anyhow::Result<()> {
+fn copy_dir_contents(src: &Path, dst: &Path) -> anyhow::Result<()> {
     for entry in fs::read_dir(src)? {
         let entry = entry?;
         let file_type = entry.file_type()?;
@@ -176,4 +180,68 @@ fn copy_dir_contents(src: &PathBuf, dst: &PathBuf) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{
+        fs::{self, File},
+        io::Write,
+    };
+
+    use tempfile::tempdir;
+
+    use super::*;
+
+    #[test]
+    fn test_copy_dir_contents() -> anyhow::Result<()> {
+        // Create source directory structure
+        let src_dir = tempdir()?;
+        let src_path = src_dir.path().to_path_buf();
+
+        // Create some files in the source directory
+        let file1_path = src_path.join("file1.txt");
+        let mut file1 = File::create(&file1_path)?;
+        writeln!(file1, "Test content 1")?;
+
+        // Create a subdirectory with a file
+        let subdir_path = src_path.join("subdir");
+        fs::create_dir(&subdir_path)?;
+
+        let file2_path = subdir_path.join("file2.txt");
+        let mut file2 = File::create(&file2_path)?;
+        writeln!(file2, "Test content 2")?;
+
+        // Create a .git directory that should be skipped
+        let git_dir_path = src_path.join(".git");
+        fs::create_dir(&git_dir_path)?;
+
+        let git_file_path = git_dir_path.join("config");
+        let mut git_file = File::create(&git_file_path)?;
+        writeln!(git_file, "git config file")?;
+
+        // Create destination directory
+        let dst_dir = tempdir()?;
+        let dst_path = dst_dir.path().to_path_buf();
+
+        // Execute the function under test
+        copy_dir_contents(&src_path, &dst_path)?;
+
+        // Verify the results
+        assert!(dst_path.join("file1.txt").exists());
+        assert!(dst_path.join("subdir").exists());
+        assert!(dst_path.join("subdir/file2.txt").exists());
+
+        // The .git directory should be skipped
+        assert!(!dst_path.join(".git").exists());
+
+        // Check file contents
+        let copied_content1 = fs::read_to_string(dst_path.join("file1.txt"))?;
+        assert_eq!(copied_content1.trim(), "Test content 1");
+
+        let copied_content2 = fs::read_to_string(dst_path.join("subdir/file2.txt"))?;
+        assert_eq!(copied_content2.trim(), "Test content 2");
+
+        Ok(())
+    }
 }

@@ -82,3 +82,31 @@ fn get_proj_root() -> anyhow::Result<PathBuf> {
 
     Ok(PathBuf::from(String::from_utf8(output.stdout)?.trim()))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use super::*;
+
+    #[test]
+    fn test_close_run_invalid_directory() {
+        let nonexistent_dir = PathBuf::from("/path/to/nonexistent");
+        let close = Close {
+            dir: nonexistent_dir,
+        };
+
+        let result = close.run();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_try_from_dir_name_invalid_format() {
+        use std::ffi::OsString;
+
+        let invalid_dir_name = OsString::from("invalid-dir-name");
+        let result = WorkspaceInfo::try_from_dir_name(&invalid_dir_name);
+
+        assert!(result.is_err());
+    }
+}

@@ -59,5 +59,3 @@ impl Run for List {
         Ok(())
     }
 }
-
-// Function removed as it's now implemented as a method on WorkspaceInfo
