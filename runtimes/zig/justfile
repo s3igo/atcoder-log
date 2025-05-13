@@ -1,0 +1,60 @@
+mod b "build.just"
+
+filename := "./src/main.zig"
+object := "./zig-out/bin/judge"
+
+[group("judge")]
+default: test submit
+
+alias c := compile
+compile:
+    zig build --release -Doptimize=ReleaseFast
+
+alias e := execution
+execution:
+    {{ object }}
+
+alias r := run
+run: compile execution
+
+clean:
+    rm -rfv zig-out .zig-cache
+
+alias t := test
+[group("judge")]
+test: compile
+    oj test --command {{ object }}
+
+alias s := submit
+[group("judge")]
+submit:
+    oj submit --no-open --yes -- {{ read(".url.txt") }} {{ filename }}
+
+[group("setup")]
+fetch tmpdir=`mktemp -d` tarball="algorithms.tar.gz":
+    zig fetch --save=ac-library git+https://github.com/Ryoga-exe/ac-library-zig#v0.2.0
+    zig fetch --save=proconio git+https://github.com/Ryoga-exe/proconio-zig#v0.1.0
+    zig fetch --save=string git+https://github.com/JakubSzark/zig-string#f6f9e5dc7c5c45a72473de245a0e6958ef2bf913
+    zig fetch --save=ziter git+https://github.com/Hejsil/ziter#8fc06df472ca99d902619807ad08034bc1bbe08e
+    wget -q -O {{ tmpdir / tarball }} https://github.com/TheAlgorithms/Zig/archive/5b9cf67.tar.gz
+    tar -C src/algorithms --strip-components=1 -xf {{ tmpdir / tarball }} --wildcards '*/dataStructures' '*/dynamicProgramming' '*/math' '*/search' '*/sort'
+    rm -rfv {{ tmpdir }}
+
+[group("setup")]
+warmup: && compile
+    @just b::check
+
+[group("setup")]
+setup: clean fetch warmup
+
+[group("ci")]
+fmt *args:
+    zig fmt {{ args }} {{ filename }}
+
+[group("ci")]
+lint:
+    zlint
+
+[group("ci")]
+ci: (fmt "--check") lint
+    @just b::check

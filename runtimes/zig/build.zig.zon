@@ -1,0 +1,25 @@
+.{
+    .name = .judge,
+    .version = "0.0.0",
+    .fingerprint = 0xc1ce1081b81194e4, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{
+        .@"ac-library" = .{
+            .url = "git+https://github.com/Ryoga-exe/ac-library-zig?ref=v0.2.0#d8c26b0a372e8c712d1ed90c64e96d3224d26ec4",
+            .hash = "ac_library-0.2.0-3En7NbzFAQCEoO6ozvsNRxv4bX23jNdfbKiIHCj2043A",
+        },
+        .string = .{
+            .url = "git+https://github.com/JakubSzark/zig-string#f6f9e5dc7c5c45a72473de245a0e6958ef2bf913",
+            .hash = "zig_string-0.10.0-6dpLWpuVAADZJB6sW8ig4uIMqhhgOYWI8lgXWBWL-F-B",
+        },
+        .ziter = .{
+            .url = "git+https://github.com/Hejsil/ziter#8fc06df472ca99d902619807ad08034bc1bbe08e",
+            .hash = "N-V-__8AADcuAQAtKpawWHcET-tAMcsOuhkqzot7ikAPMeS-",
+        },
+        .proconio = .{
+            .url = "git+https://github.com/Ryoga-exe/proconio-zig?ref=v0.1.0#bdbef0da0654eb060660a39e9d625103908aff7b",
+            .hash = "proconio-0.1.0--aR2qwErAAC-sEaUFM3MEY-5VtOP2TtQgBmch6RsVcFr",
+        },
+    },
+    .paths = .{""},
+}
