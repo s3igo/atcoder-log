@@ -1,4 +1,4 @@
-mod ac "crates/aclog"
+mod ac "tools/aclog"
 
 _default:
     @just --choose
