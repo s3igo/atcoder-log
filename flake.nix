@@ -47,6 +47,7 @@
               pkgs.just
               pkgs.nil
               pkgs.nixd
+              pkgs.online-judge-tools
             ];
           };
         };
