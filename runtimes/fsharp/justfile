@@ -1,0 +1,50 @@
+mod b "build.just"
+
+filename := "./Main.fs"
+object := "./publish/Main"
+
+[group("judge")]
+default: test submit
+
+alias c := compile
+compile:
+    dotnet publish -c Release -o publish --no-restore --nologo
+
+alias e := execution
+execution:
+    {{ object }}
+
+alias r := run
+run: compile execution
+
+clean:
+    rm -rfv bin obj publish
+
+alias t := test
+[group("judge")]
+test: compile
+    oj test --command {{ object }}
+
+alias s := submit
+[group("judge")]
+submit:
+    oj submit --no-open --yes -- {{ read(".url.txt") }} {{ filename }}
+
+[group("setup")]
+warmup: && compile
+    @just b::build
+
+[group("setup")]
+setup: clean warmup
+
+[group("ci")]
+fmt *args:
+    fantomas {{ args }} {{ filename }}
+
+[group("ci")]
+lint:
+    dotnet fsharplint lint {{ filename }}
+
+[group("ci")]
+ci: (fmt "--check") lint
+    @just b::build

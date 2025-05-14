@@ -14,6 +14,7 @@ pub enum Lang {
     Cpp(#[bpaf(external(cpp))] ()),
     Crystal(#[bpaf(external(crystal))] ()),
     Zig(#[bpaf(external(zig))] ()),
+    Fsharp(#[bpaf(external(fsharp))] ()),
 }
 
 impl fmt::Display for Lang {
@@ -26,6 +27,7 @@ impl fmt::Display for Lang {
             Self::Cpp(()) => write!(f, "cpp"),
             Self::Crystal(()) => write!(f, "crystal"),
             Self::Zig(()) => write!(f, "zig"),
+            Self::Fsharp(()) => write!(f, "fsharp"),
         }
     }
 }
@@ -40,6 +42,7 @@ impl Lang {
             Self::Cpp(()) => "cpp",
             Self::Crystal(()) => "cr",
             Self::Zig(()) => "zig",
+            Self::Fsharp(()) => "fs",
         }
     }
 
@@ -48,6 +51,7 @@ impl Lang {
             Self::Rust(()) => "src/main.rs".to_string(),
             Self::Haskell(()) => "app/Main.hs".to_string(),
             Self::Zig(()) => "src/main.zig".to_string(),
+            Self::Fsharp(()) => "Main.fs".to_string(),
             _ => format!("main.{}", self.extension()),
         }
     }
@@ -65,6 +69,7 @@ impl Lang {
             "cpp" => Ok(Self::Cpp(())),
             "crystal" => Ok(Self::Crystal(())),
             "zig" => Ok(Self::Zig(())),
+            "fsharp" => Ok(Self::Fsharp(())),
             _ => bail!("Unsupported language: {lang_str}"),
         }
     }
@@ -80,4 +85,4 @@ macro_rules! generate_parsers {
     };
 }
 
-generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal, zig);
+generate_parsers!(rust, ocaml, haskell, nim, cpp, crystal, zig, fsharp);

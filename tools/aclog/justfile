@@ -11,7 +11,7 @@ check *args:
 alias r := run
 [no-exit-message]
 run *args:
-    cargo run {{ args }}
+    cargo run -- {{ args }}
 
 [no-exit-message]
 fmt *args:
