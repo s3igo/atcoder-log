@@ -90,10 +90,10 @@ impl Run for Open {
         // This naming convention allows us to parse the metadata back from the
         // directory name
         let temp_dir_prefix = workspace_info.temp_dir_prefix();
-        // Use into_path() to prevent automatic cleanup of the temporary directory
+        // Use keep() to prevent automatic cleanup of the temporary directory
         // This ensures the directory remains after the function exits
         let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
-        let temp_dir_path = temp_dir.into_path();
+        let temp_dir_path = temp_dir.keep();
 
         // Print temporary directory location to stderr for reference
         if !self.quiet {
