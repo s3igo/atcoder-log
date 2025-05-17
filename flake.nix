@@ -47,11 +47,17 @@
               pkgs.just
               pkgs.nil
               pkgs.nixd
+              pkgs.zig
+              pkgs.zls
               pkgs.online-judge-tools
+              (pkgs.callPackage ./runtimes/zig/zlint { })
             ];
           };
         };
 
-      flake.metadata.neovimFeatures = inputs.nixpkgs.lib.concat [ "rust" ];
+      flake.metadata.neovimFeatures = inputs.nixpkgs.lib.concat [
+        "rust"
+        "zig"
+      ];
     };
 }
