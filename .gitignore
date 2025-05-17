@@ -4,3 +4,6 @@ result
 
 # Rust
 target/
+
+# Zig
+/.zig-cache/
