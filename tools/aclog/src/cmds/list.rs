@@ -42,8 +42,14 @@ impl Run for List {
                 let file_name = entry.file_name();
                 let file_name_str = file_name.to_string_lossy();
 
-                if file_name_str.starts_with("aclog-atcoder-") {
-                    if let Some(info) = WorkspaceInfo::parse_from_dir_name(file_name.as_ref()) {
+                // Check if this is an aclog workspace by looking for the .aclog.toml file
+                // or falling back to the directory name check
+                let metadata_file = path.join(WorkspaceInfo::METADATA_FILE);
+                let is_aclog_dir =
+                    metadata_file.exists() || file_name_str.starts_with("aclog-atcoder-");
+
+                if is_aclog_dir {
+                    if let Ok(info) = WorkspaceInfo::try_from_dir(&path) {
                         // Get creation time (display "unknown" if not available)
                         let created_time =
                             path.metadata().and_then(|meta| meta.created()).map_or_else(

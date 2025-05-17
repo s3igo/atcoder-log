@@ -30,12 +30,11 @@ impl Run for Close {
             bail!("Directory does not exist: {}", self.dir.display());
         }
 
-        // Extract workspace info from directory name
-        let dir_name = self.dir.file_name().unwrap_or_default();
-        let workspace_info = WorkspaceInfo::try_from_dir_name(dir_name).with_context(|| {
+        // Extract workspace info from metadata file or directory name
+        let workspace_info = WorkspaceInfo::try_from_dir(&self.dir).with_context(|| {
             format!(
-                "Failed to parse workspace info from directory name: {}",
-                dir_name.to_string_lossy()
+                "Failed to parse workspace info from directory: {}",
+                self.dir.display()
             )
         })?;
 

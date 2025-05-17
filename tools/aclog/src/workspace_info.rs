@@ -1,10 +1,12 @@
 use std::{
     ffi::OsStr,
+    fs,
     path::{Path, PathBuf},
 };
 
 use anyhow::{Context as _, bail};
 use regex::Regex;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::langs::Lang;
@@ -22,6 +24,9 @@ pub struct WorkspaceInfo {
 const ATCODER_CONTEST_URL: &str = "https://atcoder.jp/contests";
 
 impl WorkspaceInfo {
+    /// Metadata file name
+    pub const METADATA_FILE: &str = ".aclog.toml";
+
     /// Creates a new `WorkspaceInfo` from a URL
     ///
     /// # Errors
@@ -100,10 +105,41 @@ impl WorkspaceInfo {
         })
     }
 
+    /// Save metadata to the specified directory
+    ///
+    /// # Errors
+    /// Returns an error if writing the metadata file fails
+    pub fn save_metadata(&self, dir: &Path) -> anyhow::Result<()> {
+        let metadata_path = dir.join(Self::METADATA_FILE);
+
+        let toml_content = toml::to_string(self)?;
+        fs::write(metadata_path, toml_content)?;
+
+        Ok(())
+    }
+
+    /// Load metadata from the specified directory
+    ///
+    /// # Errors
+    /// Returns an error if reading or parsing the metadata file fails
+    pub fn load_metadata(dir: &Path) -> anyhow::Result<Self> {
+        let metadata_path = dir.join(Self::METADATA_FILE);
+
+        let toml_content = fs::read_to_string(&metadata_path).with_context(|| {
+            format!("Failed to read metadata file: {}", metadata_path.display())
+        })?;
+
+        let workspace_info: Self = toml::from_str(&toml_content)?;
+        Ok(workspace_info)
+    }
+
     /// Parse workspace info from directory name
     ///
     /// Returns `None` if the directory name doesn't match the expected format
+    ///
+    /// This is kept for backward compatibility with existing workspaces
     #[must_use]
+    #[allow(clippy::similar_names)]
     pub fn parse_from_dir_name(dir_name: &OsStr) -> Option<Self> {
         let dir_name = dir_name.to_string_lossy();
 
@@ -129,6 +165,28 @@ impl WorkspaceInfo {
         }
 
         None
+    }
+
+    /// Parse workspace info from directory
+    ///
+    /// # Errors
+    /// Returns an error if no valid metadata can be found
+    pub fn try_from_dir(dir: &Path) -> anyhow::Result<Self> {
+        // First try to load metadata file
+        let metadata_path = dir.join(Self::METADATA_FILE);
+        if metadata_path.exists() {
+            return Self::load_metadata(dir);
+        }
+
+        // Fallback to old method: parse from directory name
+        let dir_name = dir.file_name().unwrap_or_default();
+        Self::parse_from_dir_name(dir_name).ok_or_else(|| {
+            let dir_name = dir_name.to_string_lossy();
+            anyhow::anyhow!(
+                "No metadata file found and invalid workspace directory name: {}",
+                dir_name
+            )
+        })
     }
 
     /// Parse workspace info from directory name
@@ -210,9 +268,59 @@ impl WorkspaceInfo {
     }
 }
 
+// Helper struct for serialization/deserialization
+#[derive(Debug, Serialize, Deserialize)]
+struct SerializableWorkspaceInfo {
+    contest: String,
+    problem: String,
+    lang: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    file: Option<String>,
+}
+
+// Manual implementation of Serialize for WorkspaceInfo
+impl Serialize for WorkspaceInfo {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let serializable = SerializableWorkspaceInfo {
+            contest: self.contest.clone(),
+            problem: self.problem.clone(),
+            lang: self.lang.to_string(),
+            url: self.url.clone(),
+            file: self.file.clone(),
+        };
+        serializable.serialize(serializer)
+    }
+}
+
+// Manual implementation of Deserialize for WorkspaceInfo
+impl<'de> Deserialize<'de> for WorkspaceInfo {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let serializable = SerializableWorkspaceInfo::deserialize(deserializer)?;
+        let lang = Lang::from(&serializable.lang).map_err(serde::de::Error::custom)?;
+
+        Ok(Self {
+            contest: serializable.contest,
+            problem: serializable.problem,
+            lang,
+            url: serializable.url,
+            file: serializable.file,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::{ffi::OsString, path::PathBuf};
+
+    use tempfile::tempdir;
 
     use super::*;
     use crate::langs::Lang;
@@ -312,6 +420,27 @@ mod tests {
         let result = WorkspaceInfo::try_from_dir_name(&dir_name);
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_save_and_load_metadata() -> anyhow::Result<()> {
+        let temp_dir = tempdir()?;
+        let temp_path = temp_dir.path();
+
+        let info = WorkspaceInfo::try_from_args(Some("problem_d"), Some("abc123"), Lang::Rust(()))?;
+
+        // Save metadata
+        info.save_metadata(temp_path)?;
+
+        // Load metadata
+        let loaded_info = WorkspaceInfo::load_metadata(temp_path)?;
+
+        // Verify
+        assert_eq!(loaded_info.contest(), "abc123");
+        assert_eq!(loaded_info.problem(), "problem_d");
+        assert_eq!(loaded_info.lang().to_string(), "rust");
+
+        Ok(())
     }
 
     #[test]

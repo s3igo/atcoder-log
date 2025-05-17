@@ -86,14 +86,18 @@ impl Run for Open {
         let solution = workspace_info.solution_path(&proj_root);
 
         // Create a temporary directory using tempfile
-        // Format: aclog-atcoder-{contest}-{problem}-{lang}-
-        // This naming convention allows us to parse the metadata back from the
-        // directory name
+        // We still use a descriptive prefix for better identification but
+        // metadata will be stored in a TOML file
         let temp_dir_prefix = workspace_info.temp_dir_prefix();
         // Use keep() to prevent automatic cleanup of the temporary directory
         // This ensures the directory remains after the function exits
         let temp_dir = TempBuilder::new().prefix(&temp_dir_prefix).tempdir()?;
         let temp_dir_path = temp_dir.keep();
+
+        // Save workspace metadata to TOML file
+        workspace_info
+            .save_metadata(&temp_dir_path)
+            .context("Failed to save workspace metadata")?;
 
         // Print temporary directory location to stderr for reference
         if !self.quiet {
