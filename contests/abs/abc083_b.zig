@@ -30,10 +30,7 @@ pub fn main() !void {
         if (cond: {
             var div = i;
             var digits_sum: u64 = 0;
-            while (div != 0) : (div /= 10) {
-                const mod = div % 10;
-                digits_sum += mod;
-            }
+            while (div != 0) : (div /= 10) digits_sum += div % 10;
             break :cond a <= digits_sum and digits_sum <= b;
         }) sum += i;
     }

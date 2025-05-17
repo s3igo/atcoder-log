@@ -18,17 +18,14 @@ pub fn main() !void {
     _ = &writer; // Ditto
 
     const input = try reader.readAllAlloc(allocator, std.math.maxInt(usize));
-    var lines_it = std.mem.tokenizeAny(u8, input, std.ascii.whitespace[1..]);
-    _ = lines_it.next();
-    var txys: std.ArrayList(State) = .init(allocator);
-    while (lines_it.next()) |line| {
-        var tokens_it = std.mem.tokenizeScalar(u8, line, ' ');
-        try txys.append(.{
-            try std.fmt.parseInt(i64, tokens_it.next().?, 0),
-            try std.fmt.parseInt(i64, tokens_it.next().?, 0),
-            try std.fmt.parseInt(i64, tokens_it.next().?, 0),
-        });
-    }
+    var tokens_it = std.mem.tokenizeAny(u8, input, &std.ascii.whitespace);
+    const n = try std.fmt.parseInt(u64, tokens_it.next().?, 0);
+    var txys: std.ArrayList(State) = try .initCapacity(allocator, n);
+    for (0..n) |_| try txys.append(.{
+        try std.fmt.parseInt(i64, tokens_it.next().?, 0),
+        try std.fmt.parseInt(i64, tokens_it.next().?, 0),
+        try std.fmt.parseInt(i64, tokens_it.next().?, 0),
+    });
 
     var state: State = .{ 0, 0, 0 };
     const cond = for (txys.items) |txy| {
