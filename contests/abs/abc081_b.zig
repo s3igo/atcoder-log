@@ -29,13 +29,9 @@ pub fn main() !void {
     while (cond: {
         for (as.items) |a| {
             if (a & 1 == 1) break :cond false;
-        } else {
-            break :cond true;
-        }
+        } else break :cond true;
     }) : (cnt += 1) {
-        for (as.items) |*a| {
-            a.* /= 2;
-        }
+        for (as.items) |*a| a.* /= 2;
     }
 
     try writer.print("{}\n", .{cnt});
