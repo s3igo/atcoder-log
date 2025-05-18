@@ -36,9 +36,7 @@ pub fn runLengthEncode(
             val = slice[i + 1];
             cnt = 1;
         }
-    }
-
-    result[out_idx] = .{ val, cnt };
+    } else result[out_idx] = .{ val, cnt };
 
     return result;
 }
