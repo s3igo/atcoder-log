@@ -183,3 +183,119 @@ test runLengthDecode {
         try testing.expectEqualSlices(i32, &original, decoded);
     }
 }
+
+/// Returns the length of a slice after removing consecutive duplicates.
+/// The input slice is modified in place to remove consecutive duplicates.
+///
+/// **Example**:
+///   ```zig
+///   var arr = [_]i32{ 1, 1, 2, 3, 3, 3, 4, 4, 1 };
+///   const len = dedupLen(i32, &arr);
+///   // len is 5
+///   ```
+fn dedupLen(comptime T: type, slice: []T) usize {
+    if (slice.len <= 1) return slice.len;
+
+    var write_idx: usize = 1;
+    for (1..slice.len) |i| {
+        if (slice[i] != slice[i - 1]) {
+            slice[write_idx] = slice[i];
+            write_idx += 1;
+        }
+    }
+
+    return write_idx;
+}
+
+test dedupLen {
+    const testing = std.testing;
+
+    { // Basic test
+        var data = [_]i32{ 1, 1, 2, 3, 3, 3, 4, 4, 1 };
+        const len = dedupLen(i32, &data);
+        try testing.expectEqual(@as(usize, 5), len);
+    }
+
+    { // Empty array
+        var data = [_]i32{};
+        const len = dedupLen(i32, &data);
+        try testing.expectEqual(@as(usize, 0), len);
+    }
+
+    { // Single element
+        var data = [_]i32{5};
+        const len = dedupLen(i32, &data);
+        try testing.expectEqual(@as(usize, 1), len);
+    }
+
+    { // All same elements
+        var data = [_]i32{ 7, 7, 7, 7 };
+        const len = dedupLen(i32, &data);
+        try testing.expectEqual(@as(usize, 1), len);
+    }
+
+    { // Already deduplicated
+        var data = [_]i32{ 1, 2, 3, 4 };
+        const len = dedupLen(i32, &data);
+        try testing.expectEqual(@as(usize, 4), len);
+    }
+
+    { // String test
+        var data = [_]u8{ 'a', 'a', 'b', 'b', 'b', 'c', 'd', 'd' };
+        const len = dedupLen(u8, &data);
+        try testing.expectEqual(@as(usize, 4), len);
+    }
+}
+
+/// Removes consecutive duplicate elements from a slice.
+/// The input slice is modified in place and a slice to the modified portion is returned.
+///
+/// **Example**:
+///   ```zig
+///   var arr = [_]i32{ 1, 1, 2, 3, 3, 3, 4, 4, 1 };
+///   const unique = dedup(i32, &arr);
+///   // unique is now [1, 2, 3, 4, 1]
+///   ```
+pub fn dedup(comptime T: type, slice: []T) []T {
+    return slice[0..dedupLen(T, slice)];
+}
+
+test dedup {
+    const testing = std.testing;
+
+    { // Basic test
+        var data = [_]i32{ 1, 1, 2, 3, 3, 3, 4, 4, 1 };
+        const result = dedup(i32, &data);
+        try testing.expectEqualSlices(i32, &[_]i32{ 1, 2, 3, 4, 1 }, result);
+    }
+
+    { // Empty array
+        var data = [_]i32{};
+        const result = dedup(i32, &data);
+        try testing.expectEqual(@as(usize, 0), result.len);
+    }
+
+    { // Single element
+        var data = [_]i32{5};
+        const result = dedup(i32, &data);
+        try testing.expectEqualSlices(i32, &[_]i32{5}, result);
+    }
+
+    { // All same elements
+        var data = [_]i32{ 7, 7, 7, 7 };
+        const result = dedup(i32, &data);
+        try testing.expectEqualSlices(i32, &[_]i32{7}, result);
+    }
+
+    { // Already deduplicated
+        var data = [_]i32{ 1, 2, 3, 4 };
+        const result = dedup(i32, &data);
+        try testing.expectEqualSlices(i32, &data, result);
+    }
+
+    { // String test
+        var data = [_]u8{ 'a', 'a', 'b', 'b', 'b', 'c', 'd', 'd' };
+        const result = dedup(u8, &data);
+        try testing.expectEqualSlices(u8, &[_]u8{ 'a', 'b', 'c', 'd' }, result);
+    }
+}
