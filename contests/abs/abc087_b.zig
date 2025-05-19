@@ -1,25 +1,23 @@
 const std = @import("std");
 
+var arena: std.heap.ArenaAllocator = .init(std.heap.page_allocator);
+const stdin = std.io.getStdIn();
+const stdout = std.io.getStdOut();
+var buffered_stdout = std.io.bufferedWriter(stdout.writer());
+
 pub fn main() !void {
-    var arena: std.heap.ArenaAllocator = .init(std.heap.page_allocator);
-    defer arena.deinit();
     const allocator = arena.allocator();
+    defer arena.deinit();
+    const writer = buffered_stdout.writer();
+    defer buffered_stdout.flush() catch {};
 
-    const stdin = std.io.getStdIn();
-    var buffered_reader = std.io.bufferedReader(stdin.reader());
-    const reader = buffered_reader.reader();
+    const raw_input = try stdin.reader().readAllAlloc(allocator, std.math.maxInt(usize));
+    var input = std.mem.tokenizeAny(u8, raw_input, &std.ascii.whitespace);
 
-    const stdout = std.io.getStdOut();
-    var buffered_writer = std.io.bufferedWriter(stdout.writer());
-    defer buffered_writer.flush() catch {};
-    const writer = buffered_writer.writer();
-
-    const input = try reader.readAllAlloc(allocator, std.math.maxInt(usize));
-    var tokens_it = std.mem.tokenizeAny(u8, input, &std.ascii.whitespace);
-    const a = try std.fmt.parseInt(u64, tokens_it.next().?, 10);
-    const b = try std.fmt.parseInt(u64, tokens_it.next().?, 10);
-    const c = try std.fmt.parseInt(u64, tokens_it.next().?, 10);
-    const x = try std.fmt.parseInt(u64, tokens_it.next().?, 10);
+    const a = try std.fmt.parseInt(u64, input.next().?, 10);
+    const b = try std.fmt.parseInt(u64, input.next().?, 10);
+    const c = try std.fmt.parseInt(u64, input.next().?, 10);
+    const x = try std.fmt.parseInt(u64, input.next().?, 10);
 
     var cnt: u64 = 0;
     for (0..a + 1) |i| {
@@ -31,5 +29,5 @@ pub fn main() !void {
         }
     }
 
-    try writer.print("{}\n", .{cnt});
+    try writer.print("{d}\n", .{cnt});
 }
