@@ -1,7 +1,9 @@
+import Flow
+
 solve :: [Int] -> Int
 solve xs
-  | all even xs = 1 + solve (map (`div` 2) xs)
+  | xs |> all even = xs |> map (`div` 2) |> solve |> (+ 1)
   | otherwise = 0
 
 main :: IO ()
-main = print . solve . map (read @Int) . words =<< (getLine >> getLine)
+main = getLine >> getLine >>= words .> map (read @Int) .> solve .> print

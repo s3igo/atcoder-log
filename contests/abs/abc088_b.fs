@@ -1,12 +1,9 @@
-let both f (a, b) = f a, f b
-
 stdin.ReadLine() |> ignore
 
 stdin.ReadLine().Split()
-|> Array.map uint64
+|> Array.map int64
 |> Array.sortDescending
-|> Array.toList
-|> fun xs -> List.foldBack (fun x (evens, odds) -> x :: odds, evens) xs ([], [])
-|> both List.sum
+|> Array.fold (fun (l, r) x -> x + r, l) (0L, 0L)
 ||> (-)
+|> abs
 |> printfn "%d"

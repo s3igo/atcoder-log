@@ -1,4 +1,6 @@
+import Data.Functor ((<&>))
 import Data.Ix (inRange)
+import Flow
 
 digits :: Int -> [Int]
 digits 0 = []
@@ -8,5 +10,5 @@ digits n = m : digits d
 
 main :: IO ()
 main = do
-  [n, a, b] <- map (read @Int) . words <$> getLine
-  print $ sum [i | i <- [1 .. n], inRange (a, b) (sum $ digits i)]
+  [n, a, b] <- getLine <&> words .> map (read @Int)
+  [1 .. n] |> filter (digits .> sum .> inRange (a, b)) |> sum |> print

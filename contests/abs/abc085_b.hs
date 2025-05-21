@@ -1,4 +1,5 @@
 import Data.List.Extra (nubOrd)
+import Flow
 
 main :: IO ()
-main = print . length . nubOrd . map (read @Int) . lines =<< (getLine >> getContents)
+main = getLine >> getContents >>= lines .> map (read @Int) .> nubOrd .> length .> print

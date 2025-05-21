@@ -1,7 +1,5 @@
-import Data.List
-import Data.Tuple.Extra (both)
+import Data.List qualified as L
+import Flow
 
 main :: IO ()
-main = do
-  (a, b) <- both (sum . map snd) . partition (odd . fst) . zip [1 :: Int ..] . sortBy (flip compare) . map (read @Int) . words <$> (getLine >> getLine)
-  print $ a - b
+main = getLine >> getLine >>= words .> map (read @Int) .> L.sortBy (flip compare) .> L.foldl' (\(l, r) x -> (x + r, l)) (0, 0) .> uncurry (-) .> abs .> print

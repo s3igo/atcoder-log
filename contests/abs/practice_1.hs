@@ -1,6 +1,9 @@
+import Data.Functor ((<&>))
+import Flow
+
 main :: IO ()
 main = do
   a <- readLn @Int
-  [b, c] <- map (read @Int) . words <$> getLine
+  [b, c] <- getLine <&> words .> map (read @Int)
   s <- getLine
-  putStrLn $ unwords [show (a + b + c), s]
+  [a + b + c |> show, s] |> unwords |> putStrLn

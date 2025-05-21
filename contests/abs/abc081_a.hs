@@ -1,2 +1,4 @@
+import Flow
+
 main :: IO ()
-main = print . length . filter (== '1') =<< getLine
+main = getLine >>= filter (== '1') .> length .> print
