@@ -23,7 +23,6 @@
             pkgs.gitMinimal
             pkgs.just
             pkgs.online-judge-tools
-            pkgs.time
             pkgs.wget
             pkgs.zig
             pkgs.zls

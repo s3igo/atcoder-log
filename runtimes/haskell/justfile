@@ -1,0 +1,49 @@
+mod b "build.just"
+
+filename := "./app/Main.hs"
+object := `cabal list-bin main`
+
+[group("judge")]
+default: test submit
+
+alias c := compile
+compile:
+    cabal v2-build --offline
+
+alias e := execution
+execution:
+    {{ object }}
+
+alias r := run
+run: compile execution
+
+clean:
+    rm -rfv dist-newstyle
+
+alias t := test
+[group("judge")]
+test: compile
+    oj test --command {{ object }}
+
+alias s := submit
+[group("judge")]
+submit:
+    oj submit --no-open --yes -- {{ read(".url.txt") }} {{ filename }}
+
+[group("setup")]
+warmup: && compile
+    cabal v2-build --only-dependencies
+
+[group("setup")]
+setup: clean warmup
+
+[group("ci")]
+fmt *args="--mode inplace":
+    ormolu {{ args }} {{ filename }}
+
+[group("ci")]
+lint:
+    hlint {{ filename }}
+
+[group("ci")]
+ci: (fmt "--mode check") lint compile

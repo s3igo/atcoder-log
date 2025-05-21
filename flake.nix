@@ -17,10 +17,8 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./runtimes/rust
-        ./runtimes/haskell
         ./snippets/rust
       ];
-      # ++ (map (path: ./runtimes/${path}) (with builtins; attrNames (readDir ./runtimes)));
 
       systems = import inputs.systems;
 
