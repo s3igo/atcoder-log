@@ -20,6 +20,10 @@ run: compile execution
 clean:
     rm -rfv bin obj publish
 
+version:
+    dotnet --list-runtimes
+    dotnet --version
+
 alias t := test
 [group("judge")]
 test: compile

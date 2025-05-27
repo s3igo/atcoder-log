@@ -4,9 +4,9 @@
     "net9.0": {
       "ac-library-csharp": {
         "type": "Direct",
-        "requested": "[3.9.1-atcoder1, )",
-        "resolved": "3.9.1-atcoder1",
-        "contentHash": "w+NQ669HeKlU4HQZfw+eY6RPDpTKVbKU3Mqz+Gbr0PofDraSANHXkqJz2q50Dlp5PYrr3TWBUWP7EJ3KvPVeeQ=="
+        "requested": "[3.9.2-atcoder1, )",
+        "resolved": "3.9.2-atcoder1",
+        "contentHash": "pDKLPopUWCSxZsqKjHNhuzC7xzJSfSRpyJoYb310izympE3J66QWf54JikiWEzDR4tBzL2tKf0r9fdBWKcovoQ=="
       },
       "FSharp.Core": {
         "type": "Direct",
