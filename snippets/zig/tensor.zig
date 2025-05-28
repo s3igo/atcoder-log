@@ -1,7 +1,8 @@
 const std = @import("std");
 
 /// Generic implementation of a multidimensional array tensor.
-/// Provides dynamic-sized multidimensional arrays for any type T.
+/// Provides multidimensional arrays for any type T with runtime-known sizes and
+/// dimensions.
 ///
 /// **Features**:
 ///   - Supports any type (primitives, structs, tuples)
@@ -13,7 +14,7 @@ const std = @import("std");
 ///   ```zig
 ///   // Create a 2x3 floating point tensor
 ///   const dims = [_]usize{ 2, 3 };
-///   var tensor = try Tensor(f32).init(allocator, &dims);
+///   var tensor: Tensor(f32) = try .init(allocator, &dims);
 ///   defer tensor.deinit();
 ///
 ///   // Access elements
@@ -22,7 +23,7 @@ const std = @import("std");
 ///
 ///   // Tensor with struct elements
 ///   const Point = struct { x: f32, y: f32 };
-///   var points_tensor = try Tensor(Point).init(allocator, &.{10, 10});
+///   var points_tensor: Tensor(Point) = try .init(allocator, &.{10, 10});
 ///   defer points_tensor.deinit();
 ///   ```
 pub fn Tensor(comptime T: type) type {
