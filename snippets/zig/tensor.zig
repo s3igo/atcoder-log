@@ -21,6 +21,10 @@ const std = @import("std");
 ///   (try tensor.at(&.{ 0, 1 })).* = 3.14;
 ///   const value = (try tensor.at(&.{ 0, 1 })).*;
 ///
+///   // Access elements (with panic on error)
+///   tensor.atAssume(&.{ 0, 1 }).* = 3.14;
+///   const value_assume = tensor.atAssume(&.{ 0, 1 }).*;
+///
 ///   // Tensor with struct elements
 ///   const Point = struct { x: f32, y: f32 };
 ///   var points_tensor: Tensor(Point) = try .init(allocator, &.{10, 10});
@@ -81,6 +85,11 @@ pub fn Tensor(comptime T: type) type {
         pub fn at(self: Self, indices: []const usize) !*T {
             const idx = try self.index(indices);
             return &self.data[idx];
+        }
+
+        pub fn atAssume(self: Self, indices: []const usize) *T {
+            return self.at(indices) catch |err|
+                std.debug.panic("Tensor({s}).atAssume: {s}", .{ @typeName(T), @errorName(err) });
         }
 
         pub fn rank(self: Self) usize {
@@ -302,6 +311,43 @@ test "Tensor - edge cases" {
         try testing.expectEqual(@as(i32, 42), (try tensor0d.at(&index0d)).*);
     }
 }
+
+test "Tensor - atAssume" {
+    const testing = std.testing;
+    const allocator = testing.allocator;
+
+    // 2x3 tensor for testing atAssume
+    const dims = [_]usize{ 2, 3 };
+    var tensor = try Tensor(f32).init(allocator, &dims);
+    defer tensor.deinit();
+
+    // Set a value using atAssume
+    tensor.atAssume(&.{ 1, 2 }).* = 3.14;
+
+    // Verify the value using both methods
+    try testing.expectEqual(@as(f32, 3.14), (try tensor.at(&.{ 1, 2 })).*);
+    try testing.expectEqual(@as(f32, 3.14), tensor.atAssume(&.{ 1, 2 }).*);
+
+    // Verify other positions are still zero
+    try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 0, 0 }).*);
+    try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 1, 0 }).*);
+}
+
+// Note: We cannot directly test for panics in Zig 0.14.1's standard testing framework
+// The implementation of atAssume is designed to panic in these cases:
+// - When indices.len != dimensions.len (DimensionMismatch)
+// - When any index is out of bounds (IndexOutOfBounds)
+//
+// Example panic situations:
+// ```
+// var tensor = try Tensor(f32).init(allocator, &[_]usize{2, 3});
+// defer tensor.deinit();
+//
+// _ = tensor.atAssume(&[_]usize{1}); // Panics: too few indices
+// _ = tensor.atAssume(&[_]usize{1, 1, 1}); // Panics: too many indices
+// _ = tensor.atAssume(&[_]usize{2, 0}); // Panics: first index out of bounds
+// _ = tensor.atAssume(&[_]usize{0, 3}); // Panics: second index out of bounds
+// ```
 
 test Tensor {
     const testing = std.testing;
