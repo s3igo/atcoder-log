@@ -25,6 +25,9 @@ const std = @import("std");
 ///   tensor.atAssume(&.{ 0, 1 }).* = 3.14;
 ///   const value_assume = tensor.atAssume(&.{ 0, 1 }).*;
 ///
+///   // Get value with default fallback
+///   const value_or_default = tensor.getOrDefault(&.{ 0, 1 }, 0.0);
+///
 ///   // Tensor with struct elements
 ///   const Point = struct { x: f32, y: f32 };
 ///   var points_tensor: Tensor(Point) = try .init(allocator, &.{10, 10});
@@ -90,6 +93,11 @@ pub fn Tensor(comptime T: type) type {
         pub fn atAssume(self: Self, indices: []const usize) *T {
             return self.at(indices) catch |err|
                 std.debug.panic("Tensor({s}).atAssume: {s}", .{ @typeName(T), @errorName(err) });
+        }
+
+        pub fn getOrDefault(self: Self, indices: []const usize, default: T) T {
+            const idx = self.index(indices) catch return default;
+            return self.data[idx];
         }
 
         pub fn rank(self: Self) usize {
@@ -331,6 +339,30 @@ test "Tensor - atAssume" {
     // Verify other positions are still zero
     try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 0, 0 }).*);
     try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 1, 0 }).*);
+}
+
+test "Tensor - getOrDefault" {
+    const testing = std.testing;
+    const allocator = testing.allocator;
+
+    // 2x3 tensor for testing getOrDefault
+    const dims = [_]usize{ 2, 3 };
+    var tensor = try Tensor(f32).init(allocator, &dims);
+    defer tensor.deinit();
+
+    // Set a value
+    (try tensor.at(&.{ 1, 1 })).* = 42.0;
+
+    // Get valid value with getOrDefault (should return actual value)
+    try testing.expectEqual(@as(f32, 42.0), tensor.getOrDefault(&.{ 1, 1 }, 99.9));
+    try testing.expectEqual(@as(f32, 0.0), tensor.getOrDefault(&.{ 0, 0 }, 99.9));
+
+    // Test with out of bounds indices (should return default)
+    try testing.expectEqual(@as(f32, 99.9), tensor.getOrDefault(&.{ 5, 5 }, 99.9));
+
+    // Test with dimension mismatch (should return default)
+    try testing.expectEqual(@as(f32, -1.0), tensor.getOrDefault(&.{1}, -1.0));
+    try testing.expectEqual(@as(f32, -2.0), tensor.getOrDefault(&.{ 1, 1, 1 }, -2.0));
 }
 
 // Note: We cannot directly test for panics in Zig 0.14.1's standard testing framework
