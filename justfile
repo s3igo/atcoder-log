@@ -8,5 +8,9 @@ alias r := run
 run *args:
     @just ac::run {{ args }}
 
-test *args:
+[no-exit-message]
+test *args="--summary all":
     zig build test {{ args }}
+
+clean:
+    rm -rfv .zig-cache
