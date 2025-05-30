@@ -11,43 +11,100 @@ pub fn main() !void {
     const writer = buffered_stdout.writer();
     defer buffered_stdout.flush() catch {};
 
-    const raw_input = try stdin.reader().readAllAlloc(allocator, std.math.maxInt(usize));
-    var input = std.mem.tokenizeAny(u8, raw_input, &std.ascii.whitespace);
+    const input = try stdin.reader().readAllAlloc(allocator, std.math.maxInt(usize));
+    var tokens: Tokens = .init(input);
 
-    const h = try std.fmt.parseInt(u64, input.next().?, 10);
-    const w = try std.fmt.parseInt(u64, input.next().?, 10);
+    const h, const w = tokens.parseN(u64, 2);
 
     const cumsum: Tensor(u64) = try .init(allocator, &.{ h, w });
 
     for (0..h) |i| {
         for (0..w) |j| {
-            const prev = cumsum.getOrDefault(&.{ i, j - 1 }, 0);
-            const x = try std.fmt.parseInt(u64, input.next().?, 10);
-            cumsum.atAssume(&.{ i, j }).* = prev + x;
+            const prev = cumsum.getOrDefault(&.{ i, j -% 1 }, 0);
+            const x = tokens.parse(u64);
+            cumsum.at(&.{ i, j }).* = prev + x;
         }
     }
 
     for (0..w) |i| {
         for (0..h) |j| {
-            const prev = cumsum.getOrDefault(&.{ i - 1, j }, 0);
-            cumsum.atAssume(&.{ i, j }).* += prev;
+            const prev = cumsum.getOrDefault(&.{ i -% 1, j }, 0);
+            cumsum.at(&.{ i, j }).* += prev;
         }
     }
 
-    const q = try std.fmt.parseInt(u64, input.next().?, 10);
+    const q = tokens.parse(u64);
 
     for (0..q) |_| {
-        const a = try std.fmt.parseInt(u64, input.next().?, 10) - 1;
-        const b = try std.fmt.parseInt(u64, input.next().?, 10) - 1;
-        const c = try std.fmt.parseInt(u64, input.next().?, 10) - 1;
-        const d = try std.fmt.parseInt(u64, input.next().?, 10) - 1;
-        const tl = cumsum.getOrDefault(&.{ a - 1, b - 1 }, 0);
-        const tr = cumsum.getOrDefault(&.{ a - 1, d }, 0);
-        const bl = cumsum.getOrDefault(&.{ c, b - 1 }, 0);
+        const a, const b, const c, const d = tokens.parseNVec(u64, 4) - @as(@Vector(4, u64), @splat(1));
+        const tl = cumsum.getOrDefault(&.{ a -% 1, b -% 1 }, 0);
+        const tr = cumsum.getOrDefault(&.{ a -% 1, d }, 0);
+        const bl = cumsum.getOrDefault(&.{ c, b -% 1 }, 0);
         const br = cumsum.getOrDefault(&.{ c, d }, 0);
         try writer.print("{d}\n", .{br + tl - tr - bl});
     }
 }
+
+/// Tokenizer and parser for values separated by any whitespace characters.
+/// Splits input string into tokens and converts them to numeric types.
+///
+/// **Features**:
+///   - String tokenization based on whitespace delimiters
+///   - Parsing tokens into numeric types
+///   - Batch parsing of multiple values into arrays, vectors, or slices
+///
+/// **Example**:
+///   ```zig
+///   // Parse "123 456" into integers
+///   var t1: Tokens = .init("123 456");
+///   const a = t1.parse(i32);
+///   const b = t1.parse(i32);
+///   // a = 123, b = 456
+///
+///   // Parse "1 2\n3" into an array of integers
+///   var t2: Tokens = .init("1 2\n3");
+///   const arr = t2.parseN(i32, 3);
+///   // arr = [3]i32{ 1, 2, 3 }
+///   ```
+pub const Tokens = struct {
+    iter: std.mem.TokenIterator(u8, .any),
+
+    const Self = @This();
+
+    pub fn init(str: []const u8) Self {
+        return .{ .iter = std.mem.tokenizeAny(u8, str, &std.ascii.whitespace) };
+    }
+
+    pub fn next(self: *Self) ?[]const u8 {
+        return self.iter.next();
+    }
+
+    pub fn raw(self: *Self) []const u8 {
+        return self.next().?;
+    }
+
+    pub fn parse(self: *Self, comptime T: type) T {
+        return std.fmt.parseInt(T, self.raw(), 0) catch |err|
+            std.debug.panic("Tokens.parse <{s}>: {s}", .{ @typeName(T), @errorName(err) });
+    }
+
+    pub fn parseN(self: *Self, comptime T: type, comptime n: comptime_int) [n]T {
+        var result: [n]T = undefined;
+        for (&result) |*elem| elem.* = self.parse(T);
+        return result;
+    }
+
+    pub fn parseNVec(self: *Self, comptime T: type, comptime n: comptime_int) @Vector(n, T) {
+        return self.parseN(T, n);
+    }
+
+    pub fn parseNAlloc(self: *Self, allocator: std.mem.Allocator, comptime T: type, n: usize) ![]T {
+        const result = try allocator.alloc(T, n);
+        errdefer allocator.free(result);
+        for (result) |*elem| elem.* = self.parse(T);
+        return result;
+    }
+};
 
 /// Generic implementation of a multidimensional array tensor.
 /// Provides multidimensional arrays for any type T with runtime-known sizes and
@@ -67,12 +124,12 @@ pub fn main() !void {
 ///   defer tensor.deinit();
 ///
 ///   // Access elements
-///   (try tensor.at(&.{ 0, 1 })).* = 3.14;
-///   const value = (try tensor.at(&.{ 0, 1 })).*;
+///   tensor.at(&.{ 0, 1 }).* = 3.14;
+///   const value = tensor.at(&.{ 0, 1 }).*;
 ///
-///   // Access elements (with panic on error)
-///   tensor.atAssume(&.{ 0, 1 }).* = 3.14;
-///   const value_assume = tensor.atAssume(&.{ 0, 1 }).*;
+///   // Access elements (with error handling)
+///   (try tensor.tryAt(&.{ 0, 1 })).* = 3.14;
+///   const value_try = (try tensor.tryAt(&.{ 0, 1 })).*;
 ///
 ///   // Get value with default fallback
 ///   const value_or_default = tensor.getOrDefault(&.{ 0, 1 }, 0.0);
@@ -134,14 +191,14 @@ pub fn Tensor(comptime T: type) type {
             return idx;
         }
 
-        pub fn at(self: Self, indices: []const usize) !*T {
+        pub fn tryAt(self: Self, indices: []const usize) !*T {
             const idx = try self.index(indices);
             return &self.data[idx];
         }
 
-        pub fn atAssume(self: Self, indices: []const usize) *T {
-            return self.at(indices) catch |err|
-                std.debug.panic("Tensor({s}).atAssume: {s}", .{ @typeName(T), @errorName(err) });
+        pub fn at(self: Self, indices: []const usize) *T {
+            return self.tryAt(indices) catch |err|
+                std.debug.panic("Tensor({s}).at: {s}", .{ @typeName(T), @errorName(err) });
         }
 
         pub fn getOrDefault(self: Self, indices: []const usize, default: T) T {

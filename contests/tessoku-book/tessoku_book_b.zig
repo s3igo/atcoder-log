@@ -18,7 +18,8 @@ pub fn main() !void {
     const x = input.next().?;
 
     const cond = for (0..n) |_| {
-        if (std.mem.eql(u8, input.next().?, x)) break true;
+        const a = input.next().?;
+        if (std.mem.eql(u8, a, x)) break true;
     } else false;
 
     try writer.print("{s}\n", .{if (cond) "Yes" else "No"});
