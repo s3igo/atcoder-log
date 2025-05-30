@@ -18,12 +18,12 @@ const std = @import("std");
 ///   defer tensor.deinit();
 ///
 ///   // Access elements
-///   (try tensor.at(&.{ 0, 1 })).* = 3.14;
-///   const value = (try tensor.at(&.{ 0, 1 })).*;
+///   tensor.at(&.{ 0, 1 }).* = 3.14;
+///   const value = tensor.at(&.{ 0, 1 }).*;
 ///
-///   // Access elements (with panic on error)
-///   tensor.atAssume(&.{ 0, 1 }).* = 3.14;
-///   const value_assume = tensor.atAssume(&.{ 0, 1 }).*;
+///   // Access elements (with error handling)
+///   (try tensor.tryAt(&.{ 0, 1 })).* = 3.14;
+///   const value_try = (try tensor.tryAt(&.{ 0, 1 })).*;
 ///
 ///   // Get value with default fallback
 ///   const value_or_default = tensor.getOrDefault(&.{ 0, 1 }, 0.0);
@@ -85,14 +85,14 @@ pub fn Tensor(comptime T: type) type {
             return idx;
         }
 
-        pub fn at(self: Self, indices: []const usize) !*T {
+        pub fn tryAt(self: Self, indices: []const usize) !*T {
             const idx = try self.index(indices);
             return &self.data[idx];
         }
 
-        pub fn atAssume(self: Self, indices: []const usize) *T {
-            return self.at(indices) catch |err|
-                std.debug.panic("Tensor({s}).atAssume: {s}", .{ @typeName(T), @errorName(err) });
+        pub fn at(self: Self, indices: []const usize) *T {
+            return self.tryAt(indices) catch |err|
+                std.debug.panic("Tensor({s}).at: {s}", .{ @typeName(T), @errorName(err) });
         }
 
         pub fn getOrDefault(self: Self, indices: []const usize, default: T) T {
@@ -133,9 +133,9 @@ test "Tensor - initialization" {
         try testing.expectEqual(@as(usize, 6), tensor2d.size()); // 2 * 3 = 6
 
         // Floating point types should initialize to 0.0
-        try testing.expectEqual(@as(f32, 0.0), (try tensor2d.at(&.{ 0, 0 })).*);
-        try testing.expectEqual(@as(f32, 0.0), (try tensor2d.at(&.{ 0, 1 })).*);
-        try testing.expectEqual(@as(f32, 0.0), (try tensor2d.at(&.{ 1, 2 })).*);
+        try testing.expectEqual(@as(f32, 0.0), tensor2d.at(&.{ 0, 0 }).*);
+        try testing.expectEqual(@as(f32, 0.0), tensor2d.at(&.{ 0, 1 }).*);
+        try testing.expectEqual(@as(f32, 0.0), tensor2d.at(&.{ 1, 2 }).*);
     }
 
     { // 3D tensor (2x3x4) initialization test
@@ -150,10 +150,10 @@ test "Tensor - initialization" {
         try testing.expectEqual(@as(usize, 24), tensor3d.size()); // 2 * 3 * 4 = 24
 
         // Integer types should initialize to 0
-        try testing.expectEqual(@as(i32, 0), (try tensor3d.at(&.{ 0, 0, 0 })).*);
-        try testing.expectEqual(@as(i32, 0), (try tensor3d.at(&.{ 0, 0, 1 })).*);
-        try testing.expectEqual(@as(i32, 0), (try tensor3d.at(&.{ 0, 1, 0 })).*);
-        try testing.expectEqual(@as(i32, 0), (try tensor3d.at(&.{ 1, 2, 3 })).*);
+        try testing.expectEqual(@as(i32, 0), tensor3d.at(&.{ 0, 0, 0 }).*);
+        try testing.expectEqual(@as(i32, 0), tensor3d.at(&.{ 0, 0, 1 }).*);
+        try testing.expectEqual(@as(i32, 0), tensor3d.at(&.{ 0, 1, 0 }).*);
+        try testing.expectEqual(@as(i32, 0), tensor3d.at(&.{ 1, 2, 3 }).*);
     }
 
     { // Tuple type tensor initialization test
@@ -165,8 +165,8 @@ test "Tensor - initialization" {
         try testing.expectEqual(@as(usize, 4), tensor_tuple.size()); // 2 * 2 = 4
 
         // Tuples should initialize to zeroes
-        try testing.expectEqualDeep(.{ 0.0, 0 }, (try tensor_tuple.at(&.{ 0, 0 })).*);
-        try testing.expectEqualDeep(.{ 0.0, 0 }, (try tensor_tuple.at(&.{ 1, 1 })).*);
+        try testing.expectEqualDeep(.{ 0.0, 0 }, tensor_tuple.at(&.{ 0, 0 }).*);
+        try testing.expectEqualDeep(.{ 0.0, 0 }, tensor_tuple.at(&.{ 1, 1 }).*);
     }
 
     { // Struct type tensor initialization test
@@ -181,8 +181,8 @@ test "Tensor - initialization" {
 
         // Struct should initialize to zeros
         const expected_point = Point{ .x = 0.0, .y = 0.0 };
-        try testing.expectEqual(expected_point.x, (try tensor_struct.at(&.{ 0, 0 })).*.x);
-        try testing.expectEqual(expected_point.y, (try tensor_struct.at(&.{ 0, 0 })).*.y);
+        try testing.expectEqual(expected_point.x, tensor_struct.at(&.{ 0, 0 }).*.x);
+        try testing.expectEqual(expected_point.y, tensor_struct.at(&.{ 0, 0 }).*.y);
     }
 }
 
@@ -200,18 +200,18 @@ test "Tensor - get and set values" {
         const indices2 = [_]usize{ 1, 2 };
         const indices3 = [_]usize{ 2, 3 };
 
-        (try tensor2d.at(&indices1)).* = 1.5;
-        (try tensor2d.at(&indices2)).* = 42.0;
-        (try tensor2d.at(&indices3)).* = -10.25;
+        tensor2d.at(&indices1).* = 1.5;
+        tensor2d.at(&indices2).* = 42.0;
+        tensor2d.at(&indices3).* = -10.25;
 
         // Get and verify values
-        try testing.expectEqual(@as(f64, 1.5), (try tensor2d.at(&indices1)).*);
-        try testing.expectEqual(@as(f64, 42.0), (try tensor2d.at(&indices2)).*);
-        try testing.expectEqual(@as(f64, -10.25), (try tensor2d.at(&indices3)).*);
+        try testing.expectEqual(@as(f64, 1.5), tensor2d.at(&indices1).*);
+        try testing.expectEqual(@as(f64, 42.0), tensor2d.at(&indices2).*);
+        try testing.expectEqual(@as(f64, -10.25), tensor2d.at(&indices3).*);
 
         // Unset values should be the default value of 0
         const unset_indices = [_]usize{ 1, 1 };
-        try testing.expectEqual(@as(f64, 0.0), (try tensor2d.at(&unset_indices)).*);
+        try testing.expectEqual(@as(f64, 0.0), tensor2d.at(&unset_indices).*);
     }
 
     { // Setting and getting values in a 3D tensor
@@ -222,11 +222,11 @@ test "Tensor - get and set values" {
         const indices3d1 = [_]usize{ 0, 0, 1 };
         const indices3d2 = [_]usize{ 1, 1, 1 };
 
-        (try tensor3d.at(&indices3d1)).* = 100;
-        (try tensor3d.at(&indices3d2)).* = -50;
+        tensor3d.at(&indices3d1).* = 100;
+        tensor3d.at(&indices3d2).* = -50;
 
-        try testing.expectEqual(@as(i32, 100), (try tensor3d.at(&indices3d1)).*);
-        try testing.expectEqual(@as(i32, -50), (try tensor3d.at(&indices3d2)).*);
+        try testing.expectEqual(@as(i32, 100), tensor3d.at(&indices3d1).*);
+        try testing.expectEqual(@as(i32, -50), tensor3d.at(&indices3d2).*);
     }
 }
 
@@ -243,15 +243,15 @@ test "Tensor - error handling" {
         const too_few_indices = [_]usize{1};
         const too_many_indices = [_]usize{ 1, 1, 1 };
 
-        try testing.expectError(error.DimensionMismatch, tensor.at(&too_few_indices));
-        try testing.expectError(error.DimensionMismatch, tensor.at(&too_many_indices));
+        try testing.expectError(error.DimensionMismatch, tensor.tryAt(&too_few_indices));
+        try testing.expectError(error.DimensionMismatch, tensor.tryAt(&too_many_indices));
 
         // Error when index is out of bounds
         const out_of_bounds_indices1 = [_]usize{ 2, 0 }; // First dimension only has 0, 1
         const out_of_bounds_indices2 = [_]usize{ 0, 3 }; // Second dimension only has 0, 1, 2
 
-        try testing.expectError(error.IndexOutOfBounds, tensor.at(&out_of_bounds_indices1));
-        try testing.expectError(error.IndexOutOfBounds, tensor.at(&out_of_bounds_indices2));
+        try testing.expectError(error.IndexOutOfBounds, tensor.tryAt(&out_of_bounds_indices1));
+        try testing.expectError(error.IndexOutOfBounds, tensor.tryAt(&out_of_bounds_indices2));
 
         // Error when requesting dimension size out of bounds
         try testing.expectError(error.DimensionOutOfBounds, tensor.dimSize(2)); // Dimensions are only 0, 1
@@ -278,14 +278,14 @@ test "Tensor - various types" {
         // Set and get values
         const indices = [_]usize{ 0, 1 };
 
-        (try tensor_i8.at(&indices)).* = -5;
-        try testing.expectEqual(@as(i8, -5), (try tensor_i8.at(&indices)).*);
+        tensor_i8.at(&indices).* = -5;
+        try testing.expectEqual(@as(i8, -5), tensor_i8.at(&indices).*);
 
-        (try tensor_u32.at(&indices)).* = 12345678;
-        try testing.expectEqual(@as(u32, 12345678), (try tensor_u32.at(&indices)).*);
+        tensor_u32.at(&indices).* = 12345678;
+        try testing.expectEqual(@as(u32, 12345678), tensor_u32.at(&indices).*);
 
-        (try tensor_bool.at(&indices)).* = true;
-        try testing.expectEqual(true, (try tensor_bool.at(&indices)).*);
+        tensor_bool.at(&indices).* = true;
+        try testing.expectEqual(true, tensor_bool.at(&indices).*);
     }
 }
 
@@ -302,8 +302,8 @@ test "Tensor - edge cases" {
         try testing.expectEqual(@as(usize, 5), tensor1d.size());
 
         const index1d = [_]usize{3};
-        (try tensor1d.at(&index1d)).* = 3.14;
-        try testing.expectEqual(@as(f32, 3.14), (try tensor1d.at(&index1d)).*);
+        tensor1d.at(&index1d).* = 3.14;
+        try testing.expectEqual(@as(f32, 3.14), tensor1d.at(&index1d).*);
     }
 
     { // 0D tensor (scalar)
@@ -315,30 +315,30 @@ test "Tensor - edge cases" {
         try testing.expectEqual(@as(usize, 1), tensor0d.size()); // Even with 0 dimensions, there's still 1 element
 
         const index0d = [_]usize{};
-        (try tensor0d.at(&index0d)).* = 42;
-        try testing.expectEqual(@as(i32, 42), (try tensor0d.at(&index0d)).*);
+        tensor0d.at(&index0d).* = 42;
+        try testing.expectEqual(@as(i32, 42), tensor0d.at(&index0d).*);
     }
 }
 
-test "Tensor - atAssume" {
+test "Tensor - at" {
     const testing = std.testing;
     const allocator = testing.allocator;
 
-    // 2x3 tensor for testing atAssume
+    // 2x3 tensor for testing at
     const dims = [_]usize{ 2, 3 };
     var tensor = try Tensor(f32).init(allocator, &dims);
     defer tensor.deinit();
 
-    // Set a value using atAssume
-    tensor.atAssume(&.{ 1, 2 }).* = 3.14;
+    // Set a value using at
+    tensor.at(&.{ 1, 2 }).* = 3.14;
 
     // Verify the value using both methods
-    try testing.expectEqual(@as(f32, 3.14), (try tensor.at(&.{ 1, 2 })).*);
-    try testing.expectEqual(@as(f32, 3.14), tensor.atAssume(&.{ 1, 2 }).*);
+    try testing.expectEqual(@as(f32, 3.14), (try tensor.tryAt(&.{ 1, 2 })).*);
+    try testing.expectEqual(@as(f32, 3.14), tensor.at(&.{ 1, 2 }).*);
 
     // Verify other positions are still zero
-    try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 0, 0 }).*);
-    try testing.expectEqual(@as(f32, 0.0), tensor.atAssume(&.{ 1, 0 }).*);
+    try testing.expectEqual(@as(f32, 0.0), tensor.at(&.{ 0, 0 }).*);
+    try testing.expectEqual(@as(f32, 0.0), tensor.at(&.{ 1, 0 }).*);
 }
 
 test "Tensor - getOrDefault" {
@@ -351,7 +351,7 @@ test "Tensor - getOrDefault" {
     defer tensor.deinit();
 
     // Set a value
-    (try tensor.at(&.{ 1, 1 })).* = 42.0;
+    tensor.at(&.{ 1, 1 }).* = 42.0;
 
     // Get valid value with getOrDefault (should return actual value)
     try testing.expectEqual(@as(f32, 42.0), tensor.getOrDefault(&.{ 1, 1 }, 99.9));
@@ -366,7 +366,7 @@ test "Tensor - getOrDefault" {
 }
 
 // Note: We cannot directly test for panics in Zig 0.14.1's standard testing framework
-// The implementation of atAssume is designed to panic in these cases:
+// The implementation of at is designed to panic in these cases:
 // - When indices.len != dimensions.len (DimensionMismatch)
 // - When any index is out of bounds (IndexOutOfBounds)
 //
@@ -375,10 +375,10 @@ test "Tensor - getOrDefault" {
 // var tensor = try Tensor(f32).init(allocator, &[_]usize{2, 3});
 // defer tensor.deinit();
 //
-// _ = tensor.atAssume(&[_]usize{1}); // Panics: too few indices
-// _ = tensor.atAssume(&[_]usize{1, 1, 1}); // Panics: too many indices
-// _ = tensor.atAssume(&[_]usize{2, 0}); // Panics: first index out of bounds
-// _ = tensor.atAssume(&[_]usize{0, 3}); // Panics: second index out of bounds
+// _ = tensor.at(&[_]usize{1}); // Panics: too few indices
+// _ = tensor.at(&[_]usize{1, 1, 1}); // Panics: too many indices
+// _ = tensor.at(&[_]usize{2, 0}); // Panics: first index out of bounds
+// _ = tensor.at(&[_]usize{0, 3}); // Panics: second index out of bounds
 // ```
 
 test Tensor {
@@ -397,22 +397,22 @@ test Tensor {
     try testing.expectEqual(@as(usize, 12), tensor.size()); // 3 * 4 = 12
 
     // Set values
-    (try tensor.at(&.{ 1, 2 })).* = 3.14;
-    (try tensor.at(&.{ 2, 3 })).* = -1.5;
+    tensor.at(&.{ 1, 2 }).* = 3.14;
+    tensor.at(&.{ 2, 3 }).* = -1.5;
 
     // Get and verify values
-    try testing.expectEqual(@as(f32, 3.14), (try tensor.at(&.{ 1, 2 })).*);
-    try testing.expectEqual(@as(f32, -1.5), (try tensor.at(&.{ 2, 3 })).*);
-    try testing.expectEqual(@as(f32, 0.0), (try tensor.at(&.{ 0, 0 })).*); // Initial value is 0
+    try testing.expectEqual(@as(f32, 3.14), tensor.at(&.{ 1, 2 }).*);
+    try testing.expectEqual(@as(f32, -1.5), tensor.at(&.{ 2, 3 }).*);
+    try testing.expectEqual(@as(f32, 0.0), tensor.at(&.{ 0, 0 }).*); // Initial value is 0
 
     { // Error handling
         // Dimension mismatch
-        try testing.expectError(error.DimensionMismatch, tensor.at(&.{1}));
-        try testing.expectError(error.DimensionMismatch, tensor.at(&.{ 0, 1, 2 }));
+        try testing.expectError(error.DimensionMismatch, tensor.tryAt(&.{1}));
+        try testing.expectError(error.DimensionMismatch, tensor.tryAt(&.{ 0, 1, 2 }));
 
         // Index out of bounds
-        try testing.expectError(error.IndexOutOfBounds, tensor.at(&.{ 3, 0 }));
-        try testing.expectError(error.IndexOutOfBounds, tensor.at(&.{ 0, 4 }));
+        try testing.expectError(error.IndexOutOfBounds, tensor.tryAt(&.{ 3, 0 }));
+        try testing.expectError(error.IndexOutOfBounds, tensor.tryAt(&.{ 0, 4 }));
 
         // Dimension info out of bounds
         try testing.expectError(error.DimensionOutOfBounds, tensor.dimSize(2));
