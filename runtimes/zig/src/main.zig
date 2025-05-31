@@ -53,12 +53,17 @@ pub const Tokens = struct {
     }
 
     pub fn raw(self: *Self) []const u8 {
-        return self.next().?;
+        return self.next() orelse std.debug.panic("Tokens.raw(): No more tokens", .{});
+    }
+
+    pub fn tryParse(self: *Self, comptime T: type) !T {
+        const token = self.next() orelse return error.NoMoreTokens;
+        return std.fmt.parseInt(T, token, 0);
     }
 
     pub fn parse(self: *Self, comptime T: type) T {
-        return std.fmt.parseInt(T, self.raw(), 0) catch |err|
-            std.debug.panic("Tokens.parse <{s}>: {s}", .{ @typeName(T), @errorName(err) });
+        return self.tryParse(T) catch |err|
+            std.debug.panic("Tokens.parse({s}): {s}", .{ @typeName(T), @errorName(err) });
     }
 
     pub fn parseN(self: *Self, comptime T: type, comptime n: comptime_int) [n]T {
@@ -74,7 +79,7 @@ pub const Tokens = struct {
     pub fn parseNAlloc(self: *Self, allocator: std.mem.Allocator, comptime T: type, n: usize) ![]T {
         const result = try allocator.alloc(T, n);
         errdefer allocator.free(result);
-        for (result) |*elem| elem.* = self.parse(T);
+        for (result) |*elem| elem.* = try self.tryParse(T);
         return result;
     }
 };

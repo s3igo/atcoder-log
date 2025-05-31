@@ -51,7 +51,7 @@ pub fn Tensor(comptime T: type) type {
             const data = try allocator.alloc(T, total_size);
             errdefer allocator.free(data);
 
-            // Initialize with zeros following tensor computation conventions
+            // Initialize with zeros following common tensor computation practice
             @memset(data, std.mem.zeroes(T));
 
             return .{
@@ -92,7 +92,11 @@ pub fn Tensor(comptime T: type) type {
 
         pub fn at(self: Self, indices: []const usize) *T {
             return self.tryAt(indices) catch |err|
-                std.debug.panic("Tensor({s}).at: {s}", .{ @typeName(T), @errorName(err) });
+                std.debug.panic("Tensor({s}).at({any}): {s}", .{
+                    @typeName(T),
+                    indices,
+                    @errorName(err),
+                });
         }
 
         pub fn getOrDefault(self: Self, indices: []const usize, default: T) T {
