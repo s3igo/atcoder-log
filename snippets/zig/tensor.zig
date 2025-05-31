@@ -92,7 +92,11 @@ pub fn Tensor(comptime T: type) type {
 
         pub fn at(self: Self, indices: []const usize) *T {
             return self.tryAt(indices) catch |err|
-                std.debug.panic("Tensor({s}).at: {s}", .{ @typeName(T), @errorName(err) });
+                std.debug.panic("Tensor({s}).at({any}): {s}", .{
+                    @typeName(T),
+                    indices,
+                    @errorName(err),
+                });
         }
 
         pub fn getOrDefault(self: Self, indices: []const usize, default: T) T {

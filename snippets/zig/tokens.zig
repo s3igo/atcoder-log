@@ -35,12 +35,17 @@ pub const Tokens = struct {
     }
 
     pub fn raw(self: *Self) []const u8 {
-        return self.next().?;
+        return self.next() orelse std.debug.panic("Tokens.raw(): No more tokens", .{});
+    }
+
+    pub fn tryParse(self: *Self, comptime T: type) !T {
+        const token = self.next() orelse return error.NoMoreTokens;
+        return std.fmt.parseInt(T, token, 0);
     }
 
     pub fn parse(self: *Self, comptime T: type) T {
-        return std.fmt.parseInt(T, self.raw(), 0) catch |err|
-            std.debug.panic("Tokens.parse <{s}>: {s}", .{ @typeName(T), @errorName(err) });
+        return self.tryParse(T) catch |err|
+            std.debug.panic("Tokens.parse({s}): {s}", .{ @typeName(T), @errorName(err) });
     }
 
     pub fn parseN(self: *Self, comptime T: type, comptime n: comptime_int) [n]T {
@@ -56,7 +61,7 @@ pub const Tokens = struct {
     pub fn parseNAlloc(self: *Self, allocator: std.mem.Allocator, comptime T: type, n: usize) ![]T {
         const result = try allocator.alloc(T, n);
         errdefer allocator.free(result);
-        for (result) |*elem| elem.* = self.parse(T);
+        for (result) |*elem| elem.* = try self.tryParse(T);
         return result;
     }
 };
@@ -104,6 +109,41 @@ test "Tokens - raw method" {
     // Note: We can't test the panic case directly in Zig's testing framework
     // The following would panic:
     // _ = tokens.raw();  // Would panic - no more tokens
+}
+
+test "Tokens - tryParse method" {
+    const testing = std.testing;
+
+    { // Basic parse test
+        var tokens: Tokens = .init("123 -456 0");
+        try testing.expectEqual(@as(i32, 123), try tokens.tryParse(i32));
+        try testing.expectEqual(@as(i32, -456), try tokens.tryParse(i32));
+        try testing.expectEqual(@as(i32, 0), try tokens.tryParse(i32));
+    }
+
+    { // Different integer types
+        var tokens: Tokens = .init("127 255 32767 65535");
+        try testing.expectEqual(@as(i8, 127), try tokens.tryParse(i8));
+        try testing.expectEqual(@as(u8, 255), try tokens.tryParse(u8));
+        try testing.expectEqual(@as(i16, 32767), try tokens.tryParse(i16));
+        try testing.expectEqual(@as(u16, 65535), try tokens.tryParse(u16));
+    }
+
+    { // Error: No more tokens
+        var tokens: Tokens = .init("10");
+        _ = try tokens.tryParse(i32);
+        try testing.expectError(error.NoMoreTokens, tokens.tryParse(i32));
+    }
+
+    { // Error: Invalid integer format
+        var tokens: Tokens = .init("abc");
+        try testing.expectError(error.InvalidCharacter, tokens.tryParse(i32));
+    }
+
+    { // Error: Integer overflow
+        var tokens: Tokens = .init("256");
+        try testing.expectError(error.Overflow, tokens.tryParse(u8));
+    }
 }
 
 test "Tokens - parse method" {
